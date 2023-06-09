@@ -63,7 +63,7 @@ export default class CTA2 extends DisplayObject {
 
         this.add(hideTween);
 
-        hideTween.on('complete', msg => this.visible = false);
+        hideTween.on('complete', this.visible = false);
     }
 }
 

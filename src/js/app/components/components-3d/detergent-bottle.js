@@ -6,7 +6,11 @@ export default class DetergentBottle extends THREE.Object3D {
         super();
 
         this.tidelGroup = null;
+        this.tideLiquid = null;
+        this.height = 0;
         this._initView();
+
+        this.idle = null;
     }
 
     _initView() {
@@ -45,13 +49,16 @@ export default class DetergentBottle extends THREE.Object3D {
             opacity: 0.6,
         });
 
-        const tideLiquid = tidelGroup.children.find(x => x.name === "Tide").children.find(y => y.name === "Liquid_base").children[0].material = new THREE.MeshPhysicalMaterial({
+        const tideLiquid = this.tideLiquid = tidelGroup.children.find(x => x.name === "Tide").children.find(y => y.name === "Liquid_base").children[0];
+
+        tideLiquid.material = new THREE.MeshPhysicalMaterial({
             color: 0x0000ff,
             transparent: true,
             opacity: 0.6,
         });
         tideLiquid.castShadow = true;
         tideLiquid.visible = false;
+        tideLiquid.scale.set(this.height, 0.013,);
 
     }
 
@@ -116,26 +123,58 @@ export default class DetergentBottle extends THREE.Object3D {
         const currentX = this._tidelGroup.position.x;
         const currentY = this._tidelGroup.position.y;
 
-        const idle = new Tween(this._tidelGroup.position)
+        this.idle = new Tween(this._tidelGroup.position)
             .to({ x: currentX - amplitude, y: currentY - amplitude }, duration)
             .easing(Easing.Sinusoidal.InOut)
             .repeat(Infinity)
             .yoyo(true)
             .start();
 
-        idle.onUpdate(() => {
+        this.idle.onUpdate(() => {
             const time = performance.now() / 1000;
             const angle = Math.sin(time * frequency) * amplitude;
             this._tidelGroup.position.x = currentX - angle;
 
         });
 
-        function animateIdle() {
+        const animateIdle = () => {
             requestAnimationFrame(animateIdle);
             rotate.update();
-            idle.update();
+            if (this.idle) { this.idle.update(); }
         }
 
         animateIdle();
     }
+
+    stopIdle() {
+        if (this.idle) {
+            this.idle.stop();
+            this.idle = null;
+        }
+    }
+    showLiquid() {
+        this.tideLiquid.visible = true;
+        this.stopIdle();
+
+        const rotate = new Tween(this._tidelGroup.rotation)
+            .to({ y: -1.5 }, 1000)
+            .easing(Easing.Quadratic.Out)
+            .start();
+        function animateLiquid() {
+            requestAnimationFrame(animateLiquid);
+            rotate.update();
+        }
+        animateLiquid();
+    }
+
+    pourLiquid() {
+        if (this.height < 3) {
+            this.height += 0.01;
+            this.tideLiquid.scale.set(this.height, 0.013);
+            console.log(this.tideLiquid.scale.x);
+        }
+        else this.tideLiquid.scale.set(3, 0.013);
+
+    }
+
 }

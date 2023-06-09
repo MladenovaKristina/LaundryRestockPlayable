@@ -1,6 +1,5 @@
 import { Black, MessageDispatcher, Timer, GameObject } from "../../utils/black-engine.module";
 import * as THREE from 'three';
-import { Tween, Easing } from "@tweenjs/tween.js";
 import Model from "../../data/model";
 import Helpers from "../helpers/helpers";
 import Layout2D from "./components-2d/layout-2d";
@@ -11,7 +10,7 @@ import Bottle from "./components-3d/bottle";
 import Environment from "./components-3d/enviroment";
 import DetergentBottle from "./components-3d/detergent-bottle";
 import Menu from "./components-3d/menu";
-
+import SwipeMechanic from "./components-3d/pouring-mechanic";
 export default class Game {
   constructor(scene, camera, renderer) {
 
@@ -44,11 +43,12 @@ export default class Game {
   _init() {
     this._initUI();
     this._cameraController = new CameraController(this._camera.threeCamera);
-    console.log('og', this._cameraController._camera.position)
     this._initEnvironment();
     this._initBottle();
     this._initDetergentBottle();
     this._initMenu();
+    this._initCameraPosition();
+    this._initSwipeMechanic();
   }
 
   start() {
@@ -89,6 +89,13 @@ export default class Game {
     this._environment = new Environment();
     this._scene.add(this._environment);
   }
+  _initCameraPosition() {
+    this._initCameraPosition = this._cameraController._camera.position.clone();
+  }
+  _initSwipeMechanic() {
+    this._swipeMechanic = new SwipeMechanic();
+    this._scene.add(this.SwipeMechanic);
+  }
 
   onDown(x, y) {
     const downloadBtnClicked = this._layout2d.onDown(x, y);
@@ -108,6 +115,11 @@ export default class Game {
     // if (this._state !== STATES.GAMEPLAY) return;
 
     this._layout2d.onMove(x, y);
+    if (this._zoomIn) {
+      this._swipeMechanic._getMousePosition(x, y, this._bottle, this._detergentBottle);
+      this._detergentBottle.showLiquid();
+      this._detergentBottle.pourLiquid();
+    }
   }
 
   onUp() {
@@ -129,65 +141,27 @@ export default class Game {
     if (this._clicks === 1) {
       this._layout2d._cta1.hide();
       this._detergentBottle.raiseDetergent(() => {
-        this._layout2d.showCTA2();
         this._zoomIn();
+        this._layout2d.showCTA2();
+        this._animationInProgress = false; // Animation completed
       });
+      this._animationInProgress = true; // Animation started
     }
 
-    if (this._clicks === 2) {
+    // Call the functions on the next click after the first set has finished
+    if (this._clicks === 2 && !this._animationInProgress) {
       this._layout2d._cta2.hide();
-      this._resetCamera();
     }
+
   }
 
 
   _zoomIn() {
-    const targetPosition = new THREE.Vector3(0, 2, -1.2);
-    const zoomDuration = 1000;
-
-    const currentPosition = this._cameraController._camera.position;
-    const initialFOV = this._camera.fov;
-
-    const zoomTween = new Tween({ t: 0 })
-      .to({ t: 1 }, zoomDuration)
-      .easing(Easing.Quadratic.Out)
-      .onUpdate((obj) => {
-        const t = obj.t;
-        const newPosition = currentPosition.clone().lerp(targetPosition, t);
-        const newFOV = THREE.MathUtils.lerp(initialFOV, desiredFOV, t);
-
-        this._camera.position.copy(newPosition);
-        this._camera.fov = newFOV;
-        this._camera.updateProjectionMatrix();
-      })
-      .start();
+    this._cameraController._camera.position.set(0, 1.8, -2);
   }
-
   _resetCamera() {
-    const initialPosition = new Vector3(0, 0, 0);
-    const initialFOV = 75;
-
-    const resetDuration = 1000;
-
-    const currentPosition = this._camera.position.clone();
-    const currentFOV = this._camera.fov;
-
-    const resetTween = new Tween({ t: 0 })
-      .to({ t: 1 }, resetDuration)
-      .easing(Easing.Quadratic.Out)
-      .onUpdate((obj) => {
-        const t = obj.t;
-        const newPosition = currentPosition.clone().lerp(initialPosition, t);
-        const newFOV = THREE.MathUtils.lerp(currentFOV, initialFOV, t);
-
-        this._camera.position.copy(newPosition);
-        this._camera.fov = newFOV;
-        this._camera.updateProjectionMatrix();
-      })
-      .start();
+    this._cameraController._camera.position.copy(this._initCameraPosition);
   }
-
-
 
   _countTime() {
     if (this._isStore) return;
