@@ -314,7 +314,7 @@ export default class ConfigurableParams {
       "android": {
         "label": "Android Link",
         "type": "link",
-        "value": "https://play.google.com/store/apps/details?id=com.engineerbrainfart.buffetboss",
+        "value": "https://play.google.com/store/apps/details?id=com.engineerbrainfart.landryrestockdiy",
         "descrition": "Please insert Google Play Store link. This link used only in Unity, AdColony, AppLovin, Chartboost.",
         "assetName": null
       },

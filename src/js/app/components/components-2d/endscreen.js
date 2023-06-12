@@ -26,6 +26,7 @@ export default class Endscreen extends DisplayObject {
     this._bg.visible = ConfigurableParams.getData()['endcard']['bg_type']['value'] === 'GRADIENT';
     this.add(this._bg);
 
+    const logoRadius = 10;
     const logo = this._logo = new Sprite('endscreen_logo');
     logo.alignAnchor(0.5, 0.5);
     this.add(logo);

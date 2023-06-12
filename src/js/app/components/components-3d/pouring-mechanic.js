@@ -10,28 +10,26 @@ export default class SwipeMechanic extends THREE.Object3D {
     }
 
     _initView() {
-        console.log('mechanic exists in scene');
+        console.log('pouring mechanic works');
     }
 
-    _getMousePosition(x, y, bottle, detergent, liquid) {
+    getMousePosition(x, y, bottle, detergent) {
         const normalizedX = (x / this.screenWidth) * 400 - 200;
         this.playerX = normalizedX;
         this.playerY = y;
-        console.log('player at', normalizedX, y);
-        this._pourDetergent(bottle, detergent);
+        this.pourDetergent(detergent);
     }
 
-    _pourDetergent(bottle, detergent) {
+    pourDetergent(detergent) {
+        const speed = 0.01;
+        const maxDistance = 150;
 
-        const speed = 0.1;
-        const velocity = 0.08;
-
-        if (this.playerX >= 0 && this.playerX <= 200) {
-            // Move the bottle to the left
-            detergent.position.x -= speed * velocity;
-        } else if (this.playerX >= -200 && this.playerX < 0) {
-            // Move the detergent to the right
-            detergent.position.x += speed * velocity;
+        if (this.playerX >= -maxDistance && this.playerX <= maxDistance) {
+            detergent.position.x = -this.playerX * speed;
+        } else if (this.playerX < -maxDistance) {
+            detergent.position.x = maxDistance * speed;
+        } else if (this.playerX > maxDistance) {
+            detergent.position.x = -maxDistance * speed;
         }
     }
 }

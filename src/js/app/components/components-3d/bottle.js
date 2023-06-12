@@ -1,12 +1,13 @@
 import * as THREE from "three";
-import Helpers from "../../helpers/helpers";
-
-import { Tween, } from "../../../utils/black-engine.module";
+import { Tween, Easing } from "@tweenjs/tween.js";
 export default class Bottle extends THREE.Object3D {
     constructor() {
         super();
-
+        this.height = 0;
+        this.top = 0.24;
+        this.bottom = 0.25;
         this._initView();
+        // this._initParticles();
     }
 
     _initView() {
@@ -41,7 +42,8 @@ export default class Bottle extends THREE.Object3D {
         });
         bottleVessel.castShadow = true;
 
-        const bottleCap = bottle.children[0].material = new THREE.MeshPhysicalMaterial({
+        const bottleCap = this.bottleCap = bottle.children[0];
+        bottleCap.material = new THREE.MeshPhysicalMaterial({
             roughness: 0.4,
             metalness: 0.15,
             reflectivity: 10,
@@ -50,16 +52,92 @@ export default class Bottle extends THREE.Object3D {
         });
         bottleCap.visible = true;
 
-        const fillGeometry = new THREE.CylinderGeometry(0.28, 0.24, 0.5, 32);
-        const fillMaterial = new THREE.MeshBasicMaterial({ color: 0x0000ff, transparent: true, opacity: 0.3 });
-        const cylinder = new THREE.Mesh(fillGeometry, fillMaterial);
-        cylinder.position.set(0, 0.3, 0);
-        this.add(cylinder);
-        cylinder.visible = true;
+        const fillGeometry = new THREE.CylinderGeometry(this.top, this.bottom, this.height, 32);
+        const fillMaterial = new THREE.MeshBasicMaterial({ color: 0x0000ff, transparent: true, opacity: 0.5 });
+        this._cylinder = new THREE.Mesh(fillGeometry, fillMaterial);
+        this._cylinder.position.set(0, 0.1, 0);
+        this.add(this._cylinder);
+        this._cylinder.visible = false;
+    }
 
+    removeCap() {
+        const removeCap = new Tween(this.bottleCap.rotation)
+            .to({ y: Math.PI }, 2000)
+            .easing(Easing.Quadratic.Out)
+            .onComplete(() => {
+                this.bottleCap.visible = false;
+            })
+            .start();
+
+        function remove() {
+            requestAnimationFrame(remove);
+            removeCap.update();
+        }
+
+        remove();
+    }
+
+    fillAnimate(callback) {
+        this._cylinder.visible = true;
+
+        if (this.height <= 0.4) {
+            console.log('filling');
+
+            this.height += 0.002;
+            if (this.bottom < this.top) {
+                this.bottom += this.height;
+            }
+            this._cylinder.geometry.dispose();
+            this._cylinder.geometry = new THREE.CylinderGeometry(0.28, this.bottom, this.height, 32);
+            this._cylinder.position.setY(0.1 + this.height / 2);
+        }
+
+        if (this.height >= 0.4 && callback) {
+            callback();
+        }
 
     }
-    fillAnimate() {
 
+    //     _initParticles() {
+    //         const particleGeometry = new THREE.CircleGeometry(0.5, 10);
+    // 
+    //         this.particles = [];
+    //         for (let i = 0; i < 4; i++) {
+    //             const particle = new THREE.Mesh(particleGeometry, this._initView.fillMaterial);
+    //             particle.position.set(0, 1, 0);
+    //             this.add(particle);
+    //             this.particles.push(particle);
+    //         }
+    //         this.add(this.particles);
+    //     }
+
+    spillAnimate() {
+        console.log("spilling");
+        const distance = 0.4;
+        const duration = 1;
+
+        // Animation duration in seconds
+
+        // Animate particles
+        //         this.particles.forEach((particle, index) => {
+        //             const startPos = particle.position.clone();
+        //             const endPos = new THREE.Vector3(startPos.x + distance, startPos.y, startPos.z);
+        //             const tween = new Tween({ t: 0 })
+        //                 .to({ t: 1 }, duration * 1000) // Multiply duration by 1000 to convert to milliseconds
+        //                 .easing(Easing.Quadratic.Out)
+        //                 .onUpdate(({ t }) => {
+        //                     particle.position.lerpVectors(startPos, endPos, t);
+        //                     particle.material.opacity = 1 - t;
+        //                 })
+        //                 .onComplete(() => {
+        //                     // Reset particle position and opacity
+        //                     particle.position.copy(startPos);
+        //                     particle.material.opacity = 0.5;
+        // 
+        //                     // Restart animation
+        //                     tween.start();
+        //                 })
+        //                 .start();
+        //         });
     }
 }

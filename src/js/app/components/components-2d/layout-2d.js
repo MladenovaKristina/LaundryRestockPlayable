@@ -153,6 +153,8 @@ export default class Layout2D extends DisplayObject {
   onUp() {
   }
 
+
+
   enableStoreMode() {
     if (this._isStaticStoreMode) return;
     this._isStaticStoreMode = true;
@@ -162,6 +164,8 @@ export default class Layout2D extends DisplayObject {
     this._topText.visible = false;
     this._tutorial.visible = false;
     this._refPhoto.visible = false;
+    this._cta2.visible = false;
+    this._tutorial.visible = false;
 
     this._endScreen.show();
   }

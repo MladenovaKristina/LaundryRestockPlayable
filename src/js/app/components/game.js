@@ -11,6 +11,7 @@ import Environment from "./components-3d/enviroment";
 import DetergentBottle from "./components-3d/detergent-bottle";
 import Menu from "./components-3d/menu";
 import SwipeMechanic from "./components-3d/pouring-mechanic";
+
 export default class Game {
   constructor(scene, camera, renderer) {
 
@@ -27,6 +28,7 @@ export default class Game {
 
     this._clicks = 0;
     this._startTime = 0;
+    this.flag = false;
 
     this._storeOnDown = false;
     this._lastClickTime = 0;
@@ -72,6 +74,7 @@ export default class Game {
       this.messageDispatcher.post(this.onFinishEvent);
     });
   }
+
   _initBottle() {
     this._bottle = new Bottle();
     this._scene.add(this._bottle);
@@ -112,14 +115,10 @@ export default class Game {
   }
 
   onMove(x, y) {
-    // if (this._state !== STATES.GAMEPLAY) return;
+    if (this._state !== STATES.GAMEPLAY) return;
 
     this._layout2d.onMove(x, y);
-    if (this._zoomIn) {
-      this._swipeMechanic._getMousePosition(x, y, this._bottle, this._detergentBottle);
-      this._detergentBottle.showLiquid();
-      this._detergentBottle.pourLiquid();
-    }
+    this._gameplay(x, y);
   }
 
   onUp() {
@@ -127,6 +126,36 @@ export default class Game {
     this._isDown = false;
 
     this._layout2d.onUp();
+  }
+
+  collision(liquid) {
+    if (liquid.x >= -0.3 && liquid.x <= -0.07 && this.flag == true) {
+
+      this._bottle.fillAnimate(() => {
+        this.win();
+      });
+
+    } else {
+      this._bottle.spillAnimate();
+    }
+  }
+
+  win() {
+    this.flag = false;
+
+    console.log('win');
+    this._onFinish();
+  }
+
+  _gameplay(x, y) {
+    if (this.flag = true && this._state === STATES.GAMEPLAY) {
+      this._swipeMechanic.getMousePosition(x, y, this._bottle, this._detergentBottle);
+      this._detergentBottle.showLiquid();
+      this._detergentBottle.pourLiquid();
+      this.collision(this._detergentBottle.position);
+      console.log('x,y', x, y)
+
+    }
   }
 
   _countClicks() {
@@ -140,17 +169,21 @@ export default class Game {
 
     if (this._clicks === 1) {
       this._layout2d._cta1.hide();
+      this._bottle.removeCap();
       this._detergentBottle.raiseDetergent(() => {
         this._zoomIn();
         this._layout2d.showCTA2();
-        this._animationInProgress = false; // Animation completed
+        this._animationInProgress = false;
       });
-      this._animationInProgress = true; // Animation started
+      this._animationInProgress = true;
     }
 
-    // Call the functions on the next click after the first set has finished
-    if (this._clicks === 2 && !this._animationInProgress) {
+    if (this._clicks > 1 && !this._animationInProgress) {
+      this.flag = true;
       this._layout2d._cta2.hide();
+      this._state = STATES.GAMEPLAY;
+      setTimeout(() => { this._layout2d.showHint() }, 2000
+      );
     }
 
   }
@@ -160,7 +193,7 @@ export default class Game {
     this._cameraController._camera.position.set(0, 1.8, -2);
   }
   _resetCamera() {
-    this._cameraController._camera.position.copy(this._initCameraPosition);
+    this._cameraController._camera.position.set(this._initCameraPosition);
   }
 
   _countTime() {

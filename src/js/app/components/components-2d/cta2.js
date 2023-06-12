@@ -37,18 +37,18 @@ export default class CTA2 extends DisplayObject {
     show() {
         this.visible = true;
 
-        this.swipeAnimation();
-        this.textPulse();
+        this._swipeAnimation();
+        this._textPulse();
     }
 
 
-    swipeAnimation() {
+    _swipeAnimation() {
         const swipe = new Tween({
             x: [100, -100],
         }, 2, { ease: Ease.quadraticInOut, delay: 0, loop: true });
         this._pointer.add(swipe);
     }
-    textPulse() {
+    _textPulse() {
         const textTween = new Tween({
             scaleX: [1.2, 1],
             scaleY: [1.2, 1],

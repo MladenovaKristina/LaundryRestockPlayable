@@ -17,10 +17,19 @@ export default class Tutorial extends DisplayObject {
 
   onAdded() {
     this._hand = new TutorialHand();
-    this._hand.x = 260;
-    this._hand.y = 200;
-
+    this._hand._rotation = 0;
     this.add(this._hand);
+
+    this._text = new TextField(
+      'HOLD',
+      'arial',
+      0xff0000,
+      40,
+      '',
+      900
+    );
+    this._text.alignAnchor(0.5, -2);
+    this._hand.add(this._text);
 
     if (ConfigurableParams.getData()['hint']['starting_hint_type']['value'] === 'INFINITY ONLY') this._hand.visible = false;
   }
@@ -33,9 +42,9 @@ export default class Tutorial extends DisplayObject {
 
   _makeClick() {
     const scaleTw = new Tween({
-      scaleX: [1.2, 1],
-      scaleY: [1.2, 1],
-    }, 1, { ease: Ease.sinusoidalIn, delay: 0, loop: true });
+      scaleX: [1.5, 1],
+      scaleY: [1.5, 1]
+    }, 3, { ease: Ease.quadraticInOut, delay: 0, loop: true });
     this._hand.add(scaleTw);
   }
 
