@@ -11,6 +11,9 @@ export default class DetergentBottle extends THREE.Object3D {
         this._initView();
 
         this.idle = null;
+
+        this.raycaster = new THREE.Raycaster();
+
     }
 
     _initView() {
@@ -59,6 +62,9 @@ export default class DetergentBottle extends THREE.Object3D {
         tideLiquid.castShadow = true;
         tideLiquid.visible = false;
         tideLiquid.scale.set(this.height, 0.013);
+
+        this._initCollider(this.tideBottle);
+
     }
 
     createTween(options) {
@@ -189,11 +195,39 @@ export default class DetergentBottle extends THREE.Object3D {
     }
 
     pourLiquid() {
+
+        //this needs to be edited, instead of growing the tideliquid to this.height, grow until it colides with the bottle object in the collider
         if (this.height < 3) {
             this.height += 0.01;
             this.tideLiquid.scale.set(this.height, 0.013);
         } else {
             this.tideLiquid.scale.set(3, 0.013);
         }
+    }
+
+
+    _initParticles() {
+        const particleGeometry = new THREE.CircleGeometry(0.5, 10);
+
+        this.particles = [];
+        for (let i = 0; i < 4; i++) {
+            const particle = new THREE.Mesh(particleGeometry, this._initView.fillMaterial);
+            particle.position.set(0, 1, 0);
+            this.add(particle);
+            this.particles.push(particle);
+        }
+        this.add(this.particles);
+    }
+    _initCollider(bottle) {
+        console.log('colliding with bottle');
+        //code for collider based on received shape
+
+    }
+    spillAnimate() {
+        console.log("spilling");
+        const distance = 0.4;
+        const duration = 1;
+
+        //when the liquid height touches the bottle, animating particles by throwing them away from the collision point for 2 seconds, reset their position instead of destroying them and replay the animation again if it's still colliding
     }
 }

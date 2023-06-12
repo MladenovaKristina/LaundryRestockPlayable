@@ -37,15 +37,15 @@ export default class Tutorial extends DisplayObject {
   show() {
     this.visible = true;
 
-    this._makeClick();
+    this._hold();
   }
 
-  _makeClick() {
-    const scaleTw = new Tween({
+  _hold() {
+    const holdAnimation = new Tween({
       scaleX: [1.5, 1],
       scaleY: [1.5, 1]
-    }, 3, { ease: Ease.quadraticInOut, delay: 0, loop: true });
-    this._hand.add(scaleTw);
+    }, 2, { ease: Ease.quadraticInOut, delay: 0, loop: true });
+    this._hand.add(holdAnimation);
   }
 
 

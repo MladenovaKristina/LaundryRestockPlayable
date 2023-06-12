@@ -128,7 +128,7 @@ export default class Game {
     this._layout2d.onUp();
   }
 
-  collision(liquid) {
+  collision(liquid,) {
     if (liquid.x >= -0.3 && liquid.x <= -0.07 && this.flag == true) {
 
       this._bottle.fillAnimate(() => {
@@ -136,7 +136,7 @@ export default class Game {
       });
 
     } else {
-      this._bottle.spillAnimate();
+      this._detergentBottle.spillAnimate();
     }
   }
 
@@ -153,7 +153,6 @@ export default class Game {
       this._detergentBottle.showLiquid();
       this._detergentBottle.pourLiquid();
       this.collision(this._detergentBottle.position);
-      console.log('x,y', x, y)
 
     }
   }
@@ -179,10 +178,10 @@ export default class Game {
     }
 
     if (this._clicks > 1 && !this._animationInProgress) {
-      this.flag = true;
+      this.flag = true; this._state = STATES.GAMEPLAY;
+
       this._layout2d._cta2.hide();
-      this._state = STATES.GAMEPLAY;
-      setTimeout(() => { this._layout2d.showHint() }, 2000
+      setTimeout(() => { this._layout2d.showHint() }, 500
       );
     }
 

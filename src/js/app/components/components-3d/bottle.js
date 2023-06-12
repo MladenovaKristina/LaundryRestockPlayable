@@ -7,7 +7,6 @@ export default class Bottle extends THREE.Object3D {
         this.top = 0.24;
         this.bottom = 0.25;
         this._initView();
-        // this._initParticles();
     }
 
     _initView() {
@@ -81,8 +80,6 @@ export default class Bottle extends THREE.Object3D {
         this._cylinder.visible = true;
 
         if (this.height <= 0.4) {
-            console.log('filling');
-
             this.height += 0.002;
             if (this.bottom < this.top) {
                 this.bottom += this.height;
@@ -96,48 +93,5 @@ export default class Bottle extends THREE.Object3D {
             callback();
         }
 
-    }
-
-    //     _initParticles() {
-    //         const particleGeometry = new THREE.CircleGeometry(0.5, 10);
-    // 
-    //         this.particles = [];
-    //         for (let i = 0; i < 4; i++) {
-    //             const particle = new THREE.Mesh(particleGeometry, this._initView.fillMaterial);
-    //             particle.position.set(0, 1, 0);
-    //             this.add(particle);
-    //             this.particles.push(particle);
-    //         }
-    //         this.add(this.particles);
-    //     }
-
-    spillAnimate() {
-        console.log("spilling");
-        const distance = 0.4;
-        const duration = 1;
-
-        // Animation duration in seconds
-
-        // Animate particles
-        //         this.particles.forEach((particle, index) => {
-        //             const startPos = particle.position.clone();
-        //             const endPos = new THREE.Vector3(startPos.x + distance, startPos.y, startPos.z);
-        //             const tween = new Tween({ t: 0 })
-        //                 .to({ t: 1 }, duration * 1000) // Multiply duration by 1000 to convert to milliseconds
-        //                 .easing(Easing.Quadratic.Out)
-        //                 .onUpdate(({ t }) => {
-        //                     particle.position.lerpVectors(startPos, endPos, t);
-        //                     particle.material.opacity = 1 - t;
-        //                 })
-        //                 .onComplete(() => {
-        //                     // Reset particle position and opacity
-        //                     particle.position.copy(startPos);
-        //                     particle.material.opacity = 0.5;
-        // 
-        //                     // Restart animation
-        //                     tween.start();
-        //                 })
-        //                 .start();
-        //         });
     }
 }
