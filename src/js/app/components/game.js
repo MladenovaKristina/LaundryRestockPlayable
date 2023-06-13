@@ -136,7 +136,6 @@ export default class Game {
       });
 
     } else {
-      this._detergentBottle.spillAnimate();
       this._layout2d.particleEmitter();
     }
   }
@@ -151,7 +150,8 @@ export default class Game {
 
   _gameplay(x, y) {
     if (this.flag = true && this._state === STATES.GAMEPLAY) {
-      this._swipeMechanic.getMousePosition(x, y, this._bottle, this._detergentBottle);
+      this._swipeMechanic.getMousePosition(x, y, this._bottle, this._detergentBottle); this._layout2d.progressBar();
+
       this._detergentBottle.showLiquid();
       this._detergentBottle.pourLiquid();
       this.collision(this._detergentBottle.position);
@@ -173,6 +173,7 @@ export default class Game {
       this._bottle.removeCap();
       this._detergentBottle.raiseDetergent(() => {
         this._zoomIn();
+        this._layout2d.showProgressBar();
         this._layout2d.showCTA2();
         this._animationInProgress = false;
       });

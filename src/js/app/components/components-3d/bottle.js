@@ -12,12 +12,15 @@ export default class Bottle extends THREE.Object3D {
     _initView() {
         const asset = THREE.Cache.get('assets').scene.children;
 
-        const bottle = this._bottle = asset[1].clone();
+        const bottle = this._bottle = asset[1];
+        bottle.castShadow = true;
         bottle.scale.set(0.01, 0.01, 0.01);
         bottle.position.set(0, 0, 0);
         bottle.rotation.z = Math.PI;
         this.add(bottle);
-
+        // 
+        // 
+        // 
         const bottleLabel = bottle.children ? bottle.children.find(x => x.name === 'detergent1') : null;
         bottleLabel.children[1].material = new THREE.MeshPhysicalMaterial({
             roughness: 0.4,
@@ -40,6 +43,7 @@ export default class Bottle extends THREE.Object3D {
             side: THREE.DoubleSide,
         });
         bottleVessel.castShadow = true;
+        bottleVessel.children[0].castShadow = true;
 
         const bottleCap = this.bottleCap = bottle.children[0];
         bottleCap.material = new THREE.MeshPhysicalMaterial({
@@ -50,6 +54,7 @@ export default class Bottle extends THREE.Object3D {
             side: THREE.DoubleSide,
         });
         bottleCap.visible = true;
+        bottleCap.castShadow = true;
 
         const fillGeometry = new THREE.CylinderGeometry(this.top, this.bottom, this.height, 32);
         const fillMaterial = new THREE.MeshBasicMaterial({ color: 0x0000ff, transparent: true, opacity: 0.5 });

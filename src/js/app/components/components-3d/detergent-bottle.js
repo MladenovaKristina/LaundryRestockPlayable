@@ -10,16 +10,15 @@ export default class DetergentBottle extends THREE.Object3D {
         this.tideLiquid = null;
         this.height = 0;
         this._initView();
-
         this.idle = null;
-
         this.raycaster = new THREE.Raycaster();
 
     }
 
     _initView() {
-        const asset = THREE.Cache.get("assets").scene.children;
-        const tidelGroup = this._tidelGroup = asset[2].clone();
+        const asset = THREE.Cache.get('assets').scene.children;
+
+        const tidelGroup = this._tidelGroup = asset[1];
 
         tidelGroup.scale.set(0.013, 0.013, 0.013);
         tidelGroup.rotation.z = Math.PI;
@@ -117,6 +116,7 @@ export default class DetergentBottle extends THREE.Object3D {
 
         animateRaise();
     }
+
 
     idleAnimateDetergent() {
         const amplitude = 0.1;

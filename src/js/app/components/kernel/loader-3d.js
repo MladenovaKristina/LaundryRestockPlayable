@@ -1,6 +1,6 @@
 import { TextureLoader, Cache } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
-import assets from '../../../data/models/Detergent3.glb';
+import assets from '../../../data/models/Detergent5.glb';
 
 import corn_flakes from '../../../data/textures/3d/corn_flakes.png';
 import detergent_poster from '../../../data/textures/3d/Detergent_posterD.png';
