@@ -9,6 +9,7 @@ import Tutorial from './tutorial';
 import CTA2 from './cta2';
 import CTA1 from './cta1';
 import ReferencePhoto from './ref-photo';
+import ProgressBar from './progressbar';
 
 // works as a main class in 2D playables
 export default class Layout2D extends DisplayObject {
@@ -43,6 +44,9 @@ export default class Layout2D extends DisplayObject {
     this.add(this._cta2);
     this._createEndscreen();
 
+    this._progressbar = new ProgressBar();
+    this.add(this._progressbar);
+
     this._createLogo();
     this._createDownloadBtn();
 
@@ -57,7 +61,6 @@ export default class Layout2D extends DisplayObject {
     this._topText.x = bb.left;
     this._topText.y = bb.top + Number(ConfigurableParams.getData()["top_text"]["top_title_offset"]["value"]);
 
-
     this._refPhoto.x = bb.left + Number(ConfigurableParams.getData()["reference_photo"]["offset"]["x"]);
     this._refPhoto.y = bb.top + Number(ConfigurableParams.getData()["reference_photo"]["offset"]["y"]);
     if (this._topText.visible)
@@ -66,13 +69,14 @@ export default class Layout2D extends DisplayObject {
     this._tutorial.x = Black.stage.centerX;
     this._tutorial.y = Black.stage.centerY + bb.height * 0.18;
 
-
     this._cta2.x = Black.stage.centerX;
     this._cta2.y = bb.top + (bb.height / 2) * 1.8;
 
-
     this._cta1.x = Black.stage.centerX;
     this._cta1.y = Black.stage.centerY + bb.height * 0.18;
+
+    this._progressbar.x = Black.stage.centerX;
+    this._progressbar.y = bb.top + (bb.height / 2) * 1.8;
 
     this._endScreen.onResize(bb);
 
@@ -130,6 +134,13 @@ export default class Layout2D extends DisplayObject {
     this._cta2.show();
   }
 
+  showProgressBar() {
+    this._progressbar.show();
+  }
+  progressBar() {
+    this._progressbar.fill();
+  }
+
   onDown(x, y) {
     this.countClicks();
     const defaultPos = { x: x, y: y };
@@ -153,6 +164,11 @@ export default class Layout2D extends DisplayObject {
   onUp() {
   }
 
+  particleEmitter(x, y) {
+    console.log('making spillage at', x, y);
+  }
+
+
   enableStoreMode() {
     if (this._isStaticStoreMode) return;
     this._isStaticStoreMode = true;
@@ -162,6 +178,8 @@ export default class Layout2D extends DisplayObject {
     this._topText.visible = false;
     this._tutorial.visible = false;
     this._refPhoto.visible = false;
+    this._cta2.visible = false;
+    this._tutorial.visible = false;
 
     this._endScreen.show();
   }

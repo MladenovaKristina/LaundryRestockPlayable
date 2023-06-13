@@ -9,16 +9,17 @@ export default class Menu extends THREE.Object3D {
     _initView() {
         const asset = THREE.Cache.get('assets').scene.children;
 
-        const menu = this._menu = asset[0].clone();
+        const menu = this._menu = asset[0];
         menu.scale.set(0.01, 0.01, 0.01);
         menu.rotation.z = Math.PI;
         menu.position.x = 0;
         menu.position.y = 0;
         menu.position.z = -0.2;
-        menu.castShadow = true; // Enable shadow casting for the menu
+        menu.castShadow = true;
         this.add(menu);
 
-        const cornFlakes = menu.children[0].material = new THREE.MeshPhysicalMaterial({
+        const cornFlakes = menu.children[0];
+        cornFlakes.material = new THREE.MeshPhysicalMaterial({
             roughness: 0.4,
             metalness: 0.15,
             map: THREE.Cache.get('corn_flakes'),
@@ -27,7 +28,8 @@ export default class Menu extends THREE.Object3D {
         });
         cornFlakes.castShadow = true;
 
-        const detergentBox = menu.children[1].material = new THREE.MeshPhysicalMaterial({
+        const detergentBox = menu.children[1];
+        detergentBox.material = new THREE.MeshPhysicalMaterial({
             roughness: 0.4,
             metalness: 0.15,
             map: THREE.Cache.get('detergent'),
@@ -45,6 +47,8 @@ export default class Menu extends THREE.Object3D {
             side: THREE.FrontSide
         });
         riceBag.castShadow = true;
+        riceBag.children[0].castShadow = true;
+
 
         riceBag.children[1].material = new THREE.MeshPhysicalMaterial({ color: 0xffed3c });
 
@@ -63,7 +67,9 @@ export default class Menu extends THREE.Object3D {
             side: THREE.DoubleSide
         });
 
-        scentBooster.castShadow = true;
+        scentBooster.children[0].castShadow = true;
+        scentBooster.children[1].castShadow = true;
+
 
         const shelfGeometry = new THREE.BoxGeometry(4, 0.94, 0.05);
         const shelfMaterial = new THREE.MeshPhysicalMaterial({ color: 0xD6DADD });
