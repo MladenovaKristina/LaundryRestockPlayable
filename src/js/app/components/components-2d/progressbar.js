@@ -19,7 +19,7 @@ export default class ProgressBar extends DisplayObject {
         this.add(this._container);
 
         this._outline = new Sprite('outline_white');
-        this._outline.alignAnchor(0, 0);
+        this._outline.alignAnchor(0.5, 0);
         this._container.add(this._outline);
 
         this._bg = new Sprite('base_blue');
