@@ -62,6 +62,7 @@ export default class Bottle extends THREE.Object3D {
     removeCap() {
         const removeCap = new Tween(this.bottleCap.rotation)
             .to({ y: Math.PI }, 2000)
+            .delay(1000)
             .easing(Easing.Quadratic.Out)
             .onComplete(() => {
                 this.bottleCap.visible = false;

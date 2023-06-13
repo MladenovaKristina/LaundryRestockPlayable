@@ -137,6 +137,7 @@ export default class Game {
 
     } else {
       this._detergentBottle.spillAnimate();
+      this._layout2d.particleEmitter();
     }
   }
 
@@ -144,6 +145,7 @@ export default class Game {
     this.flag = false;
 
     console.log('win');
+    this._detergentBottle.stopIdle();
     this._onFinish();
   }
 

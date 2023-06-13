@@ -153,6 +153,9 @@ export default class Layout2D extends DisplayObject {
   onUp() {
   }
 
+  particleEmitter(x, y) {
+    console.log('making spillage at', x, y);
+  }
 
 
   enableStoreMode() {

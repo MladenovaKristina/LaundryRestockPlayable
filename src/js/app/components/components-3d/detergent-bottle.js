@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { Tween, Easing } from "@tweenjs/tween.js";
 
 export default class DetergentBottle extends THREE.Object3D {
+
     constructor() {
         super();
 
@@ -61,39 +62,30 @@ export default class DetergentBottle extends THREE.Object3D {
         });
         tideLiquid.castShadow = true;
         tideLiquid.visible = false;
+
         tideLiquid.scale.set(this.height, 0.013);
 
         this._initCollider(this.tideBottle);
 
     }
 
-    createTween(options) {
-        return new Tween(options.target)
-            .to(options.to, options.duration)
-            .easing(options.easing)
-            .onUpdate(options.onUpdate)
-            .onComplete(options.onComplete);
-    }
 
-    createRotateTween() {
-        return new Tween(this._tidelGroup.rotation)
-            .to({ y: -1 }, 1000)
-            .easing(Easing.Quadratic.Out);
-    }
 
     raiseDetergent(callback) {
         const startX = this._tidelGroup.position.x;
         const startY = this._tidelGroup.position.y;
 
-        const removeCap = this.createTween({
-            target: this._tideBottleCap,
-            to: { y: 3, rotation: { y: -Math.PI } },
-            duration: 2000,
-            easing: Easing.Quadratic.Out,
-            onComplete: () => {
+        const removeCap = new Tween(this._tideBottleCap)
+            .to({ y: 3, rotation: { y: -Math.PI } }, 2000)
+            .easing(Easing.Quadratic.Out)
+            .delay(500)
+            .onComplete(() => {
                 this._tideBottleCap.visible = false;
 
-                const rotate = this.createRotateTween()
+                const rotate = new Tween(this._tidelGroup.rotation)
+                    .to({ y: -1 }, 1000)
+                    .easing(Easing.Quadratic.Out)
+                    .delay(500)
                     .start();
 
                 function animateBottle() {
@@ -102,23 +94,21 @@ export default class DetergentBottle extends THREE.Object3D {
                     rotate.update();
                 }
 
-                const raiseTween = this.createTween({
-                    target: this._tidelGroup.position,
-                    to: { x: startX, y: 1.8 },
-                    duration: 1000,
-                    easing: Easing.Quadratic.Out,
-                    onUpdate: () => {
+                const raiseTween = new Tween(this._tidelGroup.position)
+                    .to({ x: startX, y: 1.8 }, 1000)
+                    .easing(Easing.Quadratic.Out)
+                    .onUpdate(() => {
                         this._tidelGroup.position.set(this._tidelGroup.position.x, this._tidelGroup.position.y, 0);
-                    },
-                    onComplete: () => {
+                    })
+                    .onComplete(() => {
                         this.idleAnimateDetergent();
                         if (callback) callback();
-                    }
-                }).start();
+                    })
+                    .start();
 
                 animateBottle();
-            }
-        }).start();
+            })
+            .start();
 
         function animateRaise() {
             requestAnimationFrame(animateRaise);
@@ -128,46 +118,29 @@ export default class DetergentBottle extends THREE.Object3D {
         animateRaise();
     }
 
-    createIdleAnimateTween() {
-        const amplitude = 0.1; // Adjust the amplitude of the swaying motion
-        const frequency = 1; // Adjust the frequency of the swaying motion
-        const duration = 1000; // Adjust the duration of the animation
+    idleAnimateDetergent() {
+        const amplitude = 0.1;
+        const frequency = 1;
+        const duration = 1000;
 
-        const rotate = this.createRotateTween();
-
-        const currentX = this._tidelGroup.position.x;
-        const currentY = this._tidelGroup.position.y;
-
-        return this.createTween({
-            target: this._tidelGroup.position,
-            to: { x: currentX - amplitude, y: currentY - amplitude },
-            duration: duration,
-            easing: Easing.Sinusoidal.InOut,
-            onUpdate: () => {
+        this.idle = new Tween(this._tidelGroup.position)
+            .to({ x: this._tidelGroup.position.x - amplitude, y: this._tidelGroup.position.y - amplitude }, duration)
+            .easing(Easing.Sinusoidal.InOut)
+            .onUpdate(() => {
                 const time = performance.now() / 1000;
                 const angle = Math.sin(time * frequency) * amplitude;
-                this._tidelGroup.position.x = currentX - angle;
-            },
-            repeat: Infinity,
-            yoyo: true
-        });
-    }
-
-    idleAnimateDetergent() {
-        this.stopIdle();
-
-        const rotate = this.createRotateTween().start();
-
-        this.idle = this.createIdleAnimateTween().start();
+                this._tidelGroup.position.x = this._tidelGroup.position.x - angle;
+            })
+            .repeat(Infinity)
+            .yoyo(true)
+            .start();
 
         const animateIdle = () => {
-            requestAnimationFrame(animateIdle);
-            rotate.update();
             if (this.idle) {
+                requestAnimationFrame(animateIdle);
                 this.idle.update();
             }
         };
-
         animateIdle();
     }
 
@@ -180,9 +153,8 @@ export default class DetergentBottle extends THREE.Object3D {
 
     showLiquid() {
         this.tideLiquid.visible = true;
-        this.stopIdle();
 
-        const rotate = this.createRotateTween()
+        const rotate = new Tween(this._tidelGroup.rotation)
             .to({ y: -1.5 }, 1000)
             .start();
 
@@ -205,29 +177,9 @@ export default class DetergentBottle extends THREE.Object3D {
         }
     }
 
-
-    _initParticles() {
-        const particleGeometry = new THREE.CircleGeometry(0.5, 10);
-
-        this.particles = [];
-        for (let i = 0; i < 4; i++) {
-            const particle = new THREE.Mesh(particleGeometry, this._initView.fillMaterial);
-            particle.position.set(0, 1, 0);
-            this.add(particle);
-            this.particles.push(particle);
-        }
-        this.add(this.particles);
-    }
     _initCollider(bottle) {
         console.log('colliding with bottle');
-        //code for collider based on received shape
 
     }
-    spillAnimate() {
-        console.log("spilling");
-        const distance = 0.4;
-        const duration = 1;
 
-        //when the liquid height touches the bottle, animating particles by throwing them away from the collision point for 2 seconds, reset their position instead of destroying them and replay the animation again if it's still colliding
-    }
 }
