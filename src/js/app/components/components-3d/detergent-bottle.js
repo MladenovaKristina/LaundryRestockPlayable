@@ -17,6 +17,7 @@ export default class DetergentBottle extends THREE.Object3D {
 
     _initView() {
         const asset = THREE.Cache.get('assets').scene.children;
+        console.log(THREE.Cache.get('assets').animations)
 
         const tidelGroup = this._tidelGroup = asset[1];
 
@@ -68,8 +69,6 @@ export default class DetergentBottle extends THREE.Object3D {
 
     }
 
-
-
     raiseDetergent(callback) {
         const startX = this._tidelGroup.position.x;
         const startY = this._tidelGroup.position.y;
@@ -77,7 +76,7 @@ export default class DetergentBottle extends THREE.Object3D {
         const removeCap = new Tween(this._tideBottleCap)
             .to({ y: 3, rotation: { y: -Math.PI } }, 2000)
             .easing(Easing.Quadratic.Out)
-            .delay(500)
+            .delay(0)
             .onComplete(() => {
                 this._tideBottleCap.visible = false;
 
@@ -167,7 +166,6 @@ export default class DetergentBottle extends THREE.Object3D {
     }
 
     pourLiquid() {
-
         //this needs to be edited, instead of growing the tideliquid to this.height, grow until it colides with the bottle object in the collider
         if (this.height < 3) {
             this.height += 0.01;
@@ -178,7 +176,7 @@ export default class DetergentBottle extends THREE.Object3D {
     }
 
     _initCollider(bottle) {
-        console.log('colliding with bottle');
+        console.log('colliding with bottle', bottle);
 
     }
 

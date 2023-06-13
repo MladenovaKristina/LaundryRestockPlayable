@@ -112,6 +112,11 @@ export default class Game {
     }
 
     this._countClicks();
+
+    if (this._state !== STATES.GAMEPLAY) return;
+
+    this._layout2d.onMove(x, y);
+    this._gameplay(x, y);
   }
 
   onMove(x, y) {
@@ -130,6 +135,7 @@ export default class Game {
 
   collision(liquid,) {
     if (liquid.x >= -0.3 && liquid.x <= -0.07 && this.flag == true) {
+      this._layout2d.progressBar();
 
       this._bottle.fillAnimate(() => {
         this.win();
@@ -142,16 +148,13 @@ export default class Game {
 
   win() {
     this.flag = false;
-
-    console.log('win');
     this._detergentBottle.stopIdle();
     this._onFinish();
   }
 
   _gameplay(x, y) {
     if (this.flag = true && this._state === STATES.GAMEPLAY) {
-      this._swipeMechanic.getMousePosition(x, y, this._bottle, this._detergentBottle); this._layout2d.progressBar();
-
+      this._swipeMechanic.getMousePosition(x, y, this._bottle, this._detergentBottle);
       this._detergentBottle.showLiquid();
       this._detergentBottle.pourLiquid();
       this.collision(this._detergentBottle.position);
