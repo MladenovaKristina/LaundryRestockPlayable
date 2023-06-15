@@ -8,7 +8,6 @@ import SoundsController from "./kernel/soundscontroller";
 import ConfigurableParams from "../../data/configurable_params";
 import Bottle from "./components-3d/bottle";
 import Environment from "./components-3d/enviroment";
-import DetergentBottle from "./components-3d/detergent-bottle";
 import Menu from "./components-3d/menu";
 import SwipeMechanic from "./components-3d/pouring-mechanic";
 
@@ -47,7 +46,6 @@ export default class Game {
     this._cameraController = new CameraController(this._camera.threeCamera);
     this._initEnvironment();
     this._initBottle();
-    this._initDetergentBottle();
     this._initMenu();
     this._initCameraPosition();
     this._initSwipeMechanic();
@@ -97,11 +95,6 @@ export default class Game {
   _initBottle() {
     this._bottle = new Bottle();
     this._scene.add(this._bottle);
-  }
-
-  _initDetergentBottle() {
-    this._detergentBottle = new DetergentBottle();
-    this._scene.add(this._detergentBottle);
   }
   _initMenu() {
     this._menu = new Menu();

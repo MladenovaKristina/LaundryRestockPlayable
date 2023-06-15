@@ -12,15 +12,25 @@ export default class Environment extends THREE.Object3D {
     const backgroundGeometry = new THREE.BoxGeometry(8, 5, 0.05);
     const backgroundMaterial = new THREE.MeshPhongMaterial({ map: THREE.Cache.get("bg_image") });
     const backgroundMesh = new THREE.Mesh(backgroundGeometry, backgroundMaterial);
-    backgroundMesh.position.set(0, -3, 3);
+    backgroundMesh.position.set(0, -3, -3);
     backgroundMesh.rotateOnAxis.x = 180;
 
     this.add(backgroundMesh);
 
+
+    const shelfGeometry = new THREE.BoxGeometry(5, 0.05, 1);
+    const shelfMaterial = new THREE.MeshPhysicalMaterial({ color: 0x999999 });
+    const shelfMesh = new THREE.Mesh(shelfGeometry, shelfMaterial);
+    shelfMesh.receiveShadow = true;
+    shelfMesh.position.set(0, 0, 1);
+    shelfMesh.rotateOnAxis.z = 180;
+
+    this.add(shelfMesh);
+
     const asset = THREE.Cache.get('assets').scene.children;
     const table = this._table = asset[4];
     table.scale.set(0.4, 0.4, 0.4);
-    table.position.set(0, 0, 0.3);
+    table.position.set(0, 0, -0.7);
 
     table.material = new THREE.MeshPhysicalMaterial({
       color: 0x000000,
