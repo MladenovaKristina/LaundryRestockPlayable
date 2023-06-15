@@ -50,8 +50,6 @@ export default class Layout2D extends DisplayObject {
     this._progressbar = new ProgressBar();
     this.add(this._progressbar);
 
-
-
     this._createLogo();
     this._createDownloadBtn();
 
@@ -104,6 +102,7 @@ export default class Layout2D extends DisplayObject {
       this._downloadBtn.x = Helpers.LP(bb.right - 170, Black.stage.centerX);
       this._downloadBtn.y = bb.bottom - 85;
     }
+    this._targetlight.onResize();
   }
 
   _createEndscreen() {
