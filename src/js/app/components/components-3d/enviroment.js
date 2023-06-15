@@ -18,20 +18,22 @@ export default class Environment extends THREE.Object3D {
     this.add(backgroundMesh);
 
     const asset = THREE.Cache.get('assets').scene.children;
-    const table = this._table = asset[4].clone();
-
+    const table = this._table = asset[4];
     table.scale.set(0.4, 0.4, 0.4);
     table.position.set(0, 0, 0.3);
+
     table.material = new THREE.MeshPhysicalMaterial({
-      roughness: 0.4,
-      metalness: 0.15,
-      reflectivity: 0,
+      color: 0x000000,
+      roughness: 0.8,
+      metalness: 0,
+      reflectivity: 10,
+      side: THREE.DoubleSide,
+      transparent: false,
     });
     table.castShadow = true;
     table.receiveShadow = true;
-    this.add(table);
 
-    const shelfGeometry = new THREE.BoxGeometry(4, 0.94, 0.05);
+    this.add(table);
 
   }
 }

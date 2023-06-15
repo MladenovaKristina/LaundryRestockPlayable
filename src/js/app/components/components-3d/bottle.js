@@ -18,9 +18,7 @@ export default class Bottle extends THREE.Object3D {
         bottle.position.set(0, 0, 0);
         bottle.rotation.z = Math.PI;
         this.add(bottle);
-        // 
-        // 
-        // 
+
         const bottleLabel = bottle.children ? bottle.children.find(x => x.name === 'detergent1') : null;
         bottleLabel.children[1].material = new THREE.MeshPhysicalMaterial({
             roughness: 0.4,
@@ -36,12 +34,12 @@ export default class Bottle extends THREE.Object3D {
         bottleVessel.children[0].material = new THREE.MeshPhysicalMaterial({
             color: 0x999999,
             roughness: 0,
-            reflectivity: 10,
             metalness: 0,
             transparent: true,
             opacity: 0.4,
             side: THREE.DoubleSide,
         });
+
         bottleVessel.castShadow = true;
         bottleVessel.children[0].castShadow = true;
 

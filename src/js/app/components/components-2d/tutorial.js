@@ -9,45 +9,38 @@ export default class Tutorial extends DisplayObject {
 
     this._sign = null;
 
-    this.scaleX = 1;
-    this.scaleY = 1;
+    this.scaleX = 0.9;
+    this.scaleY = 0.9;
 
     this.visible = false;
   }
 
   onAdded() {
-    this._hand = new TutorialHand();
-    this._hand._rotation = 0;
+    this._hand = new Sprite('hint_hold');
+    this._hand.alignAnchor(0.5, 0.5);
     this.add(this._hand);
 
-    this._text = new TextField(
-      'HOLD',
-      'arial',
-      0xff0000,
-      40,
-      '',
-      900
-    );
-    this._text.alignAnchor(0.5, -2);
-    this._hand.add(this._text);
-
-    if (ConfigurableParams.getData()['hint']['starting_hint_type']['value'] === 'INFINITY ONLY') this._hand.visible = false;
   }
 
   show() {
     this.visible = true;
-
-    this._hold();
+    this._makeStep();
   }
 
-  _hold() {
-    const holdAnimation = new Tween({
-      scaleX: [1.5, 1],
-      scaleY: [1.5, 1]
-    }, 2, { ease: Ease.quadraticInOut, delay: 0, loop: true });
-    this._hand.add(holdAnimation);
-  }
+  _makeStep() {
+    const scaleTw = new Tween({
+      scaleX: [0.33, 0.45, 0.33, 0.4, 0.33, 0.35, 0.35],
+      scaleY: [0.38, 0.28, 0.38, 0.3, 0.38, 0.35, 0.35],
+    }, 2, { ease: Ease.sinusoidalOut, delay: 0 });
+    this._hand.add(scaleTw);
 
+    const timer = new Timer(2.2, 1);
+    this.add(timer);
+
+    timer.on('tick', msg => {
+      this._makeStep();
+    });
+  }
 
   hide() {
     const hideTween = new Tween({

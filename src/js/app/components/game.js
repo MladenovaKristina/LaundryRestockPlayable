@@ -55,6 +55,8 @@ export default class Game {
 
   start() {
     this._layout2d.showCTA1();
+    const { bottlePosition, width, height } = this._3dto2d();
+    this._layout2d.update2dPos(bottlePosition, width, height);
 
     this._startTime = Date.now();
 
@@ -63,6 +65,23 @@ export default class Game {
         this._countTime();
       }, 1000);
     }
+  }
+
+  _3dto2d() {
+    let bottlePosition = Helpers.vector3ToBlackPosition(this._detergentBottle.position, this._renderer.threeRenderer, this._camera.threeCamera);
+
+    const boundingBox = new THREE.Box3().setFromObject(this._detergentBottle._tidelGroup);
+    const dimensions = new THREE.Vector3();
+    boundingBox.getSize(dimensions);
+    const width = dimensions.x;
+    const height = dimensions.y;
+    const depth = dimensions.z;
+
+    return {
+      bottlePosition,
+      width,
+      height
+    };
   }
 
   _initUI() {
@@ -112,6 +131,11 @@ export default class Game {
     }
 
     this._countClicks();
+
+    if (this._state !== STATES.GAMEPLAY) return;
+
+    this._layout2d.onMove(x, y);
+    this._gameplay(x, y);
   }
 
   onMove(x, y) {
@@ -130,6 +154,7 @@ export default class Game {
 
   collision(liquid,) {
     if (liquid.x >= -0.3 && liquid.x <= -0.07 && this.flag == true) {
+      this._layout2d.progressBar();
 
       this._bottle.fillAnimate(() => {
         this.win();
@@ -142,16 +167,13 @@ export default class Game {
 
   win() {
     this.flag = false;
-
-    console.log('win');
     this._detergentBottle.stopIdle();
     this._onFinish();
   }
 
   _gameplay(x, y) {
     if (this.flag = true && this._state === STATES.GAMEPLAY) {
-      this._swipeMechanic.getMousePosition(x, y, this._bottle, this._detergentBottle); this._layout2d.progressBar();
-
+      this._swipeMechanic.getMousePosition(x, y, this._bottle, this._detergentBottle);
       this._detergentBottle.showLiquid();
       this._detergentBottle.pourLiquid();
       this.collision(this._detergentBottle.position);
@@ -170,6 +192,7 @@ export default class Game {
 
     if (this._clicks === 1) {
       this._layout2d._cta1.hide();
+      this._layout2d._targetlight.hide();
       this._bottle.removeCap();
       this._detergentBottle.raiseDetergent(() => {
         this._zoomIn();
