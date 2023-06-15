@@ -59,8 +59,8 @@ export default class TargetLight extends DisplayObject {
         const centerX = width / 2;
         const centerY = height / 2;
 
-        this._holeX = bottleposition.x - centerX;
-        this._holeY = bottleposition.y - centerY;
+        this._holeX = bottleposition.x - (height * 1000) / 2 - centerX;
+        this._holeY = bottleposition.y - (height * 1000);
 
         this._hole.x = this._holeX;
         this._hole.y = this._holeY;

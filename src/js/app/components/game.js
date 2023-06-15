@@ -182,7 +182,6 @@ export default class Game {
 
     }
   }
-
   _countClicks() {
     if (this._isStore) return;
 
@@ -193,26 +192,36 @@ export default class Game {
     }
 
     if (this._clicks === 1) {
-      this._layout2d._cta1.hide();
-      this._bottle.removeCap();
-      this._detergentBottle.playAnim("raise");
-      this._layout2d._targetlight.hide();
-      // this._zoomIn();
-      // this._layout2d.showProgressBar();
-      // this._layout2d.showCTA2();
-      // this._animationInProgress = false;
-      // });
+      this.runAnimationSequence();
       this._animationInProgress = true;
     }
 
     if (this._clicks > 1 && !this._animationInProgress) {
-      this.flag = true; this._state = STATES.GAMEPLAY;
+      this.flag = true;
+      this._state = STATES.GAMEPLAY;
 
       this._layout2d._cta2.hide();
-      setTimeout(() => { this._layout2d.showHint() }, 500
-      );
     }
+  }
 
+  async runAnimationSequence() {
+    if (this._animationInProgress) return;
+    this._animationInProgress = true;
+
+    this._layout2d._cta1.hide();
+    this._layout2d._targetlight.hide();
+
+    await Promise.all([
+      this._bottle.removeCap(),
+      this._detergentBottle.removeDetergentCap()
+    ]);
+
+    await this._detergentBottle.playAnim("raise");
+    this._zoomIn();
+    this._layout2d.showProgressBar();
+    this._layout2d.showCTA2();
+
+    this._animationInProgress = false;
   }
 
   _zoomIn() {
