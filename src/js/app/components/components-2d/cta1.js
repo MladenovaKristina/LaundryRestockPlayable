@@ -2,7 +2,6 @@ import ConfigurableParams from '../../../data/configurable_params';
 import { Tween, Black, Graphics, Sprite, DisplayObject, TextField, Ease, Timer } from '../../../utils/black-engine.module';
 import UTween from '../../helpers/../../utils/utween';
 import { TutorialHand } from './tutorial-hand';
-import TargetLight from './targetlight';
 
 export default class CTA1 extends DisplayObject {
   constructor() {
@@ -17,17 +16,12 @@ export default class CTA1 extends DisplayObject {
   }
 
   onAdded() {
-    this._targetlight = new TargetLight();
-    this.add(this._targetlight);
 
     this._hand = new TutorialHand();
     this._hand.x = 260;
     this._hand.y = 200;
 
     this.add(this._hand);
-
-    this._targetlight = new TargetLight();
-    this.add(this._targetlight);
 
     this._text = new TextField(
       'TAP TO START!',

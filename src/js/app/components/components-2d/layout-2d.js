@@ -10,12 +10,12 @@ import CTA2 from './cta2';
 import CTA1 from './cta1';
 import ReferencePhoto from './ref-photo';
 import ProgressBar from './progressbar';
+import TargetLight from './targetlight'
 
 // works as a main class in 2D playables
 export default class Layout2D extends DisplayObject {
   constructor() {
     super();
-
     this.onPlayBtnClickEvent = 'onPlayBtnClickEvent';
     this.onActionClickEvent = 'onActionClickEvent';
     this.fill = 0;
@@ -37,6 +37,9 @@ export default class Layout2D extends DisplayObject {
     this._tutorial = new Tutorial();
     this.add(this._tutorial);
 
+    this._targetlight = new TargetLight();
+    this.add(this._targetlight);
+
     this._cta1 = new CTA1();
     this.add(this._cta1);
 
@@ -46,6 +49,8 @@ export default class Layout2D extends DisplayObject {
 
     this._progressbar = new ProgressBar();
     this.add(this._progressbar);
+
+
 
     this._createLogo();
     this._createDownloadBtn();
@@ -72,11 +77,15 @@ export default class Layout2D extends DisplayObject {
     this._cta2.x = Black.stage.centerX;
     this._cta2.y = bb.top + (bb.height / 2) * 1.8;
 
+    this._targetlight.x = Black.stage.centerX;
+    this._targetlight.y = Black.stage.centerY;
+
     this._cta1.x = Black.stage.centerX;
     this._cta1.y = Black.stage.centerY + bb.height * 0.18;
 
     this._progressbar.x = Black.stage.centerX;
     this._progressbar.y = 100;
+
 
     this._endScreen.onResize(bb);
 
@@ -129,6 +138,11 @@ export default class Layout2D extends DisplayObject {
   showCTA1() {
     this._cta1.show();
   }
+
+  update2dPos(position, width, height) {
+    this._targetlight.setSpotlightPosition(position, width, height);
+  }
+
 
   showCTA2() {
     this._cta2.show();
