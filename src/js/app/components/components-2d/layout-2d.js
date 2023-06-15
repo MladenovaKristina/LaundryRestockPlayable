@@ -138,8 +138,8 @@ export default class Layout2D extends DisplayObject {
     this._cta1.show();
   }
 
-  update2dPos(position) {
-    this._targetlight.setSpotlightPosition(position);
+  update2dPos(position, width, height) {
+    this._targetlight.setSpotlightPosition(position, width, height);
   }
 
 

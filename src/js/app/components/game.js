@@ -196,6 +196,7 @@ export default class Game {
       this._layout2d._cta1.hide();
       this._bottle.removeCap();
       this._detergentBottle.playAnim("raise");
+      this._layout2d._targetlight.hide();
       // this._zoomIn();
       // this._layout2d.showProgressBar();
       // this._layout2d.showCTA2();

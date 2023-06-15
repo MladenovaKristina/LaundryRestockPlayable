@@ -54,9 +54,10 @@ export default class TargetLight extends DisplayObject {
         this._bg.fill();
     }
 
+
     setSpotlightPosition(bottleposition, width, height) {
-        const centerX = width * 1000 / 2.4;
-        const centerY = height * 1000 / 1.4;
+        const centerX = width / 2;
+        const centerY = height / 2;
 
         this._holeX = bottleposition.x - centerX;
         this._holeY = bottleposition.y - centerY;
@@ -65,6 +66,7 @@ export default class TargetLight extends DisplayObject {
         this._hole.y = this._holeY;
         this._height = height;
     }
+
 
     show() {
         this.visible = true;
