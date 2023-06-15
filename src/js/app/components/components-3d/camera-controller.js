@@ -21,7 +21,7 @@ export default class CameraController {
 
   _updateTransform() {
     const position = this._getPosition();
-    this._camera.position.set(0, 2, -3);
+    this._camera.position.set(0, 2, 3);
   }
 
   _updatePositions() {
