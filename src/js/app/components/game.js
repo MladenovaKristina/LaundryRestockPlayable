@@ -8,6 +8,8 @@ import SoundsController from "./kernel/soundscontroller";
 import ConfigurableParams from "../../data/configurable_params";
 import Bottle from "./components-3d/bottle";
 import Environment from "./components-3d/enviroment";
+import DetergentBottle from "./components-3d/detergent_bottle";
+
 import Menu from "./components-3d/menu";
 import SwipeMechanic from "./components-3d/pouring-mechanic";
 
@@ -46,6 +48,7 @@ export default class Game {
     this._cameraController = new CameraController(this._camera.threeCamera);
     this._initEnvironment();
     this._initBottle();
+    this._initDetergentBottle();
     this._initMenu();
     this._initCameraPosition();
     this._initSwipeMechanic();
@@ -55,7 +58,6 @@ export default class Game {
     this._layout2d.showCTA1();
     const { bottlePosition, width, height } = this._3dto2d();
     this._layout2d.update2dPos(bottlePosition, width, height);
-
     this._startTime = Date.now();
 
     if (ConfigurableParams.isXTime()) {
@@ -66,9 +68,10 @@ export default class Game {
   }
 
   _3dto2d() {
-    let bottlePosition = Helpers.vector3ToBlackPosition(this._detergentBottle.position, this._renderer.threeRenderer, this._camera.threeCamera);
+    let detergentBottle = this._detergentBottle.children[0].children[0];
 
-    const boundingBox = new THREE.Box3().setFromObject(this._detergentBottle._tidelGroup);
+    let bottlePosition = Helpers.vector3ToBlackPosition(detergentBottle.position, this._renderer.threeRenderer, this._camera.threeCamera);
+    const boundingBox = new THREE.Box3().setFromObject(detergentBottle);
     const dimensions = new THREE.Vector3();
     boundingBox.getSize(dimensions);
     const width = dimensions.x;
@@ -81,6 +84,7 @@ export default class Game {
       height
     };
   }
+
 
   _initUI() {
     this._layout2d = new Layout2D();
@@ -95,6 +99,11 @@ export default class Game {
   _initBottle() {
     this._bottle = new Bottle();
     this._scene.add(this._bottle);
+  }
+
+  _initDetergentBottle() {
+    this._detergentBottle = new DetergentBottle();
+    this._scene.add(this._detergentBottle);
   }
   _initMenu() {
     this._menu = new Menu();
@@ -185,14 +194,13 @@ export default class Game {
 
     if (this._clicks === 1) {
       this._layout2d._cta1.hide();
-      this._layout2d._targetlight.hide();
       this._bottle.removeCap();
-      this._detergentBottle.raiseDetergent(() => {
-        this._zoomIn();
-        this._layout2d.showProgressBar();
-        this._layout2d.showCTA2();
-        this._animationInProgress = false;
-      });
+      this._detergentBottle.playAnim("raise");
+      // this._zoomIn();
+      // this._layout2d.showProgressBar();
+      // this._layout2d.showCTA2();
+      // this._animationInProgress = false;
+      // });
       this._animationInProgress = true;
     }
 
@@ -206,9 +214,8 @@ export default class Game {
 
   }
 
-
   _zoomIn() {
-    this._cameraController._camera.position.set(0, 1.8, -2);
+    this._cameraController._camera.position.set(0, 1.8, 2);
   }
   _resetCamera() {
     this._cameraController._camera.position.set(this._initCameraPosition);

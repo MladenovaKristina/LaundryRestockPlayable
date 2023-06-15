@@ -55,15 +55,15 @@ export default class TargetLight extends DisplayObject {
     }
 
     setSpotlightPosition(bottleposition, width, height) {
-        const centerX = width * 1000 / 2;
-        const centerY = height * 1000 / 2;
+        const centerX = width * 1000 / 2.4;
+        const centerY = height * 1000 / 1.4;
 
         this._holeX = bottleposition.x - centerX;
         this._holeY = bottleposition.y - centerY;
 
         this._hole.x = this._holeX;
         this._hole.y = this._holeY;
-        console.log('height', this._height);
+        this._height = height;
     }
 
     show() {
@@ -77,6 +77,8 @@ export default class TargetLight extends DisplayObject {
 
         this.add(hideTween);
 
-        hideTween.on('complete', msg => this.visible = false);
+        hideTween.on('complete', () => {
+            this.visible = false;
+        });
     }
 }
