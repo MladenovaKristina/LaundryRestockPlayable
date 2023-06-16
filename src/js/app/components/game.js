@@ -160,10 +160,7 @@ export default class Game {
   collision(liquid) {
     if (liquid.x >= -0.02 && liquid.x <= 0.2 && this.flag) {
       this._layout2d.progressBar();
-      console.log("filling")
-      this._detergentBottle.playAnim("pour").then(() => {
-        this.win();
-      });
+      this._detergentBottle.pourLiquid();
 
     } else {
       this._layout2d.particleEmitter();
@@ -179,8 +176,6 @@ export default class Game {
   }
 
   _gameplay(x, y) {
-    this._detergentBottle.playAnim("pour");
-    this._detergentBottle.playAnim("fillVessel");
 
     this._detergentBottle.pourLiquid();
 
@@ -233,14 +228,37 @@ export default class Game {
     this._detergentBottle.idleAnimateDetergent();
     this._animationInProgress = false;
   }
-
   _zoomIn() {
-    this._cameraController._camera.position.set(
-      this._cameraController._camera.position.x,
-      this._cameraController._camera.position.y,
-      this._cameraController._camera.position.z - 1
-    );
+    const targetZ = this._cameraController._camera.position.z - 1.5;
+    const duration = 1000;
+
+    let startTime = null;
+    const initialZ = this._cameraController._camera.position.z;
+    const initialY = this._cameraController._camera.position.y;
+
+    const updateCameraPosition = (timestamp) => {
+      if (!startTime) startTime = timestamp;
+      const elapsed = timestamp - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const interpolatedZ = initialZ + (targetZ - initialZ) * progress;
+
+      const interpolatedY = initialY + (targetY - initialY) * progress;
+
+      this._cameraController._camera.position.z = interpolatedZ;
+      this._cameraController._camera.position.y = interpolatedY;
+
+      if (progress < 1) {
+        requestAnimationFrame(updateCameraPosition);
+      }
+    };
+
+    requestAnimationFrame(updateCameraPosition);
   }
+
+
+
+
+
 
   _resetCamera() {
     this._cameraController._camera.position.set(this._initCameraPosition);
@@ -265,6 +283,7 @@ export default class Game {
   onUpdate(dt) {
     if (this._isStore) return;
     dt = Math.min(dt, 0.02);
+
   }
 
   onResize() {

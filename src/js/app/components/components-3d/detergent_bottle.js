@@ -21,12 +21,27 @@ export default class DetergentBottle extends Group {
         const asset = THREE.Cache.get('assets').scene.children;
         this._view = asset[1];
         this._liquid = asset[1].children[0].children[3];
-        this._liquid.children[0].scale.set(0, 0, 0)
-        console.log(this._liquid);
-        this._fill = asset[2];
+        this._liquid.children[0].scale.set(0, 0, 1); // Set initial scale to (0, 1, 1) to maintain pivot position
+
         this._tideBottleCap = asset[1].children[0].children[2];
         this._view.scale.set(0.013, 0.013, 0.013);
         this.add(this._view);
+
+        this._fill = THREE.Cache.get('assets').scene.children.find(child => child.name === "Liquid_00");
+        if (this._fill) {
+            this._fill.material = new MeshStandardMaterial({
+                color: 0x0000ff,
+                roughness: 0,
+                transparent: true,
+                opacity: 0.5,
+                side: DoubleSide,
+            })
+            this._fill.position.set(0, 0, 0);
+            this._fill.visible = false;
+            this._fill.children.visible = false;
+            this.add(this._fill);
+
+        }
 
         this._view.traverse(child => {
             child.frustumCulled = false;
@@ -51,7 +66,7 @@ export default class DetergentBottle extends Group {
                         side: DoubleSide,
                     });
                     child.castShadow = true;
-                } else if (child.name === "Cap" || child.name === "Liquid" || child.name === "Liquid_base" || child.name === "Liquid_00") {
+                } else if (child.name === "Cap" || child.name === "Liquid" || child.name === "Liquid_base") {
                     child.material = new MeshStandardMaterial({
                         color: 0x0000ff,
                         roughness: 0,
@@ -60,7 +75,7 @@ export default class DetergentBottle extends Group {
                         side: DoubleSide,
                     });
 
-                    if (child.name === "Liquid" || child.name === "Liquid_00" || child.name === "Liquid_base" || child.name === "Liquid_00") {
+                    if (child.name === "Liquid" || child.name === "Liquid_base" || child.name === "Liquid_00") {
                         child.visible = false;
                     }
                     child.castShadow = true;
@@ -81,7 +96,7 @@ export default class DetergentBottle extends Group {
     }
 
     adjustDetergentPosition() {
-        const targetZ = 0;
+        const targetZ = 0.12;
         const positionTween = new TWEEN.Tween(this._view.position).to({ z: targetZ }, this._animations.raise.duration);
         positionTween.start();
     }
@@ -173,36 +188,35 @@ export default class DetergentBottle extends Group {
 
         animateIdle();
     }
-
     pourLiquid() {
+        this.playAnim("fillVessel")
+        this.playAnim("pour")
+
         this._liquid.visible = true;
         this._liquid.children[0].visible = true;
         this._fill.children.visible = true;
-        this._fill.position.set(0, 0, 0);
-        this._fill.scale.set(0.013, 0.013, 0.013);
         this._fill.visible = true;
 
-        const targetScaleY = 2;
+        const targetScaleX = 1; // Target scale on the x-axis
 
-        const scaleTween = new TWEEN.Tween(this._liquid.children[0].scale)
-            .to({ x: 1.8, y: targetScaleY, z: 1.8 }, 3500)
+        this._liquidTween = new TWEEN.Tween(this._liquid.children[0].scale)
+            .to({ x: targetScaleX, y: targetScaleX }, 3500)
             .easing(TWEEN.Easing.Quadratic.Out)
             .delay(900)
             .onComplete(() => {
                 setTimeout(() => {
-                    const shrinkTween = new TWEEN.Tween(this._liquid.children[0].scale)
-                        .to({ x: 0, y: 0, z: 0 }, 800)
-                        .easing(TWEEN.Easing.Linear.None)
-                        .start();
-                }, 3400);
+                    this.resetLiquidState(); // Reset the liquid state after the animation completes
+                }, 3600);
             })
             .start();
-
     }
 
-
-
-
+    resetLiquidState() {
+        this._liquid.visible = false;
+        this._liquid.children[0].visible = false;
+        this._fill.children.visible = false;
+        this._fill.visible = false;
+    }
 
     stopIdle() {
         if (this.idle) {
