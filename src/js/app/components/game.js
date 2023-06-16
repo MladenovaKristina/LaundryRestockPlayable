@@ -140,7 +140,6 @@ export default class Game {
     if (this._state !== STATES.GAMEPLAY) return;
 
     this._layout2d.onMove(x, y);
-    this._gameplay(x, y);
   }
 
   onMove(x, y) {
@@ -158,16 +157,16 @@ export default class Game {
   }
 
   collision(liquid) {
-    if (liquid.x >= -0.02 && liquid.x <= 0.2 && this.flag) {
+    if (liquid.x >= -0.4 && liquid.x <= 0.4) {
       this._layout2d.progressBar();
-      this._detergentBottle.playAnim("fillVessel");
-      console.log("animation playing")
-    } else {
-      this._layout2d.particleEmitter();
+      this._detergentBottle.playAnim("fillVessel")
+        .then(() => {
+          this.win(); // Call the win function when the animation is finished
+        });
+      console.log("animation playing");
+    } else if (liquid.x < -0.4 || liquid.x > 0.4) {
       this._detergentBottle.stopAnim("fillVessel");
-      console.log("animation stopped")
-
-
+      console.log("animation stopped");
     }
   }
 
@@ -179,16 +178,13 @@ export default class Game {
   }
 
   _gameplay(x, y) {
-
-    this._detergentBottle.pourLiquid();
-
-    if (this.flag && this._state === STATES.GAMEPLAY) {
+    if (this._state === STATES.GAMEPLAY) {
       this._detergentBottle.stopIdle();
       this._detergentBottle.playAnim("pour");
       this._detergentBottle.pourLiquid();
 
-      this._swipeMechanic.getMousePosition(x, y, this._bottle, this._detergentBottle);
-      this.collision(this._detergentBottle.position);
+      this._swipeMechanic.getMousePosition(x, y, this._bottle, this._detergentBottle._view);
+      this.collision(this._detergentBottle._view.position);
     }
   }
 
@@ -234,12 +230,11 @@ export default class Game {
     this._animationInProgress = false;
   }
   _zoomIn() {
-    const targetZ = this._cameraController._camera.position.z - 1.5;
+    const targetZ = this._cameraController._camera.position.z - 1;
     const duration = 1000;
 
     let startTime = null;
     const initialZ = this._cameraController._camera.position.z;
-    const initialY = this._cameraController._camera.position.y;
 
     const updateCameraPosition = (timestamp) => {
       if (!startTime) startTime = timestamp;
@@ -247,10 +242,7 @@ export default class Game {
       const progress = Math.min(elapsed / duration, 1);
       const interpolatedZ = initialZ + (targetZ - initialZ) * progress;
 
-      const interpolatedY = initialY + (targetY - initialY) * progress;
-
       this._cameraController._camera.position.z = interpolatedZ;
-      this._cameraController._camera.position.y = interpolatedY;
 
       if (progress < 1) {
         requestAnimationFrame(updateCameraPosition);
