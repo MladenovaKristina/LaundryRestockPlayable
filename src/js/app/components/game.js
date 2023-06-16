@@ -160,11 +160,14 @@ export default class Game {
   collision(liquid) {
     if (liquid.x >= -0.02 && liquid.x <= 0.2 && this.flag) {
       this._layout2d.progressBar();
-      this._detergentBottle.pourLiquid();
-
+      this._detergentBottle.playAnim("fillVessel");
+      console.log("animation playing")
     } else {
       this._layout2d.particleEmitter();
       this._detergentBottle.stopAnim("fillVessel");
+      console.log("animation stopped")
+
+
     }
   }
 
@@ -181,6 +184,8 @@ export default class Game {
 
     if (this.flag && this._state === STATES.GAMEPLAY) {
       this._detergentBottle.stopIdle();
+      this._detergentBottle.playAnim("pour");
+      this._detergentBottle.pourLiquid();
 
       this._swipeMechanic.getMousePosition(x, y, this._bottle, this._detergentBottle);
       this.collision(this._detergentBottle.position);

@@ -189,15 +189,12 @@ export default class DetergentBottle extends Group {
         animateIdle();
     }
     pourLiquid() {
-        this.playAnim("fillVessel")
-        this.playAnim("pour")
-
         this._liquid.visible = true;
         this._liquid.children[0].visible = true;
         this._fill.children.visible = true;
         this._fill.visible = true;
 
-        const targetScaleX = 1; // Target scale on the x-axis
+        const targetScaleX = 1;
 
         this._liquidTween = new TWEEN.Tween(this._liquid.children[0].scale)
             .to({ x: targetScaleX, y: targetScaleX }, 3500)
@@ -214,8 +211,6 @@ export default class DetergentBottle extends Group {
     resetLiquidState() {
         this._liquid.visible = false;
         this._liquid.children[0].visible = false;
-        this._fill.children.visible = false;
-        this._fill.visible = false;
     }
 
     stopIdle() {
