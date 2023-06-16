@@ -158,17 +158,19 @@ export default class Game {
   }
 
   collision(liquid) {
-    if (liquid.x >= -0.3 && liquid.x <= -0.07 && this.flag) {
+    if (liquid.x >= -0.02 && liquid.x <= 0.2 && this.flag) {
       this._layout2d.progressBar();
+      console.log("filling")
+      this._detergentBottle.playAnim("pour").then(() => {
+        this.win();
+      });
 
-      this._detergentBottle.playAnim("fillVessel")
-      // when resolved
-      // this.win();
     } else {
       this._layout2d.particleEmitter();
-      this._detergentBottle.stopAnim("fillVessel")
+      this._detergentBottle.stopAnim("fillVessel");
     }
   }
+
 
   win() {
     this.flag = false;
@@ -177,11 +179,15 @@ export default class Game {
   }
 
   _gameplay(x, y) {
+    this._detergentBottle.playAnim("pour");
+    this._detergentBottle.playAnim("fillVessel");
+
+    this._detergentBottle.pourLiquid();
+
     if (this.flag && this._state === STATES.GAMEPLAY) {
-      this._detergentBottle.playAnim("pour");
+      this._detergentBottle.stopIdle();
 
       this._swipeMechanic.getMousePosition(x, y, this._bottle, this._detergentBottle);
-      this._detergentBottle.pourLiquid();
       this.collision(this._detergentBottle.position);
     }
   }
