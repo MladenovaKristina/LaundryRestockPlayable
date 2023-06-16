@@ -15,7 +15,6 @@ import SwipeMechanic from "./components-3d/pouring-mechanic";
 
 export default class Game {
   constructor(scene, camera, renderer) {
-
     this.messageDispatcher = new MessageDispatcher();
     this.onFinishEvent = 'onFinishEvent';
 
@@ -105,20 +104,24 @@ export default class Game {
     this._detergentBottle = new DetergentBottle();
     this._scene.add(this._detergentBottle);
   }
+
   _initMenu() {
     this._menu = new Menu();
     this._scene.add(this._menu);
   }
+
   _initEnvironment() {
     this._environment = new Environment();
     this._scene.add(this._environment);
   }
+
   _initCameraPosition() {
     this._initCameraPosition = this._cameraController._camera.position.clone();
   }
+
   _initSwipeMechanic() {
     this._swipeMechanic = new SwipeMechanic();
-    this._scene.add(this.SwipeMechanic);
+    this._scene.add(this._swipeMechanic);
   }
 
   onDown(x, y) {
@@ -154,16 +157,16 @@ export default class Game {
     this._layout2d.onUp();
   }
 
-  collision(liquid,) {
-    if (liquid.x >= -0.3 && liquid.x <= -0.07 && this.flag == true) {
+  collision(liquid) {
+    if (liquid.x >= -0.3 && liquid.x <= -0.07 && this.flag) {
       this._layout2d.progressBar();
 
-      this._bottle.fillAnimate(() => {
-        this.win();
-      });
-
+      this._detergentBottle.playAnim("fillVessel")
+      // when resolved
+      // this.win();
     } else {
       this._layout2d.particleEmitter();
+      this._detergentBottle.stopAnim("fillVessel")
     }
   }
 
@@ -174,14 +177,15 @@ export default class Game {
   }
 
   _gameplay(x, y) {
-    if (this.flag = true && this._state === STATES.GAMEPLAY) {
+    if (this.flag && this._state === STATES.GAMEPLAY) {
+      this._detergentBottle.playAnim("pour");
+
       this._swipeMechanic.getMousePosition(x, y, this._bottle, this._detergentBottle);
-      this._detergentBottle.showLiquid();
       this._detergentBottle.pourLiquid();
       this.collision(this._detergentBottle.position);
-
     }
   }
+
   _countClicks() {
     if (this._isStore) return;
 
@@ -220,13 +224,18 @@ export default class Game {
     this._zoomIn();
     this._layout2d.showProgressBar();
     this._layout2d.showCTA2();
-
+    this._detergentBottle.idleAnimateDetergent();
     this._animationInProgress = false;
   }
 
   _zoomIn() {
-    this._cameraController._camera.position.set(0, 1.8, 2);
+    this._cameraController._camera.position.set(
+      this._cameraController._camera.position.x,
+      this._cameraController._camera.position.y,
+      this._cameraController._camera.position.z - 1
+    );
   }
+
   _resetCamera() {
     this._cameraController._camera.position.set(this._initCameraPosition);
   }
@@ -235,10 +244,13 @@ export default class Game {
     if (this._isStore) return;
 
     if (ConfigurableParams.isXTime() && (Date.now() - this._startTime) / 1000 > this._timeToStore) {
-      if (Date.now() - this._lastClickTime < 1500 || this._isDown || ConfigurableParams.isPN())
-        this._onFinish()
-      else
-        this._storeOnDown = true;
+      if (
+        Date.now() - this._lastClickTime < 1500 ||
+        this._isDown ||
+        ConfigurableParams.isPN()
+      )
+        this._onFinish();
+      else this._storeOnDown = true;
 
       console.log('time');
     }
@@ -247,7 +259,6 @@ export default class Game {
   onUpdate(dt) {
     if (this._isStore) return;
     dt = Math.min(dt, 0.02);
-
   }
 
   onResize() {
@@ -267,12 +278,10 @@ export default class Game {
         SoundsController.playWithKey('win');
 
       this.enableStoreMode();
-    }
-    else {
+    } else {
       if (Date.now() - this._lastClickTime < 1500 || this._isDown)
         this.messageDispatcher.post(this.onFinishEvent);
-      else
-        this._storeOnDown = true;
+      else this._storeOnDown = true;
     }
   }
 

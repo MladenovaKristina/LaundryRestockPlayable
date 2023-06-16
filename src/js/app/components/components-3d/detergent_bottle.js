@@ -1,6 +1,6 @@
-import TWEEN from "@tweenjs/tween.js";
+import * as TWEEN from "@tweenjs/tween.js";
 import * as THREE from "three";
-import { Group, Cache, AnimationMixer, MeshStandardMaterial, DoubleSide } from "three";
+import { Group, AnimationMixer, MeshStandardMaterial, DoubleSide } from "three";
 import { MessageDispatcher } from "../../../utils/black-engine.module";
 
 export default class DetergentBottle extends Group {
@@ -20,9 +20,12 @@ export default class DetergentBottle extends Group {
     _init() {
         const asset = THREE.Cache.get('assets').scene.children;
         this._view = asset[1];
+        this._liquid = asset[1].children[0].children[3];
+        this._fill = asset[2];
         this._tideBottleCap = asset[1].children[0].children[2];
         this._view.scale.set(0.013, 0.013, 0.013);
         this.add(this._view);
+
         this._view.traverse(child => {
             child.frustumCulled = false;
 
@@ -46,7 +49,7 @@ export default class DetergentBottle extends Group {
                         side: DoubleSide,
                     });
                     child.castShadow = true;
-                } else if (child.name === "Cap" || child.name === "Liquid" || child.name === "Liquid_base") {
+                } else if (child.name === "Cap" || child.name === "Liquid" || child.name === "Liquid_base" || child.name === "Liquid_00") {
                     child.material = new MeshStandardMaterial({
                         color: 0x0000ff,
                         roughness: 0,
@@ -54,7 +57,8 @@ export default class DetergentBottle extends Group {
                         opacity: 0.5,
                         side: DoubleSide,
                     });
-                    if (child.name === "Liquid" || child.name === "Liquid_base") {
+
+                    if (child.name === "Liquid" || child.name === "Liquid_00" || child.name === "Liquid_base" || child.name === "Liquid_00") {
                         child.visible = false;
                     }
                     child.castShadow = true;
@@ -62,49 +66,40 @@ export default class DetergentBottle extends Group {
             }
         });
 
-        const animations = Cache.get('assets').animations;
+        const animations = THREE.Cache.get('assets').animations;
         const animationsNames = ["pour", "raise", "fillVessel"];
         animationsNames.forEach((animName, index) => {
             const anim = animations[index];
             this._animations[animName].duration = anim.duration;
+
             this._animations[animName].mixer = new AnimationMixer(this._view);
+
             this._animations[animName].action = this._animations[animName].mixer.clipAction(anim);
         });
     }
 
+    createAndPlayTween() {
+        const targetZ = 0;
+        const positionTween = new TWEEN.Tween(this._view.position).to({ z: targetZ }, this._animations.raise.duration);
+        positionTween.start();
+    }
+
     playAnim(name) {
         return new Promise(resolve => {
-            if (this._animations[name].tween) {
-                this._animations[name].tween.stop();
-            }
-
             const action = this._animations[name].action;
             action.setLoop(THREE.LoopOnce);
             action.clampWhenFinished = true;
             action.play();
 
-            const finalPosition = this.position.clone();
-
-            this._animations[name].tween = new TWEEN.Tween(action)
-                .to({ time: this._animations[name].duration }, this._animations[name].time)
-                .onUpdate(() => {
-                    this._animations[name].mixer.update(0.0000001);
-                })
+            this.createAndPlayTween();
+            const tween = new TWEEN.Tween(action).to({ time: this._animations[name].duration }, this._animations[name].time)
+                .onUpdate(() => this._animations[name].mixer.update(0.0000001))
                 .onComplete(() => {
-                    this.stopAnim(name);
                     resolve();
-                })
-                .start();
-
-            const animate = () => {
-                requestAnimationFrame(animate);
-                TWEEN.update();
-                Object.values(this._animations).forEach(animation => {
-                    animation.mixer.update(0.0167);
                 });
-            };
 
-            animate();
+            this._animations[name].tween = tween;
+            tween.start();
         });
     }
 
@@ -117,7 +112,7 @@ export default class DetergentBottle extends Group {
 
     changeAnim(oldAnimName, newAnimName) {
         this.stopAnim(oldAnimName);
-        this.playAnim(newAnimName);
+        return this.playAnim(newAnimName);
     }
 
     updateMixer(delta) {
@@ -127,7 +122,7 @@ export default class DetergentBottle extends Group {
     }
 
     removeDetergentCap() {
-        return new Promise((resolve) => {
+        return new Promise(resolve => {
             const removeCap = new TWEEN.Tween(this._tideBottleCap)
                 .to({ y: 3, rotation: { y: -Math.PI } }, 2000)
                 .easing(TWEEN.Easing.Quadratic.Out)
@@ -138,12 +133,12 @@ export default class DetergentBottle extends Group {
                 })
                 .start();
 
-            const animateRaise = () => {
-                requestAnimationFrame(animateRaise);
+            const removeCapTween = () => {
+                requestAnimationFrame(removeCapTween);
                 TWEEN.update();
             };
 
-            animateRaise();
+            removeCapTween();
         });
     }
 
@@ -152,13 +147,13 @@ export default class DetergentBottle extends Group {
         const frequency = 1;
         const duration = 1000;
 
-        this.idle = new TWEEN.Tween(this._tidelGroup.position)
-            .to({ x: this._tidelGroup.position.x - amplitude, y: this._tidelGroup.position.y - amplitude }, duration)
+        this.idle = new TWEEN.Tween(this._view.position)
+            .to({ x: this._view.position.x - amplitude, y: this._view.position.y - amplitude }, duration)
             .easing(TWEEN.Easing.Sinusoidal.InOut)
             .onUpdate(() => {
                 const time = performance.now() / 1000;
                 const angle = Math.sin(time * frequency) * amplitude;
-                this._tidelGroup.position.x = this._tidelGroup.position.x - angle;
+                this._view.position.x = this._view.position.x - angle;
             })
             .repeat(Infinity)
             .yoyo(true)
@@ -167,11 +162,18 @@ export default class DetergentBottle extends Group {
         const animateIdle = () => {
             if (this.idle) {
                 requestAnimationFrame(animateIdle);
-                this.idle.update();
+                TWEEN.update();
             }
         };
 
         animateIdle();
+    }
+
+    pourLiquid() {
+        this._liquid.visible = true;
+        this._fill.visible = true;
+        this.playAnim("fillVessel");
+        console.log("working")
     }
 
     stopIdle() {

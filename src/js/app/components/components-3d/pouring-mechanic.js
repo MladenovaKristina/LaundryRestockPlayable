@@ -17,11 +17,11 @@ export default class SwipeMechanic extends THREE.Object3D {
         const normalizedX = (x / this.screenWidth) * 400 - 200;
         this.playerX = normalizedX;
         this.playerY = y;
-        this.pourDetergent(detergent);
+        this.moveDetergent(detergent);
     }
 
-    pourDetergent(detergent) {
-        const speed = 0.01;
+    moveDetergent(detergent) {
+        const speed = -0.01;
         const maxDistance = 150;
 
         if (this.playerX >= -maxDistance && this.playerX <= maxDistance) {

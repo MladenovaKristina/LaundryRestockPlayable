@@ -53,12 +53,6 @@ export default class Bottle extends THREE.Object3D {
         bottleCap.visible = true;
         bottleCap.castShadow = true;
 
-        const fillGeometry = new THREE.CylinderGeometry(this.top, this.bottom, this.height, 32);
-        const fillMaterial = new THREE.MeshBasicMaterial({ color: 0x0000ff, transparent: true, opacity: 0.5 });
-        this._cylinder = new THREE.Mesh(fillGeometry, fillMaterial);
-        this._cylinder.position.set(0, 0.1, 0);
-        this.add(this._cylinder);
-        this._cylinder.visible = false;
     }
 
     removeCap() {
@@ -79,22 +73,5 @@ export default class Bottle extends THREE.Object3D {
         remove();
     }
 
-    fillAnimate(callback) {
-        this._cylinder.visible = true;
 
-        if (this.height <= 0.4) {
-            this.height += 0.002;
-            if (this.bottom < this.top) {
-                this.bottom += this.height;
-            }
-            this._cylinder.geometry.dispose();
-            this._cylinder.geometry = new THREE.CylinderGeometry(0.28, this.bottom, this.height, 32);
-            this._cylinder.position.setY(0.1 + this.height / 2);
-        }
-
-        if (this.height >= 0.4 && callback) {
-            callback();
-        }
-
-    }
 }
