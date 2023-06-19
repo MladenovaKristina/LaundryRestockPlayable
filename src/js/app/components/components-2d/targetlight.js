@@ -47,7 +47,7 @@ export default class TargetLight extends DisplayObject {
         this._bg.fill();
     }
 
-    setSpotlightPosition(position) {
+    setTargetlightPosition(position) {
         let holeX = position.x;
         let holeY = position.y;
 

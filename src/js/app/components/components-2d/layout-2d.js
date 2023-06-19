@@ -1,4 +1,9 @@
-import { Black, DisplayObject, Rectangle, Sprite } from '../../../utils/black-engine.module';
+import {
+  Black,
+  DisplayObject,
+  Rectangle,
+  Sprite
+} from '../../../utils/black-engine.module';
 import model from '../../../data/model';
 import Helpers from '../../helpers/helpers';
 import PlayButton from './play-button';
@@ -10,9 +15,8 @@ import CTA2 from './cta2';
 import CTA1 from './cta1';
 import ReferencePhoto from './ref-photo';
 import ProgressBar from './progressbar';
-import TargetLight from './targetlight'
+import TargetLight from './targetlight';
 
-// works as a main class in 2D playables
 export default class Layout2D extends DisplayObject {
   constructor() {
     super();
@@ -106,25 +110,27 @@ export default class Layout2D extends DisplayObject {
   }
 
   _createEndscreen() {
-    const endscreen = this._endScreen = new Endscreen();
+    const endscreen = (this._endScreen = new Endscreen());
     this.add(endscreen);
 
-    endscreen.on(endscreen.onPlayBtnClickEvent, msg => {
+    endscreen.on(endscreen.onPlayBtnClickEvent, (msg) => {
       this.post(this.onPlayBtnClickEvent);
     });
   }
 
   _createLogo() {
-    if (model.platform === "google_landscape" || model.platform === "google_portrait") {
-      const logo = this._logoGoogle = new Sprite('logo');
+    if (model.platform === 'google_landscape' || model.platform === 'google_portrait') {
+      const logo = (this._logoGoogle = new Sprite('logo'));
       logo.alignAnchor(0, 0);
       this.add(logo);
     }
   }
 
   _createDownloadBtn() {
-    if (model.platform === "mintegral" || ConfigurableParams.isNeedShowPN()) {
-      const downloadBtn = this._downloadBtn = new PlayButton(ConfigurableParams.getData()["play_button"]["play_now_text"]["value"]);
+    if (model.platform === 'mintegral' || ConfigurableParams.isNeedShowPN()) {
+      const downloadBtn = (this._downloadBtn = new PlayButton(
+        ConfigurableParams.getData()['play_button']['play_now_text']['value']
+      ));
       downloadBtn.visible = false;
       this.add(downloadBtn);
     }
@@ -132,14 +138,13 @@ export default class Layout2D extends DisplayObject {
 
   showHint() {
     this._tutorial.show();
-
   }
   showCTA1() {
     this._cta1.show();
   }
 
   update2dPos(position) {
-    this._targetlight.setSpotlightPosition(position);
+    this._targetlight.setTargetlightPosition(position);
   }
 
   showCTA2() {
@@ -150,7 +155,6 @@ export default class Layout2D extends DisplayObject {
     this._progressbar.fill(percent);
   }
 
-
   onDown(x, y) {
     this.countClicks();
     const defaultPos = { x: x, y: y };
@@ -160,7 +164,6 @@ export default class Layout2D extends DisplayObject {
     if (ifDownloadButtonClicked) return true;
 
     this._endScreen.onDown(blackPos.x, blackPos.y);
-
   }
   countClicks(clicks) {
     this._click++;
@@ -171,8 +174,7 @@ export default class Layout2D extends DisplayObject {
     const blackPos = Black.stage.worldTransformationInverted.transformVector(defaultPos);
   }
 
-  onUp() {
-  }
+  onUp() { }
 
   enableStoreMode() {
     if (this._isStaticStoreMode) return;
