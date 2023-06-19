@@ -178,6 +178,7 @@ export default class Game {
   _gameplay(x, y) {
     if (this._state === STATES.GAMEPLAY) {
       this._detergentBottle.stopIdle();
+
       this._detergentBottle.pourLiquid();
       this._detergentBottle.playAnim("pour");
 
@@ -206,6 +207,7 @@ export default class Game {
 
       this._layout2d._cta2.hide();
       this._layout2d._progressbar.show();
+      this._layout2d.showHint();
     }
   }
 
