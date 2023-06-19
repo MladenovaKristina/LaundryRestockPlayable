@@ -55,8 +55,6 @@ export default class Game {
 
   start() {
     this._layout2d.showCTA1();
-    const { bottlePosition, width, height } = this._3dto2d();
-    this._layout2d.update2dPos(bottlePosition, width, height);
     this._startTime = Date.now();
 
     if (ConfigurableParams.isXTime()) {
@@ -67,23 +65,32 @@ export default class Game {
   }
 
   _3dto2d() {
-    let detergentBottle = this._detergentBottle.children[0].children[0];
+    const detergentBottle = this._detergentBottle.children[0].children[0];
+    const camera = this._camera.threeCamera;
 
-    let bottlePosition = Helpers.vector3ToBlackPosition(detergentBottle.position, this._renderer.threeRenderer, this._camera.threeCamera);
-    const boundingBox = new THREE.Box3().setFromObject(detergentBottle);
-    const dimensions = new THREE.Vector3();
-    boundingBox.getSize(dimensions);
-    const width = dimensions.x;
-    const height = dimensions.y;
-    const depth = dimensions.z;
+    const bottlePosition = detergentBottle.position.clone();
+
+    const cameraPosition = camera.position.clone();
+    console.log(bottlePosition.y, 'og y')
+
+    const adjustedX = bottlePosition.x //- cameraPosition.x;
+    const adjustedY = bottlePosition.y //- cameraPosition.y;
+    const adjustedZ = bottlePosition.z //- cameraPosition.z;
+    console.log(adjustedY, 'adj y')
+
+    const position2D =
+      Helpers.vector3ToBlackPosition(
+        new THREE.Vector3(adjustedX, adjustedY, adjustedZ),
+        this._renderer.threeRenderer,
+        this._camera.threeCamera
+      );
+    console.log(position2D)
+
 
     return {
-      bottlePosition,
-      width,
-      height
+      position: position2D,
     };
   }
-
 
   _initUI() {
     this._layout2d = new Layout2D();
@@ -157,16 +164,14 @@ export default class Game {
   }
 
   collision(liquid) {
-    if (liquid.x >= -0.4 && liquid.x <= 0.4) {
-      this._layout2d.progressBar();
-      this._detergentBottle.playAnim("fillVessel")
-        .then(() => {
-          this.win(); // Call the win function when the animation is finished
-        });
-      console.log("animation playing");
+    if (liquid.x >= 0.3 && liquid.x <= 0.4) {
+      this._layout2d.progressBar(() => {
+        this.win();
+      });
+
+      this._detergentBottle.progressionAnim("fillVessel");
+
     } else if (liquid.x < -0.4 || liquid.x > 0.4) {
-      this._detergentBottle.stopAnim("fillVessel");
-      console.log("animation stopped");
     }
   }
 
@@ -180,8 +185,8 @@ export default class Game {
   _gameplay(x, y) {
     if (this._state === STATES.GAMEPLAY) {
       this._detergentBottle.stopIdle();
-      this._detergentBottle.playAnim("pour");
       this._detergentBottle.pourLiquid();
+      this._detergentBottle.playAnim("pour");
 
       this._swipeMechanic.getMousePosition(x, y, this._bottle, this._detergentBottle._view);
       this.collision(this._detergentBottle._view.position);
@@ -218,8 +223,8 @@ export default class Game {
     this._layout2d._targetlight.hide();
 
     await Promise.all([
-      this._bottle.removeCap(),
-      this._detergentBottle.removeDetergentCap()
+      this._detergentBottle.removeDetergentCap(),
+      this._bottle.removeCap()
     ]);
 
     await this._detergentBottle.playAnim("raise");
@@ -252,11 +257,6 @@ export default class Game {
     requestAnimationFrame(updateCameraPosition);
   }
 
-
-
-
-
-
   _resetCamera() {
     this._cameraController._camera.position.set(this._initCameraPosition);
   }
@@ -285,6 +285,8 @@ export default class Game {
 
   onResize() {
     this._cameraController.onResize();
+    const { position } = this._3dto2d();
+    this._layout2d.update2dPos(position);
   }
 
   _onFinish() {

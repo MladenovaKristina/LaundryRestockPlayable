@@ -138,8 +138,8 @@ export default class Layout2D extends DisplayObject {
     this._cta1.show();
   }
 
-  update2dPos(position, width, height) {
-    this._targetlight.setSpotlightPosition(position, width, height);
+  update2dPos(position) {
+    this._targetlight.setSpotlightPosition(position);
   }
 
 
@@ -150,10 +150,16 @@ export default class Layout2D extends DisplayObject {
   showProgressBar() {
     this._progressbar.show();
   }
-  progressBar() {
+
+  progressBar(callback) {
     this.fill += 0.005;
     this._progressbar.fill(this.fill);
+
+    if (this.fill >= 1) {
+      callback(); // Call the callback function when the progress bar is full
+    }
   }
+
 
   onDown(x, y) {
     this.countClicks();
