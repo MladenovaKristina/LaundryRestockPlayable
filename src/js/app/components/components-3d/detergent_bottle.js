@@ -35,7 +35,6 @@ export default class DetergentBottle extends Group {
         this.add(this._view);
 
         this._fill = asset.find((child) => child.name === "Liquid_00");
-        console.log(this._fill);
         this._fill.material = new MeshStandardMaterial({
             color: 0x0000ff,
             roughness: 0,
@@ -158,22 +157,24 @@ export default class DetergentBottle extends Group {
         }
     }
 
-    progressionAnim(animation) {
-        return new Promise((resolve) => {
-            const progressAnimation = () => {
-                animation.currentTime += 0.0001;
-                animation.mixer.update(0.0001);
+    progressionAnim(animationName, callback) {
+        const animation = this._animations[animationName];
+        const action = animation.action;
 
-                if (animation.currentTime >= animation.duration) {
-                    resolve();
-                } else {
-                    requestAnimationFrame(progressAnimation);
-                }
-            };
+        action.setLoop(THREE.LoopOnce);
+        action.clampWhenFinished = true;
+        action.play();
 
-            requestAnimationFrame(progressAnimation);
-        });
+        animation.currentTime += 0.001;
+        animation.mixer.update(0.001);
+
+        if (animation.currentTime >= animation.duration) {
+            callback();
+        }
+        const progressPercent = (animation.currentTime / animation.duration) * 100;
     }
+
+
 
     changeAnim(oldAnimName, newAnimName, resume = false) {
         this.stopAnim(oldAnimName);

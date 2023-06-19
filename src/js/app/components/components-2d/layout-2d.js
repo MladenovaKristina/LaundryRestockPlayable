@@ -45,6 +45,7 @@ export default class Layout2D extends DisplayObject {
 
     this._cta2 = new CTA2();
     this.add(this._cta2);
+
     this._createEndscreen();
 
     this._progressbar = new ProgressBar();
@@ -66,9 +67,9 @@ export default class Layout2D extends DisplayObject {
 
     this._refPhoto.x = bb.left + Number(ConfigurableParams.getData()["reference_photo"]["offset"]["x"]);
     this._refPhoto.y = bb.top + Number(ConfigurableParams.getData()["reference_photo"]["offset"]["y"]);
-    if (this._topText.visible)
+    if (this._topText.visible) {
       this._refPhoto.y = this._topText.y + this._topText.height + Number(ConfigurableParams.getData()["reference_photo"]["offset"]["y"]);
-
+    }
     this._tutorial.x = Black.stage.centerX;
     this._tutorial.y = Black.stage.centerY + bb.height * 0.18;
 
@@ -80,10 +81,6 @@ export default class Layout2D extends DisplayObject {
 
     this._cta1.x = Black.stage.centerX;
     this._cta1.y = Black.stage.centerY + bb.height * 0.18;
-
-    this._progressbar.x = Black.stage.centerX;
-    this._progressbar.y = 100;
-
 
     this._endScreen.onResize(bb);
 
@@ -103,6 +100,9 @@ export default class Layout2D extends DisplayObject {
       this._downloadBtn.y = bb.bottom - 85;
     }
     this._targetlight.onResize();
+
+    this._progressbar.x = Black.stage.centerX;
+    this._progressbar.y = bb.top + this._topText._height + 20;
   }
 
   _createEndscreen() {
@@ -142,22 +142,12 @@ export default class Layout2D extends DisplayObject {
     this._targetlight.setSpotlightPosition(position);
   }
 
-
   showCTA2() {
     this._cta2.show();
   }
 
-  showProgressBar() {
-    this._progressbar.show();
-  }
-
-  progressBar(callback) {
-    this.fill += 0.005;
-    this._progressbar.fill(this.fill);
-
-    if (this.fill >= 1) {
-      callback(); // Call the callback function when the progress bar is full
-    }
+  progressBar(percent) {
+    this._progressbar.fill(percent);
   }
 
 
@@ -183,11 +173,6 @@ export default class Layout2D extends DisplayObject {
 
   onUp() {
   }
-
-  particleEmitter(x, y) {
-    console.log('making spillage at', x, y);
-  }
-
 
   enableStoreMode() {
     if (this._isStaticStoreMode) return;

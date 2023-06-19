@@ -3,14 +3,9 @@ import * as THREE from "three";
 export default class SwipeMechanic extends THREE.Object3D {
     constructor() {
         super();
-        this._initView();
         this.playerX = 0;
         this.playerY = 0;
         this.screenWidth = window.innerWidth;
-    }
-
-    _initView() {
-        console.log('pouring mechanic works');
     }
 
     getMousePosition(x, y, bottle, detergent) {

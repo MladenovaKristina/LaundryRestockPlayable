@@ -30,7 +30,7 @@ export default class Environment extends THREE.Object3D {
     const asset = THREE.Cache.get('assets').scene.children;
     const table = this._table = asset[4];
     table.scale.set(0.4, 0.4, 0.4);
-    table.position.set(0, 0, -0.7);
+    table.position.set(0, 0, -0.4);
 
     table.material = new THREE.MeshPhysicalMaterial({
       color: 0x000000,

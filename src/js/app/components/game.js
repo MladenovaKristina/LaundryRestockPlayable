@@ -71,12 +71,10 @@ export default class Game {
     const bottlePosition = detergentBottle.position.clone();
 
     const cameraPosition = camera.position.clone();
-    console.log(bottlePosition.y, 'og y')
 
     const adjustedX = bottlePosition.x //- cameraPosition.x;
     const adjustedY = bottlePosition.y //- cameraPosition.y;
     const adjustedZ = bottlePosition.z //- cameraPosition.z;
-    console.log(adjustedY, 'adj y')
 
     const position2D =
       Helpers.vector3ToBlackPosition(
@@ -84,8 +82,6 @@ export default class Game {
         this._renderer.threeRenderer,
         this._camera.threeCamera
       );
-    console.log(position2D)
-
 
     return {
       position: position2D,
@@ -164,14 +160,11 @@ export default class Game {
   }
 
   collision(liquid) {
-    if (liquid.x >= 0.3 && liquid.x <= 0.4) {
-      this._layout2d.progressBar(() => {
+    if (liquid.x >= 0.35 && liquid.x <= 0.45) {
+      this._layout2d.progressBar(this._detergentBottle.progressPercent);
+      this._detergentBottle.progressionAnim("fillVessel", () => {
         this.win();
       });
-
-      this._detergentBottle.progressionAnim("fillVessel");
-
-    } else if (liquid.x < -0.4 || liquid.x > 0.4) {
     }
   }
 
@@ -212,6 +205,7 @@ export default class Game {
       this._state = STATES.GAMEPLAY;
 
       this._layout2d._cta2.hide();
+      this._layout2d._progressbar.show();
     }
   }
 
@@ -229,7 +223,6 @@ export default class Game {
 
     await this._detergentBottle.playAnim("raise");
     this._zoomIn();
-    this._layout2d.showProgressBar();
     this._layout2d.showCTA2();
     this._detergentBottle.idleAnimateDetergent();
     this._animationInProgress = false;
