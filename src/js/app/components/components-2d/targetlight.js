@@ -48,8 +48,8 @@ export default class TargetLight extends DisplayObject {
     }
 
     setTargetlightPosition(position) {
-        let holeX = position.x;
-        let holeY = position.y;
+        let holeX = position.x + this._radius / 4;
+        let holeY = position.y + this._radius / 8;
 
         this._hole.clear();
         this._hole.beginPath();

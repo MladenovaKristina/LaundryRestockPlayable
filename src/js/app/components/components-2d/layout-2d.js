@@ -84,7 +84,7 @@ export default class Layout2D extends DisplayObject {
     this._targetlight.y = Black.stage.centerY;
 
     this._cta1.x = Black.stage.centerX;
-    this._cta1.y = Black.stage.centerY + bb.height * 0.18;
+    this._cta1.y = bb.top + this._topText.height * 2 + this._cta1._text.size;
 
     this._endScreen.onResize(bb);
 
@@ -145,6 +145,7 @@ export default class Layout2D extends DisplayObject {
 
   update2dPos(position) {
     this._targetlight.setTargetlightPosition(position);
+    this._cta1.setPosition(position);
   }
 
   showCTA2() {

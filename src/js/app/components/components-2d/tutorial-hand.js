@@ -7,7 +7,7 @@ export class TutorialHand extends DisplayObject {
     super();
 
     this.animate = false;
-    this._view = null;
+    this.detergentBottle = null;
 
     this._distX = 150;
     this._distY = 60;
@@ -19,28 +19,28 @@ export class TutorialHand extends DisplayObject {
 
   onAdded() {
     if (ConfigurableParams.getData()['hint']['starting_hint_type']['value'] === 'MICKEY') {
-      this._view = new Sprite('hint_mickey');
-      this._view.scaleX = 0.7;
-      this._view.scaleY = 0.7;
-      this._view.alignAnchor(0.15, -0.1);
-      this._view.rotation = this._rotation;
-      this.add(this._view);
+      this.detergentBottle = new Sprite('hint_mickey');
+      this.detergentBottle.scaleX = 0.7;
+      this.detergentBottle.scaleY = 0.7;
+      this.detergentBottle.alignAnchor(0.15, -0.1);
+      this.detergentBottle.rotation = this._rotation;
+      this.add(this.detergentBottle);
     }
     if (ConfigurableParams.getData()['hint']['starting_hint_type']['value'] === 'SIMPLE') {
-      this._view = new Sprite('hint_simple');
-      this._view.scaleX = 1;
-      this._view.scaleY = 1;
-      this._view.alignAnchor(0.4, -0.1);
-      this._view.rotation = this._rotation;
-      this.add(this._view);
+      this.detergentBottle = new Sprite('hint_simple');
+      this.detergentBottle.scaleX = 1;
+      this.detergentBottle.scaleY = 1;
+      this.detergentBottle.alignAnchor(0.4, -0.1);
+      this.detergentBottle.rotation = this._rotation;
+      this.add(this.detergentBottle);
     }
     if (ConfigurableParams.getData()['hint']['starting_hint_type']['value'] === 'ORIGINAL') {
-      this._view = new Sprite('hint_original');
-      this._view.scaleX = 0.35;
-      this._view.scaleY = 0.35;
-      this._view.alignAnchor(0.5, -0.2);
-      this._view.rotation = this._rotation;
-      this.add(this._view);
+      this.detergentBottle = new Sprite('hint_original');
+      this.detergentBottle.scaleX = 0.35;
+      this.detergentBottle.scaleY = 0.35;
+      this.detergentBottle.alignAnchor(0.5, -0.2);
+      this.detergentBottle.rotation = this._rotation;
+      this.add(this.detergentBottle);
     }
   }
 
@@ -61,7 +61,7 @@ export class TutorialHand extends DisplayObject {
     this._xdt = value;
     this._ydt = -value * 2;
 
-    this._view.x = Math.cos(this._xdt) * this._distX;
-    this._view.y = Math.sin(this._ydt) * this._distY;
+    this.detergentBottle.x = Math.cos(this._xdt) * this._distX;
+    this.detergentBottle.y = Math.sin(this._ydt) * this._distY;
   }
 }

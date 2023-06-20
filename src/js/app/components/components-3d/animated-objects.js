@@ -18,21 +18,22 @@ export default class DetergentBottle extends Group {
             fillVessel: { tween: null, action: null, mixer: null, duration: null, currentTime: 0 },
         };
         this.finalPosition = new THREE.Vector3();
-        this._view = null;
+        this.detergentBottle = null;
         this._init();
+        let progressPercent = 0;
     }
 
     _init() {
         const asset = THREE.Cache.get("assets").scene.children;
 
-        this._view = asset[1];
+        this.detergentBottle = asset[1];
 
         this._liquid = asset[1].children[0].children[3];
         this._liquid.children[0].scale.set(0, 0, 1);
 
         this._tideBottleCap = asset[1].children[0].children[2];
-        this._view.scale.set(0.013, 0.013, 0.013);
-        this.add(this._view);
+        this.detergentBottle.scale.set(0.013, 0.013, 0.013);
+        this.add(this.detergentBottle);
 
         this._fill = asset.find((child) => child.name === "Liquid_00");
         this._fill.material = new MeshStandardMaterial({
@@ -47,7 +48,7 @@ export default class DetergentBottle extends Group {
 
         this.add(this._fill);
 
-        this._view.traverse((child) => {
+        this.detergentBottle.traverse((child) => {
             child.frustumCulled = false;
 
             if (child.type === "Mesh" || child.type === "SkinnedMesh") {
@@ -100,7 +101,7 @@ export default class DetergentBottle extends Group {
             if (animName === "fillVessel") {
                 this._animations[animName].mixer = new AnimationMixer(this._fill);
             } else {
-                this._animations[animName].mixer = new AnimationMixer(this._view);
+                this._animations[animName].mixer = new AnimationMixer(this.detergentBottle);
             }
 
             this._animations[animName].action = this._animations[animName].mixer.clipAction(anim);
@@ -118,7 +119,7 @@ export default class DetergentBottle extends Group {
 
     adjustDetergentPosition() {
         const targetZ = 0.12;
-        const positionTween = new TWEEN.Tween(this._view.position).to(
+        const positionTween = new TWEEN.Tween(this.detergentBottle.position).to(
             { z: targetZ },
             this._animations.raise.duration
         );
@@ -140,6 +141,7 @@ export default class DetergentBottle extends Group {
                 .to({ time: animation.duration }, animation.time)
                 .onUpdate(() => animation.mixer.update(0.0000001))
                 .onComplete(() => {
+                    if (name === "pour") animation.action.stop();
                     resolve();
                 });
 
@@ -171,7 +173,7 @@ export default class DetergentBottle extends Group {
         if (animation.currentTime >= animation.duration) {
             callback();
         }
-        const progressPercent = (animation.currentTime / animation.duration) * 100;
+        this.progressPercent = animation.currentTime / animation.duration;
     }
 
 
@@ -197,8 +199,8 @@ export default class DetergentBottle extends Group {
     removeDetergentCap() {
         return new Promise((resolve) => {
             const removeCap = new TWEEN.Tween(this._tideBottleCap.rotation)
-                .to({ y: -Math.PI }, 2000)
-                .delay(500)
+                .to({ y: -Math.PI / 2 }, 1000)
+                .delay(1000)
                 .easing(TWEEN.Easing.Quadratic.Out)
                 .onComplete(() => {
                     this._tideBottleCap.visible = false;
@@ -220,16 +222,16 @@ export default class DetergentBottle extends Group {
         const frequency = 1;
         const duration = 1000;
 
-        this.idle = new TWEEN.Tween(this._view.position)
+        this.idle = new TWEEN.Tween(this.detergentBottle.position)
             .to(
-                { x: this._view.position.x - amplitude, y: this._view.position.y - amplitude },
+                { x: this.detergentBottle.position.x - amplitude, y: this.detergentBottle.position.y - amplitude },
                 duration
             )
             .easing(TWEEN.Easing.Sinusoidal.InOut)
             .onUpdate(() => {
                 const time = performance.now() / 1000;
                 const angle = Math.sin(time * frequency) * amplitude;
-                this._view.position.x = this._view.position.x - angle;
+                this.detergentBottle.position.x = this.detergentBottle.position.x - angle;
             })
             .repeat(Infinity)
             .yoyo(true)
