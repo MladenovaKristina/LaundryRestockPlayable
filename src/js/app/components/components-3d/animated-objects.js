@@ -44,7 +44,7 @@ export default class DetergentBottle extends Group {
             side: DoubleSide,
         });
         this._fill.position.set(0, 0, 0);
-        this._fill.visible = true;
+        this._fill.visible = false;
 
         this.add(this._fill);
 
@@ -160,6 +160,7 @@ export default class DetergentBottle extends Group {
     }
 
     progressionAnim(animationName, callback) {
+        this._fill.visible = true;
         const animation = this._animations[animationName];
         const action = animation.action;
 
@@ -170,7 +171,7 @@ export default class DetergentBottle extends Group {
         animation.currentTime += 0.001;
         animation.mixer.update(0.001);
 
-        if (animation.currentTime >= animation.duration) {
+        if (animation.currentTime >= animation.duration * 0.8) {
             callback();
         }
         this.progressPercent = animation.currentTime / animation.duration;
@@ -262,6 +263,7 @@ export default class DetergentBottle extends Group {
                     .to({ x: 0, y: 0 }, 800)
                     .delay(3500)
                     .easing(TWEEN.Easing.Quadratic.Out)
+                    .onComplete(this._liquid.visible = false)
                     .start();
             })
             .start();

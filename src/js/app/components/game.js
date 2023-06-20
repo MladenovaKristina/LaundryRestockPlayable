@@ -168,7 +168,7 @@ export default class Game {
     }
 
     if (liquid.x >= 0.35 && liquid.x <= 0.45) {
-      this._layout2d.progressBar(this._animatedObject.progressPercent);
+      this._layout2d.progressBar(this._animatedObject.progressPercent / 2);
       this._animatedObject.progressionAnim("fillVessel", () => {
         this.win();
       });

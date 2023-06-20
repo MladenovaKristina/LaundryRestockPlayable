@@ -16,6 +16,7 @@ export default class Bottle extends THREE.Object3D {
         bottle.castShadow = true;
         bottle.scale.set(0.01, 0.01, 0.01);
         bottle.position.set(0, 0, 0);
+        bottle.rotation.z = -0.3;
         this.add(bottle);
 
         const bottleLabel = bottle.children ? bottle.children.find(x => x.name === 'detergent1') : null;
@@ -24,6 +25,8 @@ export default class Bottle extends THREE.Object3D {
             metalness: 0,
             map: THREE.Cache.get('uv_names'),
             reflectivity: 10,
+            transparent: true,
+            opacity: 0.5,
             side: THREE.DoubleSide,
         });
         bottleLabel.children[1].castShadow = true;

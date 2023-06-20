@@ -42,7 +42,7 @@ export default class TargetLight extends DisplayObject {
 
         this._bg.clear();
         this._bg.beginPath();
-        this._bg.fillStyle(0x000000, 0.5);
+        this._bg.fillStyle(0x000000, 0.6);
         this._bg.rect(0, 0, bgWidth, bgHeight);
         this._bg.fill();
     }
