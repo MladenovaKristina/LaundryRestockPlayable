@@ -177,8 +177,6 @@ export default class DetergentBottle extends Group {
         this.progressPercent = animation.currentTime / animation.duration;
     }
 
-
-
     changeAnim(oldAnimName, newAnimName, resume = false) {
         this.stopAnim(oldAnimName);
         return this.playAnim(newAnimName, resume);
@@ -253,15 +251,16 @@ export default class DetergentBottle extends Group {
         this._liquid.children[0].visible = true;
 
         const targetScaleX = 1;
+        const duration = 2000;
 
         const initialTween = new TWEEN.Tween(this._liquid.children[0].scale)
-            .to({ x: targetScaleX - 0.1, y: targetScaleX }, 4000)
+            .to({ x: targetScaleX - 0.1, y: targetScaleX }, duration)
             .easing(TWEEN.Easing.Quadratic.Out)
-            .delay(900)
+            .delay(duration * 0.22)
             .onComplete(() => {
                 const resetTween = new TWEEN.Tween(this._liquid.children[0].scale)
-                    .to({ x: 0, y: 0 }, 800)
-                    .delay(3500)
+                    .to({ x: 0, y: 0 }, duration)
+                    .delay(duration * 0.875)
                     .easing(TWEEN.Easing.Quadratic.Out)
                     .onComplete(this._liquid.visible = false)
                     .start();
