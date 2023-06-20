@@ -9,7 +9,7 @@ export default class ColorCircle extends DisplayObject {
   }
 
   onAdded() {
-    const view = this._view = new Graphics();
+    const view = this.detergentBottle = new Graphics();
     view.fillStyle(this._color, 1);
     view.lineStyle(15, 0xffffff);
     view.circle(0, 0, 55);

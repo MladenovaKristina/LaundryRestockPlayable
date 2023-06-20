@@ -7,7 +7,7 @@ export default class PlayButton extends DisplayObject {
 
     this._text = text;
     this._container = null;
-    this._view = null;
+    this.detergentBottle = null;
 
     this._backColor = ConfigurableParams.getData()["play_button"]["btn_color_dark"]["value"];
     this._mainColor = ConfigurableParams.getData()["play_button"]["btn_color_main"]["value"];

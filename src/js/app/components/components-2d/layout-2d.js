@@ -1,4 +1,9 @@
-import { Black, DisplayObject, Rectangle, Sprite } from '../../../utils/black-engine.module';
+import {
+  Black,
+  DisplayObject,
+  Rectangle,
+  Sprite
+} from '../../../utils/black-engine.module';
 import model from '../../../data/model';
 import Helpers from '../../helpers/helpers';
 import PlayButton from './play-button';
@@ -10,9 +15,8 @@ import CTA2 from './cta2';
 import CTA1 from './cta1';
 import ReferencePhoto from './ref-photo';
 import ProgressBar from './progressbar';
-import TargetLight from './targetlight'
+import TargetLight from './targetlight';
 
-// works as a main class in 2D playables
 export default class Layout2D extends DisplayObject {
   constructor() {
     super();
@@ -45,6 +49,7 @@ export default class Layout2D extends DisplayObject {
 
     this._cta2 = new CTA2();
     this.add(this._cta2);
+
     this._createEndscreen();
 
     this._progressbar = new ProgressBar();
@@ -66,9 +71,9 @@ export default class Layout2D extends DisplayObject {
 
     this._refPhoto.x = bb.left + Number(ConfigurableParams.getData()["reference_photo"]["offset"]["x"]);
     this._refPhoto.y = bb.top + Number(ConfigurableParams.getData()["reference_photo"]["offset"]["y"]);
-    if (this._topText.visible)
+    if (this._topText.visible) {
       this._refPhoto.y = this._topText.y + this._topText.height + Number(ConfigurableParams.getData()["reference_photo"]["offset"]["y"]);
-
+    }
     this._tutorial.x = Black.stage.centerX;
     this._tutorial.y = Black.stage.centerY + bb.height * 0.18;
 
@@ -79,11 +84,7 @@ export default class Layout2D extends DisplayObject {
     this._targetlight.y = Black.stage.centerY;
 
     this._cta1.x = Black.stage.centerX;
-    this._cta1.y = Black.stage.centerY + bb.height * 0.18;
-
-    this._progressbar.x = Black.stage.centerX;
-    this._progressbar.y = 100;
-
+    this._cta1.y = bb.top + this._topText.height * 2 + this._cta1._text.size;
 
     this._endScreen.onResize(bb);
 
@@ -103,28 +104,33 @@ export default class Layout2D extends DisplayObject {
       this._downloadBtn.y = bb.bottom - 85;
     }
     this._targetlight.onResize();
+
+    this._progressbar.x = Black.stage.centerX;
+    this._progressbar.y = bb.top + this._topText._height + 20;
   }
 
   _createEndscreen() {
-    const endscreen = this._endScreen = new Endscreen();
+    const endscreen = (this._endScreen = new Endscreen());
     this.add(endscreen);
 
-    endscreen.on(endscreen.onPlayBtnClickEvent, msg => {
+    endscreen.on(endscreen.onPlayBtnClickEvent, (msg) => {
       this.post(this.onPlayBtnClickEvent);
     });
   }
 
   _createLogo() {
-    if (model.platform === "google_landscape" || model.platform === "google_portrait") {
-      const logo = this._logoGoogle = new Sprite('logo');
+    if (model.platform === 'google_landscape' || model.platform === 'google_portrait') {
+      const logo = (this._logoGoogle = new Sprite('logo'));
       logo.alignAnchor(0, 0);
       this.add(logo);
     }
   }
 
   _createDownloadBtn() {
-    if (model.platform === "mintegral" || ConfigurableParams.isNeedShowPN()) {
-      const downloadBtn = this._downloadBtn = new PlayButton(ConfigurableParams.getData()["play_button"]["play_now_text"]["value"]);
+    if (model.platform === 'mintegral' || ConfigurableParams.isNeedShowPN()) {
+      const downloadBtn = (this._downloadBtn = new PlayButton(
+        ConfigurableParams.getData()['play_button']['play_now_text']['value']
+      ));
       downloadBtn.visible = false;
       this.add(downloadBtn);
     }
@@ -132,27 +138,22 @@ export default class Layout2D extends DisplayObject {
 
   showHint() {
     this._tutorial.show();
-
   }
   showCTA1() {
     this._cta1.show();
   }
 
-  update2dPos(position, width, height) {
-    this._targetlight.setSpotlightPosition(position, width, height);
+  update2dPos(position) {
+    this._targetlight.setTargetlightPosition(position);
+    this._cta1.setPosition(position);
   }
-
 
   showCTA2() {
     this._cta2.show();
   }
 
-  showProgressBar() {
-    this._progressbar.show();
-  }
-  progressBar() {
-    this.fill += 0.005;
-    this._progressbar.fill(this.fill);
+  progressBar(percent) {
+    this._progressbar.fill(percent);
   }
 
   onDown(x, y) {
@@ -164,7 +165,6 @@ export default class Layout2D extends DisplayObject {
     if (ifDownloadButtonClicked) return true;
 
     this._endScreen.onDown(blackPos.x, blackPos.y);
-
   }
   countClicks(clicks) {
     this._click++;
@@ -175,13 +175,7 @@ export default class Layout2D extends DisplayObject {
     const blackPos = Black.stage.worldTransformationInverted.transformVector(defaultPos);
   }
 
-  onUp() {
-  }
-
-  particleEmitter(x, y) {
-    console.log('making spillage at', x, y);
-  }
-
+  onUp() { }
 
   enableStoreMode() {
     if (this._isStaticStoreMode) return;

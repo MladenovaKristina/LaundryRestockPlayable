@@ -1,25 +1,23 @@
-import { Graphics, DisplayObject, CapsStyle, Rectangle, Black, Sprite, Container } from '../../../utils/black-engine.module';
+import { DisplayObject, Sprite, Rectangle } from '../../../utils/black-engine.module';
 import Helpers from '../../helpers/helpers';
 
 export default class ProgressBar extends DisplayObject {
     constructor() {
         super();
-
-        this.scaleX = 0.3;
-        this.scaleY = 0.35;
         this.visible = false;
-
+        this.scaleX = 0.3;
+        this.scaleY = 0.3;
         this._bg = null;
         this._fill = null;
         this._cropRect = null;
     }
 
     onAdded() {
+
         this._container = new DisplayObject(); // Create a new container element
         this.add(this._container);
 
         this._outline = new Sprite('outline_white');
-        this._outline.alignAnchor(0.5, 0);
         this._container.add(this._outline);
 
         this._bg = new Sprite('base_blue');
@@ -28,6 +26,7 @@ export default class ProgressBar extends DisplayObject {
         this._fill = new Sprite('rect_yellow');
         this._container.add(this._fill);
 
+        this._outline.x = -this._bg.width / 2;
         this._bg.x = -this._bg.width / 2;
         this._fill.x = -this._bg.width / 2;
 
@@ -45,8 +44,10 @@ export default class ProgressBar extends DisplayObject {
             -this._height / 2,
             -this._height / 2,
             progress > 0 ? progress * (this._width + this._height) : 1,
-            this._height * 2);
+            this._height * 2
+        );
     }
+
     show() {
         this.visible = true;
     }

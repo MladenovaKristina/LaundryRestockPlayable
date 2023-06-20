@@ -24,10 +24,10 @@ export default class Tutorial extends DisplayObject {
 
   show() {
     this.visible = true;
-    this._makeStep();
+    this.bounce();
   }
 
-  _makeStep() {
+  bounce() {
     const scaleTw = new Tween({
       scaleX: [0.33, 0.45, 0.33, 0.4, 0.33, 0.35, 0.35],
       scaleY: [0.38, 0.28, 0.38, 0.3, 0.38, 0.35, 0.35],
@@ -38,7 +38,7 @@ export default class Tutorial extends DisplayObject {
     this.add(timer);
 
     timer.on('tick', msg => {
-      this._makeStep();
+      this.bounce();
     });
   }
 

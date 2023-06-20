@@ -15,15 +15,15 @@ export default class ReferencePhoto extends DisplayObject {
     const imageScale = Number(ConfigurableParams.getData()["reference_photo"]["scale"]["value"]);
     const imageRotation = Number(ConfigurableParams.getData()["reference_photo"]["rotation"]["value"]);
 
-    this._view = new Sprite('ref_image');
-    this._view.alignAnchor(0.5, 0.5);
-    this.add(this._view);
+    this.detergentBottle = new Sprite('ref_image');
+    this.detergentBottle.alignAnchor(0.5, 0.5);
+    this.add(this.detergentBottle);
 
-    this._view.rotation = imageRotation / 180 * Math.PI;
-    this._view.scaleX = imageScale;
-    this._view.scaleY = imageScale;
-    this._view.x = this._view.width * 0.5;
-    this._view.y = this._view.height * 0.5;
+    this.detergentBottle.rotation = imageRotation / 180 * Math.PI;
+    this.detergentBottle.scaleX = imageScale;
+    this.detergentBottle.scaleY = imageScale;
+    this.detergentBottle.x = this.detergentBottle.width * 0.5;
+    this.detergentBottle.y = this.detergentBottle.height * 0.5;
   }
 }
 

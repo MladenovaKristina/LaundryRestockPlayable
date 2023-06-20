@@ -17,13 +17,13 @@ export default class Menu extends Group {
 
         this._scene = scene;
 
-        this._view = null;
+        this.detergentBottle = null;
         this._init();
 
     }
     _init() {
         const asset = Cache.get('assets').scene.children;
-        let view = this._view = SkeletonUtils.clone(Cache.get('assets').scene);
+        let view = this.detergentBottle = SkeletonUtils.clone(Cache.get('assets').scene);
         this.add(view);
 
         const childProperties = {

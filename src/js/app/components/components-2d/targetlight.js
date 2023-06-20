@@ -8,6 +8,7 @@ export default class TargetLight extends DisplayObject {
 
         this.visible = true;
         this._initView();
+        this.onResize();
     }
 
     _initView() {
@@ -22,20 +23,12 @@ export default class TargetLight extends DisplayObject {
         this._bg.fillStyle(0x000000, 0.5);
         this._bg.rect(0, 0, bgWidth, bgHeight);
         this._bg.fill();
-        this.add(this._bg);
+        this.addChild(this._bg);
 
         this._hole = new Graphics();
-        this._holeX = 0;
-        this._holeY = 0;
-        this._height = 150;
+        this._radius = 150;
 
-        this._hole.beginPath();
-        this._hole.alignAnchor(0.5, 0.5);
-
-        this._hole.fillStyle(0x000000, 1);
-        this._hole.circle(this._holeX, this._holeY, this._height);
-        this._hole.cut();
-        this.add(this._hole);
+        this.addChild(this._hole);
     }
 
     onResize() {
@@ -54,19 +47,17 @@ export default class TargetLight extends DisplayObject {
         this._bg.fill();
     }
 
+    setTargetlightPosition(position) {
+        let holeX = position.x + this._radius / 4;
+        let holeY = position.y + this._radius / 8;
 
-    setSpotlightPosition(bottleposition, width, height) {
-        const centerX = width / 2;
-        const centerY = height / 2;
-
-        this._holeX = bottleposition.x - (height * 1000) / 2 - centerX;
-        this._holeY = bottleposition.y - (height * 1000);
-
-        this._hole.x = this._holeX;
-        this._hole.y = this._holeY;
-        this._height = height;
+        this._hole.clear();
+        this._hole.beginPath();
+        this._hole.alignAnchor(0.5, 0.5);
+        this._hole.fillStyle(0x000000, 1);
+        this._hole.circle(holeX, holeY, this._radius);
+        this._hole.cut();
     }
-
 
     show() {
         this.visible = true;

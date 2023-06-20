@@ -1,5 +1,5 @@
 import ConfigurableParams from '../../../data/configurable_params';
-import { Tween, Black, Graphics, Sprite, DisplayObject, TextField, Ease, Timer } from '../../../utils/black-engine.module';
+import { Tween, Black, Graphics, Easing, DisplayObject, TextField, Ease, Timer } from '../../../utils/black-engine.module';
 import UTween from '../../helpers/../../utils/utween';
 import { TutorialHand } from './tutorial-hand';
 
@@ -18,10 +18,11 @@ export default class CTA1 extends DisplayObject {
   onAdded() {
 
     this._hand = new TutorialHand();
-    this._hand.x = 260;
-    this._hand.y = 200;
+    this._hand.alignAnchor(-0.5, 0.5);
+    this._hand.rotation = -0.5;
 
     this.add(this._hand);
+
 
     this._text = new TextField(
       'TAP TO START!',
@@ -30,7 +31,6 @@ export default class CTA1 extends DisplayObject {
       100
     );
     this._text.alignAnchor(0.5, 0.5);
-    this._text.y = -650;
     this.add(this._text);
 
     if (ConfigurableParams.getData()['hint']['starting_hint_type']['value'] === 'INFINITY ONLY') this._hand.visible = false;
@@ -49,11 +49,15 @@ export default class CTA1 extends DisplayObject {
 
   _makeClick() {
     const scaleTw = new Tween({
-      scaleX: [1.2, 1],
-      scaleY: [1.2, 1],
-    }, 1, { ease: Ease.sinusoidalIn, delay: 0, loop: true });
+      scaleX: [this.scaleX, this.scaleX + 0.13, this.scaleX],
+      scaleY: [this.scaleY, this.scaleY + 0.18, this.scaleY],
+    }, 2.8, { ease: Ease.sinusoidalOut, delay: 0.2, loop: true });
     this._hand.add(scaleTw);
+    const rotate = new Tween({ rotation: [this._hand.rotation, this._hand.rotation - Math.PI * 0.2, this._hand.rotation] }, 3, { loop: true, easing: Ease.sinusoidalInOut })
+
+    this._hand.add(rotate);
   }
+
 
 
   hide() {
@@ -64,6 +68,11 @@ export default class CTA1 extends DisplayObject {
     this.add(hideTween);
 
     hideTween.on('complete', msg => this.visible = false);
+  }
+
+  setPosition(position) {
+    this._hand.x = position.x;
+    this._hand.y = position.y + 500;
   }
 }
 
