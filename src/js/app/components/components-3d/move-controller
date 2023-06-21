@@ -8,29 +8,34 @@ export default class MoveController extends THREE.Object3D {
         this.detergent = null;
         this.fill = null;
         this.screenWidth = window.innerWidth;
-        this._canMove = false;
+        this._canMove = null;
     }
     start() {
         this._canMove = true;
+        console.log("started", this._canMove)
         this.detergent.stopIdleAnimation();
 
     }
     setBottleView(obj) {
         this.detergent = obj;
     }
+    setFillView(obj) {
+        this.fill = obj;
+    }
+
     onMove(x, y) {
         this.getMousePosition(x, y, this.detergent);
         this.moveDetergent(this.detergent);
     }
 
     onDown() {
-        // if (this.canMove)
-        //     this.detergent.rotateDown();
+        if (this._canMove)
+            this.detergent.rotateDown();
     }
 
     onUp() {
-        // if (this.canMove)
-        //     this.detergent.rotateUp();
+        if (this._canMove)
+            this.detergent.rotateUp();
     }
 
     getMousePosition(x, y, detergent) {
@@ -42,57 +47,19 @@ export default class MoveController extends THREE.Object3D {
 
     moveDetergent(detergent) {
         const speed = -0.01;
-        const maxDistance = 100;
+        const maxDistance = 500;
 
         const clampPlayerX = Math.max(-maxDistance, Math.min(maxDistance, this.playerX));
         detergent.position.x = -clampPlayerX * speed;
 
-
-        if (this.detergent.x >= 0.35 && this.detergent.x <= 0.45) {
+        if (detergent.position.x > 0.13 && detergent.position.x < 0.3) {
             this.collision();
         }
     }
 
     collision() {
-        console.log("bottle is being filled")
+        this.fill.show();
+        this.fill.fill();
     }
 
-    //     async runAnimationSequence() {
-    //         if (this._animationInProgress)
-    //             return;
-    // 
-    //         this._animationInProgress = true;
-    // 
-    //         this._layout2d._cta1.hide();
-    //         this._layout2d._targetlight.hide();
-    // 
-    //         this._animatedObject.removeDetergentCap();
-    //         this._bottle.removeCap();
-    // 
-    //         setTimeout(async () => {
-    //             await this._animatedObject.playAnim("raise");
-    //             this._zoomIn();
-    //             this._layout2d.showCTA2();
-    //             this._layout2d._progressbar.show();
-    //             this._animatedObject.idleAnimateDetergent();
-    //             this._animationInProgress = false;
-    //         }, 2000);
-    //     }
-    //     collision(liquid) {
-    //         if (!this.playingFlag) {
-    //             this.playingFlag = true;
-    //             this._animatedObject.pourLiquid();
-    //             this._animatedObject.playAnim("pour");
-    //             setTimeout(() => {
-    //                 this.playingFlag = false;
-    //             }, this._animatedObject._animations.pour.duration);
-    //         }
-    // 
-    //         if (liquid.x >= 0.35 && liquid.x <= 0.45) {
-    //             this._layout2d.progressBar(this._animatedObject.progressPercent / 2);
-    //             this._animatedObject.progressionAnim("fillVessel", () => {
-    //                 this.win();
-    //             });
-    //         }
-    // }
 }

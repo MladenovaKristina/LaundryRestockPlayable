@@ -41,7 +41,6 @@ export default class EmptyContainer extends THREE.Object3D {
             opacity: 0.4,
             side: THREE.DoubleSide,
         });
-
         bottleVessel.castShadow = true;
         bottleVessel.children[0].castShadow = true;
 

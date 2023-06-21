@@ -3,6 +3,7 @@ import DetergentBottle from "./detergent-bottle";
 import Environment from "./environment";
 import MoveController from "./move-controller";
 import Menu from "./menu";
+import Fill from "./fill";
 import { Group } from "three";
 
 export default class Layout3D extends Group {
@@ -26,7 +27,7 @@ export default class Layout3D extends Group {
         this._initDetergentBottle();
         this._initEnvironment();
         this._initMenu();
-        // this._initFill();
+        this._initFill();
     }
 
     _initEmptyContainer() {
@@ -37,7 +38,13 @@ export default class Layout3D extends Group {
     _initDetergentBottle() {
         this._detergentBottle = new DetergentBottle();
         this._scene.add(this._detergentBottle);
-        this.setBottleView(this._detergentBottle);
+        this._moveController.setBottleView(this._detergentBottle);
+    }
+
+    _initFill() {
+        this._fill = new Fill();
+        this._scene.add(this._fill);
+        this._moveController.setFillView(this._fill);
     }
 
     _initMenu() {
