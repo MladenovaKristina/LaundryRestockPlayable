@@ -24,8 +24,10 @@ export default class MoveController extends THREE.Object3D {
     }
 
     onMove(x, y) {
-        this.getMousePosition(x, y, this.detergent);
-        this.moveDetergent(this.detergent);
+        if (this._canMove) {
+            this.getMousePosition(x, y, this.detergent);
+            this.moveDetergent(this.detergent);
+        }
     }
 
     onDown() {
@@ -54,12 +56,20 @@ export default class MoveController extends THREE.Object3D {
 
         if (detergent.position.x > 0.13 && detergent.position.x < 0.3) {
             this.collision();
-        }
+        } else this.fill.stopFill();
     }
 
+    win() {
+        console.log("win")
+        this._canMove = false;
+        this.fill.stopFill();
+
+    }
     collision() {
         this.fill.show();
-        this.fill.fill();
+        this.fill.fill(() => {
+            this.win();
+        });
     }
 
 }

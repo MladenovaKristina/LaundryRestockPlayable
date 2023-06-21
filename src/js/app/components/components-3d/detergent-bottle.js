@@ -217,30 +217,6 @@ export default class DetergentBottle extends Group {
         }
     }
 
-    //     pourLiquid() {
-    //         this.liquidBase.visible = true;
-    //         this.liquid.visible = true;
-    // 
-    //         const targetScaleX = 1;
-    //         const duration = 2000;
-    // 
-    //         new TWEEN.Tween(this.liquid.scale)
-    //             .to({ x: targetScaleX - 0.1, y: targetScaleX }, duration)
-    //             .easing(TWEEN.Easing.Quadratic.Out)
-    //             .delay(duration * 0.22)
-    //             .onComplete(() => {
-    //                 new TWEEN.Tween(this.liquid.scale)
-    //                     .to({ x: 0, y: 0 }, duration)
-    //                     .delay(duration * 0.875)
-    //                     .easing(TWEEN.Easing.Quadratic.Out)
-    //                     .onComplete(() => {
-    //                         this.liquid.visible = false;
-    //                     })
-    //                     .start();
-    //             })
-    //             .start();
-    //     }
-
     rotateDown() {
         this.detergentBottle.rotation.x = Math.PI / 2;
 
