@@ -28,6 +28,7 @@ export default class MoveController extends THREE.Object3D {
             this.getMousePosition(x, y, this.detergent);
             this.moveDetergent(this.detergent);
         }
+
     }
 
     onDown() {
@@ -37,6 +38,7 @@ export default class MoveController extends THREE.Object3D {
 
     onUp() {
         if (this._canMove)
+
             this.detergent.rotateUp();
     }
 
@@ -63,7 +65,6 @@ export default class MoveController extends THREE.Object3D {
         console.log("win")
         this._canMove = false;
         this.fill.stopFill();
-
     }
     collision() {
         this.fill.show();

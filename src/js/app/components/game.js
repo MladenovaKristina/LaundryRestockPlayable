@@ -21,6 +21,7 @@ export default class Game {
     this.messageDispatcher = new MessageDispatcher();
     this.onFinishEvent = 'onFinishEvent';
 
+
     this._scene = scene;
     this._camera = camera;
     this._renderer = renderer;
@@ -98,7 +99,6 @@ export default class Game {
     }
 
     if (this.clicked > 1) {
-
       this._layout2d._cta2.hide();
       this._layout3d.animationController("gameplay", () => {
         this._layout2d.showHint();

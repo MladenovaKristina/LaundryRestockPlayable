@@ -27,34 +27,35 @@ export default class Fill extends THREE.Object3D {
     }
 
     fill(callback) {
-        if (this.height <= 1) {
-            const targetHeight = 1;
-            const targetTop = 0.27;
-            const targetBottom = 0.23;
+        const targetHeight = 0.5;
+        const targetTop = 0.27;
+        const targetBottom = 0.23;
 
-            this.fillTween = new TWEEN.Tween(this)
-                .to({ top: targetTop, bottom: targetBottom, height: targetHeight, }, 3000) // Set the duration of the tween animation (1000ms = 1s)
-                .easing(TWEEN.Easing.Linear.None) // Set the easing function (optional, Linear.None for linear animation)
-                .onUpdate(() => {
-                    console.log("filling");
-                    this.children[0].geometry.dispose(); // Dispose previous geometry
-                    this.children[0].geometry = new THREE.CylinderGeometry(this.top, this.bottom, this.height, 32);
-                    this.children[0].geometry.translate(0, this.height / 2, 0); // Translate the geometry to align the bottom to 0,0,0
-                    if (this.height >= targetHeight / 2) {
-                        callback();
-                    }
-                })
+        this.fillTween = new TWEEN.Tween(this)
+            .to({ top: targetTop, bottom: targetBottom, height: targetHeight, }, 3000)
+            .easing(TWEEN.Easing.Linear.None)
+            .onUpdate(() => {
+                console.log("filling");
+                this.children[0].geometry.dispose();
+                this.children[0].geometry = new THREE.CylinderGeometry(this.top, this.bottom, this.height, 32);
+                this.children[0].geometry.translate(0, this.height / 2, 0);
+                if (this.height >= targetHeight) {
+                    callback();
+                }
+            })
+            .onComplete(() => {
+                this.fillTween = null; // Reset the fillTween reference after completion
+            })
+            .start();
+        animate();
 
-                .start();
-
-            animate(); // Start the animation loop
-        }
     }
     stopFill() {
         if (this.fillTween) {
             this.fillTween.stop();
         }
-    } animate() {
+    }
+    animate() {
         if (TWEEN.update()) {
             requestAnimationFrame(animate);
         }

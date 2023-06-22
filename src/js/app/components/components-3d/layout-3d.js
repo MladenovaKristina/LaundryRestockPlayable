@@ -1,7 +1,7 @@
 import EmptyContainer from "./empty-container";
 import DetergentBottle from "./detergent-bottle";
 import Environment from "./environment";
-import MoveController from "./move-controller";
+import MoveController from "./move-controller.js";
 import Menu from "./menu";
 import Fill from "./fill";
 import { Group } from "three";
@@ -75,8 +75,8 @@ export default class Layout3D extends Group {
 
         if (state === "gameplay") {
             this._detergentBottle.stopIdleAnimation();
-            this._canPlay = true;
             this._moveController.start();
+
         } else {
             return;
         }
