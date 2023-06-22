@@ -105,7 +105,7 @@ export default class Game {
 
 
   onDown(x, y) {
-    this._layout2d.onDown(x, y)
+    this._layout2d.onDown(x, y);
     this._layout3d.onDown(x, y);
 
     const downloadBtnClicked = this._layout2d.onDown(x, y);
@@ -122,8 +122,6 @@ export default class Game {
   }
 
   onMove(x, y) {
-    // if (this._state !== STATES.GAMEPLAY)
-    //   return;
     this._layout2d.onMove(x, y);
     this._layout3d.onMove(x, y);
   }

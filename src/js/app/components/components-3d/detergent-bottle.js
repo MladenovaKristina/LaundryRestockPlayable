@@ -162,6 +162,8 @@ export default class DetergentBottle extends Group {
 
     stopIdleAnimation(callback) {
         this.canIdle = false;
+        console.log("stop");
+
         // 
         //         if (this.detergentTweenRotation) {
         //             this.detergentTweenRotation.stop();

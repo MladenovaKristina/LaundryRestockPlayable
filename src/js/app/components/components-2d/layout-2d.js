@@ -160,8 +160,7 @@ export default class Layout2D extends DisplayObject {
     this._progressbar.fill(percent);
   }
 
-  onDown(x, y, callback) {
-    this.countClicks(() => { callback(); });
+  onDown(x, y) {
     const defaultPos = { x: x, y: y };
     const blackPos = Black.stage.worldTransformationInverted.transformVector(defaultPos);
 
@@ -171,7 +170,7 @@ export default class Layout2D extends DisplayObject {
     this._endScreen.onDown(blackPos.x, blackPos.y);
   }
 
-  countClicks(callback) {
+  countClicks() {
     this._click++;
 
     if (this._click >= 1 && this.gameplay == false) {
@@ -183,7 +182,6 @@ export default class Layout2D extends DisplayObject {
     if (this._click >= 2 && this.gameplay == true) {
       this._cta2.hide();
       this.showHint();
-      callback();
     } else return;
   }
 

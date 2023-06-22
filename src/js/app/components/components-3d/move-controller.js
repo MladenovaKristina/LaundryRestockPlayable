@@ -14,6 +14,7 @@ export default class MoveController extends THREE.Object3D {
         this._detergent = null;
         this._fill = null;
         this._playFill = 0;
+        this.start();
     }
 
     start() {
@@ -53,7 +54,6 @@ export default class MoveController extends THREE.Object3D {
         const normalizedX = (x / this._screenWidth) * 400 - 200;
         this._playerX = normalizedX;
         this._playerY = y;
-        console.log(this._playerX, this._playerY)
         this._moveDetergent(detergent);
     }
 
@@ -65,7 +65,7 @@ export default class MoveController extends THREE.Object3D {
         const clampPlayerX = Math.max(-maxDistance, Math.min(maxDistance, this._playerX));
         detergent.position.x = -clampPlayerX * speed;
 
-        if (detergent.position.x > 0.13 && detergent.position.x <= 0.3 && this._isDown) {
+        if (detergent.position.x > 0.1 && detergent.position.x <= 0.2 && this._isDown) {
             this.collision();
         } else {
             this._fill.stop();

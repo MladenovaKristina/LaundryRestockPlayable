@@ -35,7 +35,7 @@ export default class Fill extends THREE.Object3D {
     stop() {
         if (this.fillTween && this.fillTween.isPlaying()) {
             this.fillTween.stop();
-        } console.log("stop filling");
+        }
 
     }
 

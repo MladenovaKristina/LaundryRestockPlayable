@@ -79,10 +79,8 @@ export default class Layout3D extends Group {
 
     count3DClicks() {
         this._3dclick++;
-        if (this._3dclick == 1) this._gameplay = false;
-        if (this._3dclick >= 2 && this._gameplay == false) {
-            console.log("anim1");
-            this._gameplay == true;
+        if (this._3dclick == 0) this._gameplay = false;
+        if (this._3dclick > 0 && this._gameplay == false) {
 
             this._emptyContainer.removeCap();
             this._detergentBottle.removeDetergentCap(() => {
@@ -93,16 +91,15 @@ export default class Layout3D extends Group {
             });
 
         }
-        if (this._gameplay == true) {
-            this._detergentBottle.stopIdleAnimation();
-            this._moveController.start();
-        }
     }
     onUp() {
         this._moveController.onUp();
+        this._detergentBottle.idleAnimateDetergent();
+
     }
 
     onMove(x, y) {
+        this._detergentBottle.stopIdleAnimation();
         this._moveController.onMove(x, y);
     }
 
