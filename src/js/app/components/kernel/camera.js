@@ -34,7 +34,6 @@ export default class Camera {
     }
     else {
       this._orientation = "portrait";
-      console.log(this.threeCamera.position)
     }
 
     this.threeCamera.fov = Helpers.LP(40, 60);

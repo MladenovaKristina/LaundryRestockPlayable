@@ -1,5 +1,5 @@
 import * as THREE from "three";
-
+import { MessageDispatcher } from "../../../utils/black-engine.module";
 export default class MoveController extends THREE.Object3D {
     constructor() {
         super();
@@ -7,14 +7,14 @@ export default class MoveController extends THREE.Object3D {
         this.playerY = 0;
         this.detergent = null;
         this.fill = null;
+        this.playFill = 0;
+
         this.screenWidth = window.innerWidth;
-        this._canMove = null;
+        this._canMove = false;
     }
     start() {
-        this._canMove = true;
-        console.log("started", this._canMove)
         this.detergent.stopIdleAnimation();
-
+        this._canMove = true;
     }
     setBottleView(obj) {
         this.detergent = obj;
@@ -28,25 +28,25 @@ export default class MoveController extends THREE.Object3D {
             this.getMousePosition(x, y, this.detergent);
             this.moveDetergent(this.detergent);
         }
-
     }
 
     onDown() {
-        if (this._canMove)
+        if (this._canMove) {
             this.detergent.rotateDown();
+        }
+        this.isDown = true;
     }
 
     onUp() {
-        if (this._canMove)
-
-            this.detergent.rotateUp();
+        if (this._canMove) this.detergent.rotateUp();
+        this.isDown = false;
     }
 
     getMousePosition(x, y, detergent) {
         const normalizedX = (x / this.screenWidth) * 400 - 200;
         this.playerX = normalizedX;
         this.playerY = y;
-        this.moveDetergent(detergent);
+
     }
 
     moveDetergent(detergent) {
@@ -56,21 +56,21 @@ export default class MoveController extends THREE.Object3D {
         const clampPlayerX = Math.max(-maxDistance, Math.min(maxDistance, this.playerX));
         detergent.position.x = -clampPlayerX * speed;
 
-        if (detergent.position.x > 0.13 && detergent.position.x < 0.3) {
+        if (detergent.position.x > 0.13 && detergent.position.x <= 0.3 && this.isDown) {
             this.collision();
-        } else this.fill.stopFill();
+        } else { this.fill.stop(); }
     }
 
-    win() {
-        console.log("win")
-        this._canMove = false;
-        this.fill.stopFill();
-    }
     collision() {
-        this.fill.show();
-        this.fill.fill(() => {
-            this.win();
-        });
+        if (this.playFill === 0) {
+            this.playFill++;
+            this.fill.show();
+        } else {
+            if (!this.fill.fillTween || !this.fill.fillTween.isPlaying()) {
+                this.fill.resume();
+            }
+        }
     }
+
 
 }

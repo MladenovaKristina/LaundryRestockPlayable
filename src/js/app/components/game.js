@@ -21,7 +21,6 @@ export default class Game {
     this.messageDispatcher = new MessageDispatcher();
     this.onFinishEvent = 'onFinishEvent';
 
-
     this._scene = scene;
     this._camera = camera;
     this._renderer = renderer;
@@ -85,26 +84,30 @@ export default class Game {
     }
   }
   _ctaController() {
-    this.clicked++;
+    if (this.clicked == 0) this.clicked++;
+
     if (this.clicked === 1) {
       this._layout2d._cta1.hide();
       this._layout2d._targetlight.hide();
       this._layout3d.animationController("start", () => {
         this.zoom();
-        this.isGameplay = true;
-        this._state = STATES.GAMEPLAY;
         this._layout2d._cta2.show();
         this._layout2d._progressbar.show();
+        this.clicked++;
       });
-    }
 
-    if (this.clicked > 1) {
+    } else if (this.clicked > 1 && this.isGameplay == false) {
+      this.isGameplay = true;
+      this._state = STATES.GAMEPLAY;
       this._layout2d._cta2.hide();
       this._layout3d.animationController("gameplay", () => {
         this._layout2d.showHint();
+        this.clicked++;
       });
     }
   }
+
+
 
   zoom() {
     if (!this.isGameplay) {
@@ -143,7 +146,6 @@ export default class Game {
   onMove(x, y) {
     if (this._state !== STATES.GAMEPLAY)
       return;
-
     this._layout2d.onMove(x, y);
     this._layout3d.onMove(x, y);
   }

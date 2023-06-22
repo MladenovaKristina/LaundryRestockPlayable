@@ -4,6 +4,7 @@ import Environment from "./environment";
 import MoveController from "./move-controller.js";
 import Menu from "./menu";
 import Fill from "./fill";
+import { MessageDispatcher } from "../../../utils/black-engine.module";
 import { Group } from "three";
 
 export default class Layout3D extends Group {
@@ -20,10 +21,8 @@ export default class Layout3D extends Group {
     }
 
     _init() {
-        console.log("initializing 3d")
         this._initEmptyContainer();
         this._initMoveController();
-
         this._initDetergentBottle();
         this._initEnvironment();
         this._initMenu();
@@ -66,8 +65,7 @@ export default class Layout3D extends Group {
         if (state === "start") {
             await this._emptyContainer.removeCap();
             await this._detergentBottle.removeDetergentCap();
-            this._detergentBottle.adjustDetergentPosition();
-
+            this._detergentBottle.idleAnimateDetergent();
             if (callback && typeof callback === "function") {
                 callback();
             }
