@@ -16,22 +16,31 @@ export default class DetergentBottle extends Group {
         this.liquid = null;
         this.tideBottleCap = null;
 
-        this.detergentTweenPosition = null;
-        this.detergentTweenRotation = null;
+        this.canIdle = false;
+
+        this.detergentTweenRotation = null; // Store the rotation tween
+        this.detergentTweenPosition = null; // Store the position tween
 
         this._init();
     }
 
     _init() {
         this.asset.traverse((child) => {
-            if (child.name === "Tide") {
-                this.detergentBottle = child;
-            } else if (child.name === "Liquid") {
-                this.liquid = child;
-            } else if (child.name === "Liquid_base") {
-                this.liquidBase = child;
-            } else if (child.name === "Cap") {
-                this.tideBottleCap = child;
+            switch (child.name) {
+                case "Tide":
+                    this.detergentBottle = child;
+                    break;
+                case "Liquid":
+                    this.liquid = child;
+                    break;
+                case "Liquid_base":
+                    this.liquidBase = child;
+                    break;
+                case "Cap":
+                    this.tideBottleCap = child;
+                    break;
+                default:
+                    break;
             }
         });
 
@@ -46,53 +55,56 @@ export default class DetergentBottle extends Group {
         this.add(this.detergentBottle);
 
         this.detergentBottle.traverse((child) => {
-            child.frustumCulled = false;
-
             if (child.type === "Mesh" || child.type === "SkinnedMesh") {
-                if (child.name === "Mesh006") {
-                    child.material = new MeshStandardMaterial({
-                        color: 0xffffff,
-                        emissive: 0x000000,
-                        roughness: 1,
-                        metalness: 0.1,
-                        side: DoubleSide,
-                        map: THREE.Cache.get("detergent_poster"),
-                    });
-                    child.castShadow = true;
-                } else if (child.name === "Mesh006_1") {
-                    child.material = new MeshStandardMaterial({
-                        color: 0xF59646,
-                        emissive: 0x000000,
-                        roughness: 1,
-                        metalness: 0.1,
-                        side: DoubleSide,
-                    });
-                    child.castShadow = true;
-                } else if (
-                    child.name === "Cap" ||
-                    child.name === "Liquid" ||
-                    child.name === "Liquid_base"
-                ) {
-                    child.material = new MeshStandardMaterial({
-                        color: 0x0000ff,
-                        roughness: 0,
-                        transparent: true,
-                        opacity: 0.5,
-                        side: DoubleSide,
-                    });
-
-                    if (child.name === "Liquid" || child.name === "Liquid_base") {
-                        child.visible = false;
-                    }
-                    child.castShadow = true;
+                child.frustumCulled = false;
+                switch (child.name) {
+                    case "Mesh006":
+                        child.material = new MeshStandardMaterial({
+                            color: 0xffffff,
+                            emissive: 0x000000,
+                            roughness: 1,
+                            metalness: 0.1,
+                            side: DoubleSide,
+                            map: THREE.Cache.get("detergent_poster"),
+                        });
+                        child.castShadow = true;
+                        break;
+                    case "Mesh006_1":
+                        child.material = new MeshStandardMaterial({
+                            color: 0xF59646,
+                            emissive: 0x000000,
+                            roughness: 1,
+                            metalness: 0.1,
+                            side: DoubleSide,
+                        });
+                        child.castShadow = true;
+                        break;
+                    case "Cap":
+                    case "Liquid":
+                    case "Liquid_base":
+                        child.material = new MeshStandardMaterial({
+                            color: 0x0000ff,
+                            roughness: 0,
+                            transparent: true,
+                            opacity: 0.5,
+                            side: DoubleSide,
+                        });
+                        if (child.name === "Liquid" || child.name === "Liquid_base") {
+                            child.visible = false;
+                        }
+                        child.castShadow = true;
+                        break;
+                    default:
+                        break;
                 }
             }
         });
     }
 
-    adjustDetergentPosition() {
+    adjustDetergentPosition(callback) {
         const targetZ = -0.001;
         const targetY = 1.8;
+        this.canIdle = true;
 
         new TWEEN.Tween(this.detergentBottle.position)
             .to({ y: targetY, z: targetZ }, 2000)
@@ -102,126 +114,91 @@ export default class DetergentBottle extends Group {
                     targetY,
                     targetZ
                 );
-                this.idleAnimateDetergent();
+                callback();
             })
             .easing(TWEEN.Easing.Quadratic.Out)
             .start();
     }
 
-    removeDetergentCap() {
-        return new Promise((resolve) => {
-            const removeCap = new TWEEN.Tween(this.tideBottleCap.rotation)
-                .to({ y: -Math.PI / 2 }, 1000)
-                .delay(1000)
-                .easing(TWEEN.Easing.Quadratic.Out)
-                .onComplete(() => {
-                    this.tideBottleCap.visible = false;
-                    resolve();
-                })
-                .start();
+    removeDetergentCap(callback) {
+        const targetY = -Math.PI;
+        new TWEEN.Tween(this.tideBottleCap.rotation)
+            .to({ y: targetY / 2 }, 1000)
+            .delay(1000)
+            .easing(TWEEN.Easing.Quadratic.Out)
+            .onComplete(() => {
+                this.tideBottleCap.visible = false;
+                callback();
+            })
+            .start();
 
-            const removeCapTween = () => {
-                requestAnimationFrame(removeCapTween);
-                TWEEN.update();
-            };
+        const removeCapTween = () => {
+            requestAnimationFrame(removeCapTween);
+            TWEEN.update();
+        };
 
-            removeCapTween();
-        });
+        removeCapTween();
+    }
+
+    animateDetergent(property, target, onUpdate) {
+        return new TWEEN.Tween(property)
+            .to(target, this.duration * 1.2)
+            .easing(TWEEN.Easing.Sinusoidal.InOut)
+            .onUpdate(onUpdate)
+            .repeat(Infinity)
+            .yoyo(true)
+            .start();
     }
 
     idleAnimateDetergent() {
-        this.detergentTweenRotation = new TWEEN.Tween(
-            this.detergentBottle.rotation
-        )
-            .to(
-                {
-                    x: this.detergentBottle.rotation.x - this.amplitude,
-                    y: this.detergentBottle.rotation.y + this.amplitude,
-                },
-                this.duration * 1.2
-            )
-            .easing(TWEEN.Easing.Sinusoidal.InOut)
-            .onUpdate(() => {
-                const time = performance.now() / 1000;
-                const angle = Math.sin(time * this.frequency) * this.amplitude;
-                this.detergentBottle.rotation.x =
-                    this.detergentBottle.rotation.x - angle;
-            })
-            .repeat(Infinity)
-            .yoyo(true)
-            .start();
+        if (this.canIdle) {
 
-        this.detergentTweenPosition = new TWEEN.Tween(
-            this.detergentBottle.position
-        )
-            .to(
-                {
-                    x: this.detergentBottle.position.x - this.amplitude,
-                    y: this.detergentBottle.position.y - this.amplitude,
-                },
-                this.duration
-            )
-            .easing(TWEEN.Easing.Sinusoidal.InOut)
-            .onUpdate(() => {
-                const time = performance.now() / 1000;
-                const angle = Math.sin(time * this.frequency) * this.amplitude;
-                this.detergentBottle.position.x =
-                    this.detergentBottle.position.x - angle;
-            })
-            .repeat(Infinity)
-            .yoyo(true)
-            .start();
+            console.log("idle");
+
+            // Start the animation loop
+
+        }
     }
 
-    stopIdleAnimation() {
-        if (this.detergentTweenPosition) {
-            this.detergentTweenPosition.stop();
-            this.detergentTweenPosition = null;
-        }
-        if (this.detergentTweenRotation) {
-            this.detergentTweenRotation.stop();
-            this.detergentTweenRotation = null;
-        }
+    stopIdleAnimation(callback) {
+        this.canIdle = false;
+        // 
+        //         if (this.detergentTweenRotation) {
+        //             this.detergentTweenRotation.stop();
+        //             this.detergentTweenRotation = null;
+        //         }
+        // 
+        //         if (this.detergentTweenPosition) {
+        //             this.detergentTweenPosition.stop();
+        //             this.detergentTweenPosition = null;
+        //         }
+    }
+
+    animateProperty(property, target, duration, easing = TWEEN.Easing.Sinusoidal.InOut) {
+        return new TWEEN.Tween(property).to(target, duration).easing(easing).start();
     }
 
     rotateDown() {
         const duration = 1000;
 
-        new TWEEN.Tween(this.detergentBottle.rotation)
-            .to({ y: Math.PI / 2 }, duration)
-            .easing(TWEEN.Easing.Sinusoidal.InOut)
-            .onUpdate(() => {
-                // this.detergentBottle.rotation.x = this.detergentBottle.rotation.x;
-            })
-            .start();
+        this.animateProperty(this.detergentBottle.rotation, { y: Math.PI / 2 }, duration);
 
         this.liquid.visible = true;
         this.liquidBase.visible = true;
 
         const targetScaleX = 1;
 
-        new TWEEN.Tween(this.liquid.scale)
-            .to({ x: targetScaleX - 0.1, y: targetScaleX }, duration * 0.2)
-            .easing(TWEEN.Easing.Quadratic.Out)
+        this.animateProperty(this.liquid.scale, { x: targetScaleX - 0.1, y: targetScaleX }, duration * 0.2)
             .delay(duration * 0.8)
             .start();
     }
 
     rotateUp() {
         const duration = 1000;
-        this.detergentBottle.rotation.x = Math.PI / 2;
 
-        new TWEEN.Tween(this.detergentBottle.rotation)
-            .to({ y: 0 }, duration)
-            .easing(TWEEN.Easing.Sinusoidal.InOut)
-            .onUpdate(() => {
-                // this.detergentBottle.rotation.x = this.detergentBottle.rotation.x;
-            })
-            .start();
+        this.animateProperty(this.detergentBottle.rotation, { y: 0 }, duration);
 
-        new TWEEN.Tween(this.liquid.scale)
-            .to({ x: 0, y: 0 }, duration * 0.2)
-            .easing(TWEEN.Easing.Quadratic.Out)
+        this.animateProperty(this.liquid.scale, { x: 0, y: 0 }, duration * 0.2)
             .onComplete(() => {
                 this.liquid.visible = false;
                 this.liquidBase.visible = false;

@@ -1,76 +1,85 @@
 import * as THREE from "three";
-import { MessageDispatcher } from "../../../utils/black-engine.module";
+
 export default class MoveController extends THREE.Object3D {
     constructor() {
         super();
-        this.playerX = 0;
-        this.playerY = 0;
-        this.detergent = null;
-        this.fill = null;
-        this.playFill = 0;
+        this._playFill = 0;
 
-        this.screenWidth = window.innerWidth;
+        this._screenWidth = window.innerWidth;
         this._canMove = false;
+        this._isDown = false;
+
+        this._playerX = null;
+        this._playerY = null;
+        this._detergent = null;
+        this._fill = null;
+        this._playFill = 0;
     }
+
     start() {
-        this.detergent.stopIdleAnimation();
         this._canMove = true;
     }
+
     setBottleView(obj) {
-        this.detergent = obj;
+        this._detergent = obj;
     }
+
     setFillView(obj) {
-        this.fill = obj;
+        this._fill = obj;
     }
 
     onMove(x, y) {
         if (this._canMove) {
-            this.getMousePosition(x, y, this.detergent);
-            this.moveDetergent(this.detergent);
+            this._getMousePosition(x, y, this._detergent);
         }
     }
 
     onDown() {
         if (this._canMove) {
-            this.detergent.rotateDown();
+            this._detergent.rotateDown();
         }
-        this.isDown = true;
+        this._isDown = true;
     }
 
     onUp() {
-        if (this._canMove) this.detergent.rotateUp();
-        this.isDown = false;
+        if (this._canMove) {
+            this._detergent.rotateUp();
+        }
+        this._isDown = false;
     }
 
-    getMousePosition(x, y, detergent) {
-        const normalizedX = (x / this.screenWidth) * 400 - 200;
-        this.playerX = normalizedX;
-        this.playerY = y;
+    _getMousePosition(x, y, detergent) {
 
+        const normalizedX = (x / this._screenWidth) * 400 - 200;
+        this._playerX = normalizedX;
+        this._playerY = y;
+        console.log(this._playerX, this._playerY)
+        this._moveDetergent(detergent);
     }
 
-    moveDetergent(detergent) {
+    _moveDetergent(detergent) {
+
         const speed = -0.01;
         const maxDistance = 500;
 
-        const clampPlayerX = Math.max(-maxDistance, Math.min(maxDistance, this.playerX));
+        const clampPlayerX = Math.max(-maxDistance, Math.min(maxDistance, this._playerX));
         detergent.position.x = -clampPlayerX * speed;
 
-        if (detergent.position.x > 0.13 && detergent.position.x <= 0.3 && this.isDown) {
+        if (detergent.position.x > 0.13 && detergent.position.x <= 0.3 && this._isDown) {
             this.collision();
-        } else { this.fill.stop(); }
-    }
-
-    collision() {
-        if (this.playFill === 0) {
-            this.playFill++;
-            this.fill.show();
         } else {
-            if (!this.fill.fillTween || !this.fill.fillTween.isPlaying()) {
-                this.fill.resume();
-            }
+            this._fill.stop();
         }
     }
 
-
+    collision() {
+        if (this._playFill === 0) {
+            this._playFill++;
+            this._fill.show();
+        } else {
+            if (this._fill.fillTween && !this._fill.fillTween.isPlaying()) {
+                this._fill.resume();
+            }
+        }
+    }
 }

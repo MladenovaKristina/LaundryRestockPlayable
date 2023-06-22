@@ -61,7 +61,6 @@ export default class Game {
   }
 
   start() {
-    this._layout2d.showCTA1();
     this._startTime = Date.now();
 
     if (ConfigurableParams.isXTime()) {
@@ -70,6 +69,9 @@ export default class Game {
       }, 1000);
     }
   }
+  changeState() {
+    this._state = STATES.GAMEPLAY;
+  };
 
   _countTime() {
     if (this._isStore) return;
@@ -81,29 +83,6 @@ export default class Game {
         this._storeOnDown = true;
 
       console.log('time');
-    }
-  }
-  _ctaController() {
-    if (this.clicked == 0) this.clicked++;
-
-    if (this.clicked === 1) {
-      this._layout2d._cta1.hide();
-      this._layout2d._targetlight.hide();
-      this._layout3d.animationController("start", () => {
-        this.zoom();
-        this._layout2d._cta2.show();
-        this._layout2d._progressbar.show();
-        this.clicked++;
-      });
-
-    } else if (this.clicked > 1 && this.isGameplay == false) {
-      this.isGameplay = true;
-      this._state = STATES.GAMEPLAY;
-      this._layout2d._cta2.hide();
-      this._layout3d.animationController("gameplay", () => {
-        this._layout2d.showHint();
-        this.clicked++;
-      });
     }
   }
 
@@ -126,8 +105,7 @@ export default class Game {
 
 
   onDown(x, y) {
-    this._ctaController();
-    this._layout2d.onDown(x, y);
+    this._layout2d.onDown(x, y)
     this._layout3d.onDown(x, y);
 
     const downloadBtnClicked = this._layout2d.onDown(x, y);
@@ -144,8 +122,8 @@ export default class Game {
   }
 
   onMove(x, y) {
-    if (this._state !== STATES.GAMEPLAY)
-      return;
+    // if (this._state !== STATES.GAMEPLAY)
+    //   return;
     this._layout2d.onMove(x, y);
     this._layout3d.onMove(x, y);
   }

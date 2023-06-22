@@ -18,7 +18,7 @@ import ProgressBar from './progressbar';
 import TargetLight from './targetlight';
 
 export default class Layout2D extends DisplayObject {
-  constructor() {
+  constructor(state) {
     super();
     this.onPlayBtnClickEvent = 'onPlayBtnClickEvent';
     this.onActionClickEvent = 'onActionClickEvent';
@@ -28,7 +28,9 @@ export default class Layout2D extends DisplayObject {
     this._logoGoogle = null;
     this._endScreen = null;
     this._click = 0;
+
     this._isStaticStoreMode = false;
+    this.gameplay = false;
   }
 
   onAdded() {
@@ -59,6 +61,7 @@ export default class Layout2D extends DisplayObject {
     this._createDownloadBtn();
 
     this.onResize();
+    this.showCTA1();
     Black.stage.on('resize', this.onResize, this);
   }
 
@@ -141,6 +144,11 @@ export default class Layout2D extends DisplayObject {
   }
   showCTA1() {
     this._cta1.show();
+    this._targetlight.show();
+  }
+
+  showCTA2() {
+    this._cta2.show();
   }
 
   update2dPos(position) {
@@ -148,16 +156,12 @@ export default class Layout2D extends DisplayObject {
     this._cta1.setPosition(position);
   }
 
-  showCTA2() {
-    this._cta2.show();
-  }
-
   progressBar(percent) {
     this._progressbar.fill(percent);
   }
 
-  onDown(x, y) {
-    this.countClicks();
+  onDown(x, y, callback) {
+    this.countClicks(() => { callback(); });
     const defaultPos = { x: x, y: y };
     const blackPos = Black.stage.worldTransformationInverted.transformVector(defaultPos);
 
@@ -166,8 +170,21 @@ export default class Layout2D extends DisplayObject {
 
     this._endScreen.onDown(blackPos.x, blackPos.y);
   }
-  countClicks(clicks) {
+
+  countClicks(callback) {
     this._click++;
+
+    if (this._click >= 1 && this.gameplay == false) {
+      this._cta1.hide();
+      this._targetlight.hide();
+      setTimeout(() => { this.showCTA2() }, 500);
+      setTimeout(() => { this.gameplay = true; }, 1000)
+    }
+    if (this._click >= 2 && this.gameplay == true) {
+      this._cta2.hide();
+      this.showHint();
+      callback();
+    } else return;
   }
 
   onMove(x, y) {
