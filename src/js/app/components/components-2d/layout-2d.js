@@ -18,7 +18,7 @@ import ProgressBar from './progressbar';
 import TargetLight from './targetlight';
 
 export default class Layout2D extends DisplayObject {
-  constructor(state) {
+  constructor() {
     super();
     this.onPlayBtnClickEvent = 'onPlayBtnClickEvent';
     this.onActionClickEvent = 'onActionClickEvent';
@@ -61,7 +61,6 @@ export default class Layout2D extends DisplayObject {
     this._createDownloadBtn();
 
     this.onResize();
-    this.showCTA1();
     Black.stage.on('resize', this.onResize, this);
   }
 
@@ -83,11 +82,13 @@ export default class Layout2D extends DisplayObject {
     this._cta2.x = Black.stage.centerX;
     this._cta2.y = bb.top + (bb.height / 2) * 1.8;
 
-    this._targetlight.x = Black.stage.centerX;
-    this._targetlight.y = Black.stage.centerY;
+    this._targetlight.x = bb.left;
+    this._targetlight.y = bb.top;
+    this._targetlight.onResize();
 
     this._cta1.x = Black.stage.centerX;
-    this._cta1.y = bb.top + this._topText.height * 2 + this._cta1._text.size;
+    this._cta1.y = bb.top + this._topText.height * 2;
+
 
     this._endScreen.onResize(bb);
 
@@ -151,8 +152,8 @@ export default class Layout2D extends DisplayObject {
     this._cta2.show();
   }
 
-  update2dPos(position) {
-    this._targetlight.setTargetlightPosition(position);
+  update2dPos(position, height) {
+    this._targetlight.setTargetlightPosition(position, height);
     this._cta1.setPosition(position);
   }
 
@@ -161,6 +162,7 @@ export default class Layout2D extends DisplayObject {
   }
 
   onDown(x, y) {
+    // this.countClicks();
     const defaultPos = { x: x, y: y };
     const blackPos = Black.stage.worldTransformationInverted.transformVector(defaultPos);
 
@@ -170,20 +172,21 @@ export default class Layout2D extends DisplayObject {
     this._endScreen.onDown(blackPos.x, blackPos.y);
   }
 
-  countClicks() {
-    this._click++;
-
-    if (this._click >= 1 && this.gameplay == false) {
-      this._cta1.hide();
-      this._targetlight.hide();
-      setTimeout(() => { this.showCTA2() }, 500);
-      setTimeout(() => { this.gameplay = true; }, 1000)
-    }
-    if (this._click >= 2 && this.gameplay == true) {
-      this._cta2.hide();
-      this.showHint();
-    } else return;
-  }
+  //   countClicks() {
+  //     this._click++;
+  // 
+  //     if (this._click >= 1 && this.gameplay == false) {
+  //       this._cta1.hide();
+  //       this._targetlight.hide();
+  //       setTimeout(() => { this.showCTA2() }, 500);
+  //       setTimeout(() => { this.gameplay = true; }, 1000)
+  //     }
+  //     if (this._click >= 2 && this.gameplay == true) {
+  //       setTimeout(() => { this._cta2.hide(); }, 500);
+  // 
+  //       setTimeout(() => { this.showHint(); }, 1000);
+  //     } else return;
+  //   }
 
   onMove(x, y) {
     const defaultPos = { x: x, y: y };

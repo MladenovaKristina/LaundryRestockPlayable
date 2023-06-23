@@ -1,4 +1,4 @@
-import { Black, Graphics, DisplayObject, Tween, Ease } from '../../../utils/black-engine.module';
+import { Black, Graphics, DisplayObject, Tween, Ease, Vector } from '../../../utils/black-engine.module';
 import Helpers from '../../helpers/helpers';
 import ConfigurableParams from '../../../data/configurable_params';
 
@@ -6,7 +6,8 @@ export default class TargetLight extends DisplayObject {
     constructor() {
         super();
 
-        this.visible = true;
+        this._lastPosition = new Vector(0, 0);
+        this.visible = false;
         this._initView();
         this.onResize();
     }
@@ -26,8 +27,7 @@ export default class TargetLight extends DisplayObject {
         this.addChild(this._bg);
 
         this._hole = new Graphics();
-        this._radius = 150;
-
+        this._hole.alignAnchor(0.5, 0.5);
         this.addChild(this._hole);
     }
 
@@ -42,28 +42,40 @@ export default class TargetLight extends DisplayObject {
 
         this._bg.clear();
         this._bg.beginPath();
+        this._bg.alignAnchor(0, 0);
         this._bg.fillStyle(0x000000, 0.6);
         this._bg.rect(0, 0, bgWidth, bgHeight);
         this._bg.fill();
     }
 
-    setTargetlightPosition(position) {
-        let holeX = position.x + this._radius / 4;
-        let holeY = position.y + this._radius / 8;
+    setTargetlightPosition(position, holeSize) {
+        const bb = Black.stage.bounds;
+
+        const diameter = holeSize * bb.width / 2;
+        const holeX = position.x - diameter / 2;
+        const holeY = position.y;
+
+        const centerX = bb.width / 2;
+        const centerY = bb.height / 2;
+
+        const normalizedX = centerX + holeX / 2;
+        const normalizedY = centerY + holeY / 2;
 
         this._hole.clear();
         this._hole.beginPath();
-        this._hole.alignAnchor(0.5, 0.5);
         this._hole.fillStyle(0x000000, 1);
-        this._hole.circle(holeX, holeY, this._radius);
+        this._hole.circle(normalizedX, normalizedY, diameter);
         this._hole.cut();
     }
+
+
+
 
     show() {
         this.visible = true;
     }
 
-    hide() {
+    hide(callback) {
         const hideTween = new Tween({
             alpha: [1, 0]
         }, 0.2);
@@ -72,6 +84,7 @@ export default class TargetLight extends DisplayObject {
 
         hideTween.on('complete', () => {
             this.visible = false;
+            callback();
         });
     }
 }

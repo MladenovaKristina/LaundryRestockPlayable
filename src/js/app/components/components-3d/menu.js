@@ -123,7 +123,6 @@ export default class Menu extends Group {
 
         view.traverse(child => {
             child.frustumCulled = false;
-            // console.log(child.name); // TO SEE ALL CHILDREN'S names in element
 
             if (child.type === "Mesh" || child.type === "SkinnedMesh") {
                 const properties = childProperties[child.name];

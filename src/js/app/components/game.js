@@ -8,6 +8,7 @@ import Layout3D from "./components-3d/layout-3d";
 import CameraController from "./components-3d/camera-controller";
 import SoundsController from "./kernel/soundscontroller";
 import ConfigurableParams from "../../data/configurable_params";
+import SceneController from "./components-3d/scene-controller";
 
 const STATES = {
   INTRO: 0, // if we want to make some action before the player interaction
@@ -43,6 +44,7 @@ export default class Game {
   _init() {
     this._initUI();
     this._init3D();
+    this._initSceneController();
     this._cameraController = new CameraController(this._camera.threeCamera);
   }
 
@@ -58,6 +60,20 @@ export default class Game {
 
   _init3D() {
     this._layout3d = new Layout3D(this._camera, this._cameraController, this._scene, this._renderer);
+    this.updateCTAPosition();
+  }
+  _initSceneController() {
+    this._sceneController = new SceneController(this._layout2d, this._layout3d, this._camera.threeCamera);
+  }
+
+  updateCTAPosition() {
+    const detergent = new THREE.Vector3(this._layout3d._detergentBottle.detergentBottle.position.x, this._layout3d._detergentBottle.detergentBottle.position.y, this._layout3d._detergentBottle.detergentBottle.position.z);
+    const position = Helpers.vector3ToBlackPosition(detergent, this._renderer.threeRenderer, this._camera.threeCamera);
+    const boundingBox = new THREE.Box3().setFromObject(this._layout3d._detergentBottle);
+    const size = new THREE.Vector3();
+    boundingBox.getSize(size);
+    const height = size.y;
+    this._layout2d.update2dPos(position, height);
   }
 
   start() {
@@ -86,27 +102,10 @@ export default class Game {
     }
   }
 
-
-
-  zoom() {
-    if (!this.isGameplay) {
-      const targetFov = this._camera.threeCamera.fov - 15;
-      const targetPositionY = this._camera.threeCamera.position.y + 4;
-      const duration = 1000;
-
-      new TWEEN.Tween(this._camera.threeCamera)
-        .to({ fov: targetFov, positionY: targetPositionY }, duration)
-        .easing(TWEEN.Easing.Quadratic.Out)
-        .onUpdate(() => this._camera.threeCamera.updateProjectionMatrix())
-        .delay(2000)
-        .start();
-    }
-  }
-
-
   onDown(x, y) {
     this._layout2d.onDown(x, y);
     this._layout3d.onDown(x, y);
+    this._sceneController.onDown();
 
     const downloadBtnClicked = this._layout2d.onDown(x, y);
     if (downloadBtnClicked)
@@ -195,5 +194,6 @@ export default class Game {
 
   onResize() {
     this._cameraController.onResize();
+    this.updateCTAPosition();
   }
 }

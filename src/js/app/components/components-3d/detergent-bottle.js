@@ -1,6 +1,7 @@
 import * as TWEEN from "@tweenjs/tween.js";
+import { Cylinder } from "cannon";
 import * as THREE from "three";
-import { Group, MeshStandardMaterial, DoubleSide } from "three";
+import { Group, MeshStandardMaterial } from "three";
 
 export default class DetergentBottle extends Group {
     constructor(scene) {
@@ -8,6 +9,12 @@ export default class DetergentBottle extends Group {
         this.amplitude = 0.1;
         this.frequency = 1;
         this.duration = 1000;
+
+
+        this.height = 0;
+        this.top = 0.009;
+        this.bottom = 0.02;
+
 
         this._scene = scene;
         this.asset = THREE.Cache.get("assets").scene;
@@ -18,8 +25,8 @@ export default class DetergentBottle extends Group {
 
         this.canIdle = false;
 
-        this.detergentTweenRotation = null; // Store the rotation tween
-        this.detergentTweenPosition = null; // Store the position tween
+        this.detergentTweenRotation = null;
+        this.detergentTweenPosition = null;
 
         this._init();
     }
@@ -43,15 +50,13 @@ export default class DetergentBottle extends Group {
                     break;
             }
         });
+        this.tideBottleCap.visible = true;
 
+        this.liquid.scale.set(0, 0, 1);
         this.detergentBottle.rotation.x = Math.PI / 2;
         this.detergentBottle.position.z = 0.75;
         this.detergentBottle.position.x = 0.4;
-        this.tideBottleCap.visible = true;
-
         this.detergentBottle.scale.set(0.013, 0.013, 0.013);
-        this.liquid.scale.set(0, 0, 1);
-
         this.add(this.detergentBottle);
 
         this.detergentBottle.traverse((child) => {
@@ -64,7 +69,6 @@ export default class DetergentBottle extends Group {
                             emissive: 0x000000,
                             roughness: 1,
                             metalness: 0.1,
-                            side: DoubleSide,
                             map: THREE.Cache.get("detergent_poster"),
                         });
                         child.castShadow = true;
@@ -75,7 +79,6 @@ export default class DetergentBottle extends Group {
                             emissive: 0x000000,
                             roughness: 1,
                             metalness: 0.1,
-                            side: DoubleSide,
                         });
                         child.castShadow = true;
                         break;
@@ -87,7 +90,6 @@ export default class DetergentBottle extends Group {
                             roughness: 0,
                             transparent: true,
                             opacity: 0.5,
-                            side: DoubleSide,
                         });
                         if (child.name === "Liquid" || child.name === "Liquid_base") {
                             child.visible = false;
@@ -99,15 +101,25 @@ export default class DetergentBottle extends Group {
                 }
             }
         });
+
+
+        const geometry = new THREE.CylinderGeometry(this.top, this.bottom, this.height, 32);
+        const material = new THREE.MeshBasicMaterial({ color: 0x0000ff });
+
+        this.cylinder = new THREE.Mesh(geometry, material);
+        this.cylinder.visible = false;
+        this.add(this.cylinder);
     }
 
-    adjustDetergentPosition(callback) {
-        const targetZ = -0.001;
-        const targetY = 1.8;
+    raise(z, callback) {
+        const targetZ = z; console.log(targetZ)
+
+        const targetY = 1.6;
+        const duration = 2000;
         this.canIdle = true;
 
         new TWEEN.Tween(this.detergentBottle.position)
-            .to({ y: targetY, z: targetZ }, 2000)
+            .to({ y: targetY, z: targetZ }, duration)
             .onComplete(() => {
                 this.detergentBottle.position.set(
                     this.detergentBottle.position.x,
@@ -118,6 +130,82 @@ export default class DetergentBottle extends Group {
             })
             .easing(TWEEN.Easing.Quadratic.Out)
             .start();
+
+        new TWEEN.Tween(this.detergentBottle.rotation)
+            .to(
+                {
+                    x: this.detergentBottle.rotation.x - (this.amplitude * 2),
+                    y: this.detergentBottle.rotation.y + (this.amplitude * 2),
+                },
+                this.duration * 1.2
+            )
+            .easing(TWEEN.Easing.Sinusoidal.InOut)
+            .onUpdate(() => {
+                const time = performance.now() / 1000;
+                const angle = Math.sin(time * this.frequency * 2) * (this.amplitude * 2);
+                this.detergentBottle.rotation.x = this.detergentBottle.rotation.x - angle;
+            })
+            .yoyo()
+            .easing(TWEEN.Easing.Quadratic.Out)
+            .start();
+    }
+
+    idle() {
+        this.detergentTweenRotation = new TWEEN.Tween(this.detergentBottle.rotation)
+            .to(
+                {
+                    x: this.detergentBottle.rotation.x - this.amplitude,
+                    y: this.detergentBottle.rotation.y + this.amplitude,
+                },
+                this.duration * 1.2
+            )
+            .easing(TWEEN.Easing.Sinusoidal.InOut)
+            .onUpdate(() => {
+                const time = performance.now() / 1000;
+                const angle = Math.sin(time * this.frequency) * this.amplitude;
+                this.detergentBottle.rotation.x = this.detergentBottle.rotation.x - angle;
+            })
+            .repeat(Infinity)
+            .yoyo(true)
+            .start();
+
+        this.detergentTweenPosition = new TWEEN.Tween(this.detergentBottle.position)
+            .to(
+                {
+                    x: this.detergentBottle.position.x - this.amplitude,
+                    y: this.detergentBottle.position.y + this.amplitude,
+                },
+                this.duration * 1.2
+            )
+            .easing(TWEEN.Easing.Sinusoidal.InOut)
+            .onUpdate(() => {
+                const time = performance.now() / 1000;
+                const angle = Math.sin(time * this.frequency) * this.amplitude;
+                this.detergentBottle.position.x = this.detergentBottle.position.x - angle;
+            })
+            .repeat(Infinity)
+            .yoyo(true)
+            .start();
+
+        const animate = () => {
+            this.detergentTweenPosition.update();
+            this.detergentTweenRotation.update();
+
+            requestAnimationFrame(animate);
+        };
+
+        animate();
+    }
+
+    lerp(start, end, progress) {
+        return start + (end - start) * progress;
+    }
+
+    stopIdle(callback) {
+        this.detergentTweenPosition.end();
+        this.detergentTweenRotation.end();
+
+        callback();
     }
 
     removeDetergentCap(callback) {
@@ -140,71 +228,57 @@ export default class DetergentBottle extends Group {
         removeCapTween();
     }
 
-    animateDetergent(property, target, onUpdate) {
-        return new TWEEN.Tween(property)
-            .to(target, this.duration * 1.2)
-            .easing(TWEEN.Easing.Sinusoidal.InOut)
-            .onUpdate(onUpdate)
-            .repeat(Infinity)
-            .yoyo(true)
-            .start();
-    }
-
-    idleAnimateDetergent() {
-        if (this.canIdle) {
-
-            console.log("idle");
-
-            // Start the animation loop
-
-        }
-    }
-
-    stopIdleAnimation(callback) {
-        this.canIdle = false;
-        console.log("stop");
-
-        // 
-        //         if (this.detergentTweenRotation) {
-        //             this.detergentTweenRotation.stop();
-        //             this.detergentTweenRotation = null;
-        //         }
-        // 
-        //         if (this.detergentTweenPosition) {
-        //             this.detergentTweenPosition.stop();
-        //             this.detergentTweenPosition = null;
-        //         }
-    }
-
-    animateProperty(property, target, duration, easing = TWEEN.Easing.Sinusoidal.InOut) {
-        return new TWEEN.Tween(property).to(target, duration).easing(easing).start();
-    }
-
     rotateDown() {
+        this.detergentBottle.rotation.set(Math.PI / 2, 0, 0);
+        let currentTime = 0;
         const duration = 1000;
+        new TWEEN.Tween(this.detergentBottle.rotation)
+            .to({ y: Math.PI / 2, z: 0 }, duration)
+            .easing(TWEEN.Easing.Quadratic.In)
+            .onUpdate(() => {
+                const targetScaleX = 1;
+                const targetScaleY = 1;
 
-        this.animateProperty(this.detergentBottle.rotation, { y: Math.PI / 2 }, duration);
 
-        this.liquid.visible = true;
-        this.liquidBase.visible = true;
+                this.cylinder.visible = true;
+                this.liquidBase.visible = true;
 
-        const targetScaleX = 1;
+                new TWEEN.Tween(this.cylinder.scale)
+                    .to({ y: targetScaleY, x: targetScaleX, z: 1 }, duration)
+                    .easing(TWEEN.Easing.Quadratic.In)
+                    .onUpdate(() => {
+                        this.cylinder.position.x = this.detergentBottle.position.x - 0.5;
+                        this.cylinder.position.y = this.detergentBottle.position.y - 0.002;
 
-        this.animateProperty(this.liquid.scale, { x: targetScaleX - 0.1, y: targetScaleX }, duration * 0.2)
-            .delay(duration * 0.8)
+                        if (this.height <= 2) this.height += 0.01;
+
+                        this.cylinder.geometry = new THREE.CylinderGeometry(
+                            this.top,
+                            this.bottom,
+                            this.height,
+                            32
+                        );
+                        this.cylinder.geometry.translate(0, -this.height / 2, 0);
+
+                    })
+                    .start();
+
+            })
             .start();
+
+
+
     }
 
     rotateUp() {
-        const duration = 1000;
+        new TWEEN.Tween(this.detergentBottle.rotation)
+            .to({ y: 0 }, 1000)
+            .easing(TWEEN.Easing.Quadratic.In)
+            .start();
 
-        this.animateProperty(this.detergentBottle.rotation, { y: 0 }, duration);
-
-        this.animateProperty(this.liquid.scale, { x: 0, y: 0 }, duration * 0.2)
-            .onComplete(() => {
-                this.liquid.visible = false;
-                this.liquidBase.visible = false;
-            })
+        new TWEEN.Tween(this.cylinder.scale)
+            .to({ y: 0, x: 0, z: 0 }, 1000)
+            .easing(TWEEN.Easing.Quadratic.In)
             .start();
     }
 }

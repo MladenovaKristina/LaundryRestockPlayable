@@ -68,7 +68,7 @@ export default class CTA1 extends DisplayObject {
 
   setPosition(position) {
     this._hand.x = position.x;
-    this._hand.y = position.y + 350;
+    this._hand.y = position.y + this._hand.height;
   }
 }
 

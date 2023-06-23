@@ -14,7 +14,6 @@ export default class MoveController extends THREE.Object3D {
         this._detergent = null;
         this._fill = null;
         this._playFill = 0;
-        this.start();
     }
 
     start() {

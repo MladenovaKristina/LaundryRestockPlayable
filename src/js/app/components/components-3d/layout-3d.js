@@ -5,7 +5,7 @@ import MoveController from "./move-controller.js";
 import Menu from "./menu";
 import Fill from "./fill";
 import { MessageDispatcher } from "../../../utils/black-engine.module";
-import { Group } from "three";
+import { Group, Vector3 } from "three";
 
 export default class Layout3D extends Group {
     constructor(camera, cameraController, scene, renderer) {
@@ -73,33 +73,14 @@ export default class Layout3D extends Group {
     start() { }
 
     onDown(x, y) {
-        this.count3DClicks();
         this._moveController.onDown();
     }
 
-    count3DClicks() {
-        this._3dclick++;
-        if (this._3dclick == 0) this._gameplay = false;
-        if (this._3dclick > 0 && this._gameplay == false) {
-
-            this._emptyContainer.removeCap();
-            this._detergentBottle.removeDetergentCap(() => {
-                this._detergentBottle.adjustDetergentPosition(() => {
-                    this._detergentBottle.idleAnimateDetergent();
-                });
-
-            });
-
-        }
-    }
     onUp() {
         this._moveController.onUp();
-        this._detergentBottle.idleAnimateDetergent();
-
     }
 
     onMove(x, y) {
-        this._detergentBottle.stopIdleAnimation();
         this._moveController.onMove(x, y);
     }
 
