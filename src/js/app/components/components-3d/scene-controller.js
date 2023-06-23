@@ -16,7 +16,6 @@ export default class SceneController extends THREE.Object3D {
         this.sceneOne();
     }
     onDown() {
-        console.log("user interacts");
         this._interacions++;
 
         if (this._interacions == 1) this.sceneTwo();
@@ -38,7 +37,6 @@ export default class SceneController extends THREE.Object3D {
                     this._camera.updateProjectionMatrix();
                 })
                 .onComplete(() => {
-
                     callback();
                 })
                 .start();
@@ -73,15 +71,6 @@ export default class SceneController extends THREE.Object3D {
                 });
             });
         });
-    }
-
-    skiptorotate() {
-        this._layout3d._detergentBottle.raise(this._layout3d._emptyContainer.position.z, () => {
-            this.zoomtest(() => {
-                this._layout3d._moveController.start();
-
-            });
-        })
     }
 
     sceneThree() {
