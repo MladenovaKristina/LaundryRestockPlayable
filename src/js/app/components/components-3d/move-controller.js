@@ -4,7 +4,7 @@ export default class MoveController extends THREE.Object3D {
     constructor() {
         super();
         this._playFill = 0;
-
+        //this one controls detergent movement
         this._screenWidth = window.innerWidth;
         this._canMove = false;
         this._isDown = false;
@@ -63,7 +63,8 @@ export default class MoveController extends THREE.Object3D {
 
         const clampPlayerX = Math.max(-maxDistance, Math.min(maxDistance, this._playerX));
         detergent.position.x = -clampPlayerX * speed;
-
+        //need to implement swaying TWEEN
+        //need to implement detergent bounds so it doesnt leave the screen
         if (detergent.position.x > 0.1 && detergent.position.x <= 0.2 && this._isDown) {
             this.collision();
         } else {
@@ -80,6 +81,7 @@ export default class MoveController extends THREE.Object3D {
             if (this._fill.fillTween && !this._fill.fillTween.isPlaying()) {
                 this._fill.resume();
             }
+
         }
     }
 }

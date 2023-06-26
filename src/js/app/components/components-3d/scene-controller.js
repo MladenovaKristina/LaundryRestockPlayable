@@ -6,7 +6,7 @@ import * as TWEEN from "@tweenjs/tween.js";
 export default class SceneController extends THREE.Object3D {
     constructor(layout2d, layout3d, camera, renderer) {
         super();
-
+        // this one switches zoom / hints /ctas
         this._camera = camera;
         this._renderer = renderer;
         this._layout2d = layout2d;
