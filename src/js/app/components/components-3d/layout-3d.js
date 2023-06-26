@@ -22,6 +22,7 @@ export default class Layout3D extends Group {
         this._gameplay = false;
 
         this._init();
+        this.start();
     }
 
     _init() {
@@ -76,7 +77,8 @@ export default class Layout3D extends Group {
         this._moveController.setBottleView(obj);
     }
 
-    start() { }
+    start() {
+    }
 
     onDown(x, y) {
         this._moveController.onDown();

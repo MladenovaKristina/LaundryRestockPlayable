@@ -59,13 +59,14 @@ export default class EmptyContainer extends THREE.Object3D {
 
     removeCap() {
         const removeCap = new Tween(this.bottleCap.rotation)
-            .to({ y: Math.PI }, 2000)
-            .delay(500)
-            .easing(Easing.Quadratic.Out)
+            .to({ y: Math.PI / 2, x: -Math.PI, z: -4 }, 3000)
+            .delay(1800)
             .onComplete(() => {
                 this.bottleCap.visible = false;
             })
+            .easing(Easing.Quadratic.Out)
             .start();
+
 
         function remove() {
             requestAnimationFrame(remove);

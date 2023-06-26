@@ -8,11 +8,10 @@ export default class Environment extends THREE.Object3D {
   }
 
   _initView() {
-    const backgroundGeometry = new THREE.BoxGeometry(8, 5, 0.05);
+    const backgroundGeometry = new THREE.BoxGeometry(12, 5, 0.05);
     const backgroundMaterial = new THREE.MeshPhongMaterial({ map: THREE.Cache.get("bg_image") });
     const backgroundMesh = new THREE.Mesh(backgroundGeometry, backgroundMaterial);
     backgroundMesh.position.set(0, -3, -3);
-    backgroundMesh.rotateOnAxis.x = 180;
 
     this.add(backgroundMesh);
 

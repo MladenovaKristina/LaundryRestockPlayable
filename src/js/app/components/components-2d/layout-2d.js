@@ -79,15 +79,16 @@ export default class Layout2D extends DisplayObject {
     this._tutorial.x = Black.stage.centerX;
     this._tutorial.y = Black.stage.centerY + bb.height * 0.18;
 
-    this._cta2.x = Black.stage.centerX;
-    this._cta2.y = bb.top + (bb.height / 2) * 1.8;
-
     this._targetlight.x = bb.left;
     this._targetlight.y = bb.top;
     this._targetlight.onResize();
 
     this._cta1.x = Black.stage.centerX;
     this._cta1.y = bb.top + this._topText.height * 2;
+
+    this._cta2.x = Black.stage.centerX;
+    this._cta2.y = bb.top;
+    this._cta2._text.y = bb.height / 2 + 100;
 
 
     this._endScreen.onResize(bb);
@@ -155,6 +156,7 @@ export default class Layout2D extends DisplayObject {
   update2dPos(position, height) {
     this._targetlight.setTargetlightPosition(position, height);
     this._cta1.setPosition(position);
+    this._cta2.setPosition(position);
   }
 
   progressBar(percent) {

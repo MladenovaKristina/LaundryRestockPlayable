@@ -58,7 +58,6 @@ export default class MoveController extends THREE.Object3D {
     }
 
     _moveDetergent(detergent) {
-
         const speed = -0.01;
         const maxDistance = 500;
 

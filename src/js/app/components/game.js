@@ -60,7 +60,6 @@ export default class Game {
 
   _init3D() {
     this._layout3d = new Layout3D(this._camera, this._cameraController, this._scene, this._renderer);
-    this.updateCTAPosition();
 
     this.messageDispatcher.on(this._layout3d.onFinishEvent, (msg) => {
       this.onFinishEvent = 'onFinishEvent';
@@ -69,17 +68,7 @@ export default class Game {
   }
 
   _initSceneController() {
-    this._sceneController = new SceneController(this._layout2d, this._layout3d, this._camera.threeCamera);
-  }
-
-  updateCTAPosition() {
-    const detergent = new THREE.Vector3(this._layout3d._detergentBottle.detergentBottle.position.x, this._layout3d._detergentBottle.detergentBottle.position.y, this._layout3d._detergentBottle.detergentBottle.position.z);
-    const position = Helpers.vector3ToBlackPosition(detergent, this._renderer.threeRenderer, this._camera.threeCamera);
-    const boundingBox = new THREE.Box3().setFromObject(this._layout3d._detergentBottle);
-    const size = new THREE.Vector3();
-    boundingBox.getSize(size);
-    const height = size.y;
-    this._layout2d.update2dPos(position, height);
+    this._sceneController = new SceneController(this._layout2d, this._layout3d, this._camera.threeCamera, this._renderer);
   }
 
   start() {
@@ -129,6 +118,8 @@ export default class Game {
   onMove(x, y) {
     this._layout2d.onMove(x, y);
     this._layout3d.onMove(x, y);
+    this._sceneController.onMove();
+
   }
 
   onUp() {
@@ -191,6 +182,6 @@ export default class Game {
 
   onResize() {
     this._cameraController.onResize();
-    this.updateCTAPosition();
+    this._sceneController.onResize();
   }
 }

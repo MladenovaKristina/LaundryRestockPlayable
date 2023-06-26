@@ -51,16 +51,30 @@ export default class TargetLight extends DisplayObject {
     setTargetlightPosition(position, holeSize) {
         const bb = Black.stage.bounds;
 
-        const diameter = holeSize * bb.width / 4;
+        if (bb.width > bb.height) {
+            const diameter = holeSize * bb.height / 4;
 
-        const positionX = position.x;
-        const positionY = position.y + diameter / 2;
+            const positionX = position.x + diameter * 3;
+            const positionY = position.y - diameter / 2;
 
-        this._hole.clear();
-        this._hole.beginPath();
-        this._hole.fillStyle(0x000000, 1);
-        this._hole.circle(positionX, positionY, diameter);
-        this._hole.cut();
+            this._hole.clear();
+            this._hole.beginPath();
+            this._hole.fillStyle(0x000000, 1);
+            this._hole.circle(positionX, positionY, diameter);
+            this._hole.cut();
+        }
+        else {
+            const diameter = holeSize * bb.width / 2;
+
+            const positionX = position.x;
+            const positionY = position.y + diameter;
+
+            this._hole.clear();
+            this._hole.beginPath();
+            this._hole.fillStyle(0x000000, 1);
+            this._hole.circle(positionX, positionY, diameter);
+            this._hole.cut();
+        }
     }
 
 

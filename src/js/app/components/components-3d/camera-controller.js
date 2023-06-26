@@ -21,16 +21,20 @@ export default class CameraController {
 
   _updateTransform() {
     const position = this._getPosition();
-    this._camera.position.set(0, 2, 3);
+    console.log(position);
+    this._camera.position.set(position.x, position.y, position.z);
   }
 
   _updatePositions() {
     if (Helpers.LP(false, true)) {
-      this._position = new THREE.Vector3(0.25, 1.5, 1.5);
+      console.log("portrait")
+
+      this._position = new THREE.Vector3(0, 2, 3);
 
     }
     else {
-      this._position = new THREE.Vector3(0.25, 1.5, 1.5);
+      console.log("landscape")
+      this._position = new THREE.Vector3(0, 2, 3);
     }
 
   }

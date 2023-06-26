@@ -67,8 +67,17 @@ export default class CTA1 extends DisplayObject {
   }
 
   setPosition(position) {
-    this._hand.x = position.x * 0.2;
-    this._hand.y = position.y - this._hand.height;
+    const bb = Black.stage.bounds;
+
+    if (bb.width > bb.height) {
+      this._text.y -= 25;
+      this._hand.x = position.x / bb.width + this._hand.width;
+      this._hand.y = position.y - this._hand.height * 2;
+    }
+    if (bb.width < bb.height) {
+      this._hand.x = position.x / bb.width + this._hand.width;
+      this._hand.y = position.y;
+    }
   }
 }
 
