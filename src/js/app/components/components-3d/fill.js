@@ -56,7 +56,6 @@ export default class Fill extends THREE.Object3D {
         let currentTime = 0;
         let trackTime = 0;
 
-
         if (!this.fillTween && this.canFill) {
             this.fillTween = new TWEEN.Tween({ time: currentTime })
                 .to({ time: duration }, duration - currentTime)
@@ -65,12 +64,6 @@ export default class Fill extends THREE.Object3D {
                     currentTime = time;
                     trackTime += 0.001;
                     this.progress = currentTime / duration;
-                    console.log(this.progress)
-                    if (this.progress >= 1) {
-                        console.log("win");
-                        this.messageDispatcher.post(this.onFinishEvent);
-                        this.canFill = false;
-                    }
 
                     this.height = this.lerp(this.height, targetHeight, this.progress);
                     this.top = this.lerp(this.top, targetTop, this.progress);
@@ -85,10 +78,12 @@ export default class Fill extends THREE.Object3D {
                     );
                     this.children[0].geometry.translate(0, this.height / 2, 0);
                 })
+                .onComplete(() => {
+                    console.log("win");
+                    this.messageDispatcher.post(this.onFinishEvent);
+                    this.canFill = false;
+                })
         }
-
-
-
 
         if (this.canFill) {
             this.fillTween.start();

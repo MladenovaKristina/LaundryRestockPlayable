@@ -54,9 +54,10 @@ export default class Layout3D extends Group {
         this._fill = new Fill();
         this._scene.add(this._fill);
         this._moveController.setFillView(this._fill);
-        this.messageDispatcher.on(this._fill.onFinishEvent, (msg) => {
+        this._fill.messageDispatcher.on(this._fill.onFinishEvent, (msg) => {
             this.onFinishEvent = 'onFinishEvent';
             this.messageDispatcher.post(this.onFinishEvent);
+            console.log("int fill message dispatcher")
         });
     }
 

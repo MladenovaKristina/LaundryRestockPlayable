@@ -61,8 +61,9 @@ export default class Game {
   _init3D() {
     this._layout3d = new Layout3D(this._camera, this._cameraController, this._scene, this._renderer);
 
-    this.messageDispatcher.on(this._layout3d.onFinishEvent, (msg) => {
+    this._layout3d.messageDispatcher.on(this._layout3d.onFinishEvent, (msg) => {
       this.onFinishEvent = 'onFinishEvent';
+      console.log("game js dispatch")
       this._onFinish();
     });
   }
