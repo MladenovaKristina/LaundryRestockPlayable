@@ -15,7 +15,7 @@ export default class Fill extends THREE.Object3D {
         this._initView();
 
         this.messageDispatcher = new MessageDispatcher();
-        this.onSpawnedEvent = 'onFinishEvent';
+        this.onFinishEvent = 'onFinishEvent';
     }
 
     _initView() {
@@ -30,6 +30,7 @@ export default class Fill extends THREE.Object3D {
         this.visible = true;
         this.canFill = true;
         this.fill();
+
     }
 
     stop() {
@@ -74,10 +75,8 @@ export default class Fill extends THREE.Object3D {
                     this.children[0].geometry.translate(0, this.height / 2, 0);
                 })
                 .onComplete(() => {
-                    // if (this.height <= targetHeight) {
-                    this.messageDispatcher.post('onFinishEvent');
-                    console.log("onfinisheventdispatched")
-                    // }
+                    console.log("win")
+                    this.messageDispatcher.post(this.onFinishEvent);
                 })
         }
 

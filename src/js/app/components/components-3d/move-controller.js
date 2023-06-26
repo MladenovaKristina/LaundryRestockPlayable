@@ -8,7 +8,7 @@ export default class MoveController extends THREE.Object3D {
         this._screenWidth = window.innerWidth;
         this._canMove = false;
         this._isDown = false;
-
+        this._layout2d = null;
         this._playerX = null;
         this._playerY = null;
         this._detergent = null;
@@ -16,7 +16,8 @@ export default class MoveController extends THREE.Object3D {
         this._playFill = 0;
     }
 
-    start() {
+    start(layout2d) {
+        this._layout2d = layout2d;
         this._canMove = true;
     }
 
@@ -75,6 +76,7 @@ export default class MoveController extends THREE.Object3D {
         if (this._playFill === 0) {
             this._playFill++;
             this._fill.show();
+            this._layout2d.showHint();
         } else {
             if (this._fill.fillTween && !this._fill.fillTween.isPlaying()) {
                 this._fill.resume();

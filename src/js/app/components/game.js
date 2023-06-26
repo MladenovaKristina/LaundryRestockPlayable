@@ -52,7 +52,7 @@ export default class Game {
     this._layout2d = new Layout2D();
     Black.stage.add(this._layout2d);
 
-    this._layout2d.onPlayBtnClickEvent((msg) => {
+    this._layout2d.on(this._layout2d.onPlayBtnClickEvent, (msg) => {
       this._state = STATES.FINAL;
       this.messageDispatcher.post(this.onFinishEvent);
     });
@@ -61,7 +61,13 @@ export default class Game {
   _init3D() {
     this._layout3d = new Layout3D(this._camera, this._cameraController, this._scene, this._renderer);
     this.updateCTAPosition();
+
+    this.messageDispatcher.on(this._layout3d.onFinishEvent, (msg) => {
+      this.onFinishEvent = 'onFinishEvent';
+      this.messageDispatcher.post(this.onFinishEvent);
+    });
   }
+
   _initSceneController() {
     this._sceneController = new SceneController(this._layout2d, this._layout3d, this._camera.threeCamera);
   }
@@ -140,15 +146,6 @@ export default class Game {
       this._onFinish();
       console.log('clicks');
     }
-  }
-  _initUI() {
-    this._layout2d = new Layout2D();
-    Black.stage.add(this._layout2d);
-
-    this._layout2d.on(this._layout2d.onPlayBtnClickEvent, (msg) => {
-      this._state = STATES.FINAL;
-      this.messageDispatcher.post(this.onFinishEvent);
-    });
   }
 
   _onFinish() {

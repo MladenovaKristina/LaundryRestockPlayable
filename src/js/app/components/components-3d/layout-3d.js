@@ -5,7 +5,7 @@ import MoveController from "./move-controller.js";
 import Menu from "./menu";
 import Fill from "./fill";
 import { MessageDispatcher } from "../../../utils/black-engine.module";
-import { Group, Vector3 } from "three";
+import { Group } from "three";
 
 export default class Layout3D extends Group {
     constructor(camera, cameraController, scene, renderer) {
@@ -14,7 +14,9 @@ export default class Layout3D extends Group {
         this._cameraController = cameraController;
         this._scene = scene;
         this._renderer = renderer;
-        this._onFinish = false;
+
+        this.messageDispatcher = new MessageDispatcher();
+        this.onFinishEvent = 'onFinishEvent';
 
         this._3dclick = 0;
         this._gameplay = false;
@@ -51,6 +53,10 @@ export default class Layout3D extends Group {
         this._fill = new Fill();
         this._scene.add(this._fill);
         this._moveController.setFillView(this._fill);
+        this.messageDispatcher.on(this._fill.onFinishEvent, (msg) => {
+            this.onFinishEvent = 'onFinishEvent';
+            this.messageDispatcher.post(this.onFinishEvent);
+        });
     }
 
     _initMenu() {
