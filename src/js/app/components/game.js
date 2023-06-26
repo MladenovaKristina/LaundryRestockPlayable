@@ -63,7 +63,7 @@ export default class Game {
 
     this.messageDispatcher.on(this._layout3d.onFinishEvent, (msg) => {
       this.onFinishEvent = 'onFinishEvent';
-      this.messageDispatcher.post(this.onFinishEvent);
+      this._onFinish();
     });
   }
 

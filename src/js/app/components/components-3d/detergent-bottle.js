@@ -104,7 +104,7 @@ export default class DetergentBottle extends Group {
 
     raise(emptyContainer, callback) {
         const targetZ = emptyContainer.position.z;
-        const targetY = 1.6;
+        const targetY = 1.8;
         const duration = 1500;
         let currentTime = 0;
         this.canIdle = true;
@@ -200,10 +200,13 @@ export default class DetergentBottle extends Group {
     }
 
     stopIdle(callback) {
-        this.detergentTweenPosition.end();
-        this.detergentTweenRotation.end();
-        this.detergentBottle.rotation.set(Math.PI / 2, this.detergentBottle.rotation.y, 0)
-        callback();
+        if (this.detergentTweenPosition) {
+            this.detergentTweenPosition.end();
+            this.detergentTweenRotation.end();
+            callback();
+        }
+
+
     }
 
     removeDetergentCap(callback) {
@@ -258,16 +261,10 @@ export default class DetergentBottle extends Group {
                 })
                 .start();
         }
-        this.onMouseUp = () => {
-            if (this.liquidTween && this.liquidTween.isPlaying) this.liquidTween.end();
 
-            this.liquid.visible = false;
-            this.liquidBase.visible = false;
-        }
     }
 
     rotateUp() {
-        this.onMouseUp();
 
         if (!this.isAnimating) {
             this.isAnimating = true;

@@ -14,7 +14,10 @@ export default class SceneController extends THREE.Object3D {
         this._canMove = false;
         this._interactions = 0;
         this._gameplay = false;
-        this._sceneHasPlayed = false;
+        this._sceneOnePlayed = false;
+        this._sceneTwoPlayed = false;
+
+        this.isLandscape = null;
 
         this.start();
     }
@@ -24,34 +27,36 @@ export default class SceneController extends THREE.Object3D {
     }
 
     onDown() {
-        this._interactions++;
-        this.switch();
+        if (this._interactions === 0 && !this._sceneOnePlayed) {
+            this._interactions++;
+            this.sceneOne();
+        }
     }
     onMove() {
-        this._interactions++;
-        this.switch();
-    }
-
-    switch() {
-        if (this._interactions === 1) {
-            this.sceneOne();
-        } else if (this._interactions > 1 && this._gameplay && !this._sceneHasPlayed) {
+        if (this._sceneOnePlayed && !this._sceneTwoPlayed) {
             this.sceneTwo();
-            //make it fast
         }
     }
 
     zoom(callback) {
         if (!this._canMove) {
-
+            let targetPositionY = 0;
             const targetFov = this._camera.fov - 12;
-            const targetPositionY = this._camera.y + 10;
+
+            if (this.isLandscape) {
+                targetPositionY = this._camera.position.y + 3000;
+                console.log("zoomed landscape", targetPositionY);
+            } else {
+                targetPositionY = this._camera.position.y + 100; console.log("zoomed portrait", targetPositionY);
+            }
+
             const duration = 1000;
 
             new TWEEN.Tween(this._camera)
-                .to({ fov: targetFov, positionY: targetPositionY }, duration)
+                .to({ fov: targetFov }, duration)
                 .easing(TWEEN.Easing.Quadratic.Out)
                 .onUpdate(() => {
+                    this._camera.position.y += 0.005;
                     this._camera.updateProjectionMatrix();
                 })
                 .onComplete(() => {
@@ -61,6 +66,7 @@ export default class SceneController extends THREE.Object3D {
         }
     }
 
+
     sceneZero() {
         console.log("scene0");
         this._layout2d.showCTA1();
@@ -68,6 +74,7 @@ export default class SceneController extends THREE.Object3D {
 
     sceneOne() {
         console.log("scene1");
+        this._sceneOnePlayed = true;
         this._layout2d._cta1.hide();
         this._layout2d._targetlight.hide(() => {
             this._layout3d._emptyContainer.removeCap();
@@ -79,6 +86,8 @@ export default class SceneController extends THREE.Object3D {
                         this._layout2d._progressbar.show();
 
                         this._gameplay = true;
+                        this._canMove = true;
+                        this._layout3d._moveController.start(this._layout2d);
                     });
                     this._layout3d._detergentBottle.idle(); //smooth it out
                 });
@@ -87,12 +96,10 @@ export default class SceneController extends THREE.Object3D {
     }
 
     sceneTwo() {
-        this._sceneHasPlayed = true;
+        this._sceneTwoPlayed = true;
         console.log("scene2");
         this._layout3d._detergentBottle.stopIdle(() => {
-            this._layout3d._moveController.start(this._layout2d);
             this._layout2d._cta2.hide();
-            this._layout3d.updateCTAPosition();
         });
     }
 
@@ -107,5 +114,6 @@ export default class SceneController extends THREE.Object3D {
     }
     onResize() {
         this.updateCTAPosition();
+        if (window.innerWidth > window.innerHeight) { this.isLandscape = true; } else this.isLandscape = false;
     }
 }

@@ -5,6 +5,8 @@ import { MessageDispatcher } from "../../../utils/black-engine.module";
 export default class Fill extends THREE.Object3D {
     constructor() {
         super();
+        //this one controls the liquid inside the bottle, calls finish event from game.js
+        //need to implement dispatcher from bohdan advice
         this.height = 0;
         this.top = 0.26;
         this.bottom = 0.20;
@@ -52,15 +54,24 @@ export default class Fill extends THREE.Object3D {
         const targetBottom = 0.23;
         const duration = 3000;
         let currentTime = 0;
+        let trackTime = 0;
 
-        if (!this.fillTween && currentTime <= duration) {
+
+        if (!this.fillTween && this.canFill) {
             this.fillTween = new TWEEN.Tween({ time: currentTime })
                 .to({ time: duration }, duration - currentTime)
                 .easing(TWEEN.Easing.Quadratic.In)
                 .onUpdate(({ time }) => {
                     currentTime = time;
-
+                    trackTime += 0.001;
                     this.progress = currentTime / duration;
+                    console.log(this.progress)
+                    if (this.progress >= 1) {
+                        console.log("win");
+                        this.messageDispatcher.post(this.onFinishEvent);
+                        this.canFill = false;
+                    }
+
                     this.height = this.lerp(this.height, targetHeight, this.progress);
                     this.top = this.lerp(this.top, targetTop, this.progress);
                     this.bottom = this.lerp(this.bottom, targetBottom, this.progress);
@@ -74,11 +85,10 @@ export default class Fill extends THREE.Object3D {
                     );
                     this.children[0].geometry.translate(0, this.height / 2, 0);
                 })
-                .onComplete(() => {
-                    console.log("win")
-                    this.messageDispatcher.post(this.onFinishEvent);
-                })
         }
+
+
+
 
         if (this.canFill) {
             this.fillTween.start();

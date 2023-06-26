@@ -13,8 +13,8 @@ export default class CameraController {
   }
 
   onResize() {
-    this._updatePositions();
-    this._updateTransform();
+    // this._updatePositions();
+    // this._updateTransform();
 
     this._camera.lookAt(0, 1, 0);
   }
@@ -27,18 +27,13 @@ export default class CameraController {
 
   _updatePositions() {
     if (Helpers.LP(false, true)) {
-      console.log("portrait")
-
       this._position = new THREE.Vector3(0, 2, 3);
 
     }
     else {
-      console.log("landscape")
       this._position = new THREE.Vector3(0, 2, 3);
     }
-
   }
-
   _getPosition() {
     return this._position;
   }

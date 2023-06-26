@@ -14,6 +14,8 @@ export default class MoveController extends THREE.Object3D {
         this._detergent = null;
         this._fill = null;
         this._playFill = 0;
+        this.time = 0;
+
     }
 
     start(layout2d) {
@@ -58,17 +60,18 @@ export default class MoveController extends THREE.Object3D {
     }
 
     _moveDetergent(detergent) {
-        const speed = -0.01;
-        const maxDistance = 500;
+        const speed = -0.002;
+        const maxDistance = 300;
 
-        const clampPlayerX = Math.max(-maxDistance, Math.min(maxDistance, this._playerX));
-        detergent.position.x = -clampPlayerX * speed;
-        //need to implement swaying TWEEN
-        //need to implement detergent bounds so it doesnt leave the screen
-        if (detergent.position.x > 0.1 && detergent.position.x <= 0.2 && this._isDown) {
-            this.collision();
-        } else {
-            this._fill.stop();
+        if (this._canMove && this._isDown) {
+            const clampPlayerX = Math.max(-maxDistance, Math.min(maxDistance, this._playerX));
+            detergent.position.x = -clampPlayerX * speed;
+
+            if (detergent.position.x > 0.1 && detergent.position.x <= 0.2 && this._isDown) {
+                this.collision();
+            } else {
+                this._fill.stop();
+            }
         }
     }
 

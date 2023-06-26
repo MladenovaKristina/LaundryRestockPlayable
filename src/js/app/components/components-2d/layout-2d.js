@@ -110,8 +110,14 @@ export default class Layout2D extends DisplayObject {
     }
     this._targetlight.onResize();
 
-    this._progressbar.x = Black.stage.centerX;
-    this._progressbar.y = bb.top + this._topText._height + 20;
+    if (bb.width > bb.height) {
+      this._progressbar.x = Black.stage.centerX;
+      this._progressbar.y = bb.bottom - this._topText._height - 20;
+    } else {
+      this._progressbar.x = Black.stage.centerX;
+      this._progressbar.y = bb.top + this._topText._height + 20;
+    }
+
   }
 
   _createEndscreen() {
