@@ -245,6 +245,14 @@ export default class DetergentBottle extends Group {
                             .to({ y: 2, x: 2, z: 2 }, duration * 0.3)
                             .onUpdate(() => {
                                 this.liquidBase.visible = true;
+                                new TWEEN.Tween(this.liquid.scale)
+                                    .to({ y: this.liquid.scale.y, z: [2, 1] }, duration)
+                                    .repeat(Infinity)
+                                    .yoyo(true)
+                                    .delay(200)
+                                    .start();
+                            })
+                            .onComplete(() => {
                                 if (this.detergentBottle.rotation.y <= 0.5) {
                                     this.liquid.visible = false;
                                     this.liquidBase.visible = false;
@@ -256,6 +264,7 @@ export default class DetergentBottle extends Group {
                 .start();
         }
     }
+
 
     rotateUp() {
         if (!this.pause) {

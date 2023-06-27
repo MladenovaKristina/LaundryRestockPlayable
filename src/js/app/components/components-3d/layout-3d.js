@@ -59,6 +59,7 @@ export default class Layout3D extends Group {
             this.messageDispatcher.post(this.onFinishEvent);
             this._detergentBottle.pause = true;
             this._moveController._canMove = false;
+            this._detergentBottle.rotateDown.TWEEN.end();
         });
     }
 

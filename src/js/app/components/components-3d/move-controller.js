@@ -67,15 +67,18 @@ export default class MoveController extends THREE.Object3D {
 
     _moveDetergent(detergent) {
         const speed = -0.002;
-        const maxDistance = 300;
-        const maxY = 3;
+        const maxDistance = 200;
+        const maxY = 30;
 
         if (this._canMove && this._isDown) {
             const clampPlayerX = Math.max(-maxDistance, Math.min(maxDistance, this._playerX));
+            const clampPlayerY = Math.max(-maxY, Math.min(maxY, this._playerX));
+
             detergent.position.x = -clampPlayerX * speed;
-            console.log(detergent.position.x
-            )
-            if (detergent.position.x > -0.15 && detergent.position.x <= 0.15 && this._isDown) {
+            detergent.rotation.z = -clampPlayerY * speed * detergent.position.x;
+            detergent.position.y = -clampPlayerY * -speed * detergent.position.x;
+
+            if (detergent.position.x > 0.2 && detergent.position.x <= 0.34 && this._isDown) {
                 this.collision();
             } else {
                 this._fill.stop();
