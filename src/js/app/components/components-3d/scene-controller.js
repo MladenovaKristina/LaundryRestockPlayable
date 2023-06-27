@@ -43,12 +43,7 @@ export default class SceneController extends THREE.Object3D {
             let targetPositionY = 0;
             const targetFov = this._camera.fov - 12;
 
-            if (this.isLandscape) {
-                targetPositionY = this._camera.position.y + 3000;
-                console.log("zoomed landscape", targetPositionY);
-            } else {
-                targetPositionY = this._camera.position.y + 100; console.log("zoomed portrait", targetPositionY);
-            }
+
 
             const duration = 1000;
 
@@ -56,7 +51,9 @@ export default class SceneController extends THREE.Object3D {
                 .to({ fov: targetFov }, duration)
                 .easing(TWEEN.Easing.Quadratic.Out)
                 .onUpdate(() => {
-                    this._camera.position.y += 0.005;
+                    if (this.isLandscape) {
+                        this._camera.position.y += 0.008;
+                    } else this._camera.position.y += 0.005;
                     this._camera.updateProjectionMatrix();
                 })
                 .onComplete(() => {
@@ -88,6 +85,7 @@ export default class SceneController extends THREE.Object3D {
                         this._gameplay = true;
                         this._canMove = true;
                         this._layout3d._moveController.start(this._layout2d);
+                        this._layout3d._moveController.setProgressBar(this._layout2d._progressbar)
                     });
                     this._layout3d._detergentBottle.idle(); //smooth it out
                 });
@@ -114,6 +112,7 @@ export default class SceneController extends THREE.Object3D {
     }
     onResize() {
         this.updateCTAPosition();
+        console.log("i update")
         if (window.innerWidth > window.innerHeight) { this.isLandscape = true; } else this.isLandscape = false;
     }
 }

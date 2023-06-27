@@ -79,8 +79,8 @@ export default class CTA2 extends DisplayObject {
         if (bb.width < bb.height) {
             this._pointer.scale = 1;
 
-            this._pointer.x = position.x / bb.width + this._pointer.width * 2;
-            this._pointer.y = position.y + this._pointer.height * 2;
+            this._pointer.x = position.x / bb.width + this._pointer.width * 1.8;
+            this._pointer.y = position.y + this._pointer.height;
         }
     }
 }

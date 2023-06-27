@@ -57,7 +57,6 @@ export default class Layout3D extends Group {
         this._fill.messageDispatcher.on(this._fill.onFinishEvent, (msg) => {
             this.onFinishEvent = 'onFinishEvent';
             this.messageDispatcher.post(this.onFinishEvent);
-            console.log("int fill message dispatcher")
         });
     }
 

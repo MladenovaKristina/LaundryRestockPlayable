@@ -206,7 +206,6 @@ export default class DetergentBottle extends Group {
             callback();
         }
 
-
     }
 
     removeDetergentCap(callback) {

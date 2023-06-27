@@ -31,6 +31,10 @@ export default class MoveController extends THREE.Object3D {
         this._fill = obj;
     }
 
+    setProgressBar(progressbar) {
+        this._fill.setProgressBar(progressbar);
+    }
+
     onMove(x, y) {
         if (this._canMove) {
             this._getMousePosition(x, y, this._detergent);
@@ -62,12 +66,17 @@ export default class MoveController extends THREE.Object3D {
     _moveDetergent(detergent) {
         const speed = -0.002;
         const maxDistance = 300;
+        const maxY = 3;
 
         if (this._canMove && this._isDown) {
             const clampPlayerX = Math.max(-maxDistance, Math.min(maxDistance, this._playerX));
-            detergent.position.x = -clampPlayerX * speed;
+            const clampPlayerY = Math.max(-maxY, Math.min(maxY, this._playerY));
 
-            if (detergent.position.x > 0.1 && detergent.position.x <= 0.2 && this._isDown) {
+            detergent.position.x = -clampPlayerX * speed;
+            detergent.position.y = -clampPlayerY * speed * detergent.position.x * 10;
+
+
+            if (detergent.position.x > 0.3 && detergent.position.x <= 0.4 && this._isDown) {
                 this.collision();
             } else {
                 this._fill.stop();
@@ -80,8 +89,10 @@ export default class MoveController extends THREE.Object3D {
             this._playFill++;
             this._fill.show();
             this._layout2d.showHint();
+
         } else {
             if (this._fill.fillTween && !this._fill.fillTween.isPlaying()) {
+                this._layout2d.progressBar(this._fill.progress * 2);
                 this._fill.resume();
             }
 

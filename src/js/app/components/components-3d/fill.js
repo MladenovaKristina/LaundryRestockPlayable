@@ -3,21 +3,20 @@ import TWEEN from "@tweenjs/tween.js";
 import { MessageDispatcher } from "../../../utils/black-engine.module";
 
 export default class Fill extends THREE.Object3D {
-    constructor() {
+    constructor(layout2d) {
         super();
-        //this one controls the liquid inside the bottle, calls finish event from game.js
-        //need to implement dispatcher from bohdan advice
         this.height = 0;
         this.top = 0.26;
         this.bottom = 0.20;
         this.progress = 0;
+        this.trackTime = 0;
         this.canFill = false;
-        this.fillTween = null;
         this.visible = false;
-        this._initView();
-
+        this.fillTween = null;
+        this.progressbar = null;
         this.messageDispatcher = new MessageDispatcher();
         this.onFinishEvent = 'onFinishEvent';
+        this._initView();
     }
 
     _initView() {
@@ -31,15 +30,19 @@ export default class Fill extends THREE.Object3D {
     show() {
         this.visible = true;
         this.canFill = true;
-        this.fill();
+        if (!this.fillTween || !this.fillTween.isPlaying()) {
+            this.fill();
+        }
+    }
 
+    setProgressBar(progressbar) {
+        this.progressbar = progressbar;
     }
 
     stop() {
         if (this.fillTween && this.fillTween.isPlaying()) {
             this.fillTween.stop();
         }
-
     }
 
     resume() {
@@ -53,41 +56,39 @@ export default class Fill extends THREE.Object3D {
         const targetTop = 0.27;
         const targetBottom = 0.23;
         const duration = 3000;
-        let currentTime = 0;
-        let trackTime = 0;
 
-        if (!this.fillTween && this.canFill) {
-            this.fillTween = new TWEEN.Tween({ time: currentTime })
-                .to({ time: duration }, duration - currentTime)
-                .easing(TWEEN.Easing.Quadratic.In)
-                .onUpdate(({ time }) => {
-                    currentTime = time;
-                    trackTime += 0.001;
-                    this.progress = currentTime / duration;
-
-                    this.height = this.lerp(this.height, targetHeight, this.progress);
-                    this.top = this.lerp(this.top, targetTop, this.progress);
-                    this.bottom = this.lerp(this.bottom, targetBottom, this.progress);
-
-                    this.children[0].geometry.dispose();
-                    this.children[0].geometry = new THREE.CylinderGeometry(
-                        this.top,
-                        this.bottom,
-                        this.height,
-                        32
-                    );
-                    this.children[0].geometry.translate(0, this.height / 2, 0);
-                })
-                .onComplete(() => {
-                    console.log("win");
-                    this.messageDispatcher.post(this.onFinishEvent);
-                    this.canFill = false;
-                })
+        if (this.fillTween && this.fillTween.isPlaying()) {
+            return;
         }
 
-        if (this.canFill) {
-            this.fillTween.start();
-        }
+        let currentTime = this.progress * duration;
+        let currentProgress = this.progress;
+
+        this.fillTween = new TWEEN.Tween({ time: currentTime })
+            .to({ time: duration }, duration - currentTime)
+            .easing(TWEEN.Easing.Quadratic.In)
+            .onUpdate(({ time }) => {
+                this.progress = currentProgress + ((time - currentTime) / (duration - currentTime));
+                this.trackTime += 0.001;
+
+                this.height = this.lerp(this.height, targetHeight, this.progress);
+                this.top = this.lerp(this.top, targetTop, this.progress);
+                this.bottom = this.lerp(this.bottom, targetBottom, this.progress);
+
+                const fillMesh = this.children[0];
+                fillMesh.geometry.dispose();
+                fillMesh.geometry = new THREE.CylinderGeometry(this.top, this.bottom, this.height, 32);
+                fillMesh.geometry.translate(0, this.height / 2, 0);
+                this.progressbar.fill(this.height / targetHeight);
+                console.log(this.height / targetHeight);
+            })
+            .onComplete(() => {
+                console.log("win");
+                this.messageDispatcher.post(this.onFinishEvent);
+                this.canFill = false;
+            });
+
+        this.fillTween.start();
 
         const animate = () => {
             TWEEN.update();
