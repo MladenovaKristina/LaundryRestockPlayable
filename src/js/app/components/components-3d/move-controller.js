@@ -14,6 +14,8 @@ export default class MoveController extends THREE.Object3D {
         this._playerY = null;
         this._detergent = null;
         this._fill = null;
+        this._emptyContainer = null;
+
         this._playFill = 0;
         this.time = 0;
 
@@ -32,6 +34,9 @@ export default class MoveController extends THREE.Object3D {
     setFillView(obj) {
         this._fill = obj;
     }
+    setEmptyContainerView(obj) {
+        this._emptyContainer = obj;
+    }
 
     setProgressBar(progressbar) {
         this._fill.setProgressBar(progressbar);
@@ -39,7 +44,7 @@ export default class MoveController extends THREE.Object3D {
 
     onMove(x, y) {
         if (this._canMove) {
-            this._getMousePosition(x, y, this._detergent);
+            this._getMousePosition(x, y, this._detergent, this._emptyContainer);
         }
     }
 
@@ -57,35 +62,34 @@ export default class MoveController extends THREE.Object3D {
         this._isDown = false;
     }
 
-    _getMousePosition(x, y, detergent) {
+    _getMousePosition(x, y, detergent, emptyContainer) {
 
         const normalizedX = (x / this._screenWidth) * 400 - 200;
         this._playerX = normalizedX;
         this._playerY = y;
-        this._moveDetergent(detergent);
+        this._moveDetergent(detergent, emptyContainer);
     }
 
-    _moveDetergent(detergent) {
+    _moveDetergent(detergent, emptyContainer) {
         const speed = -0.002;
-        const maxDistance = 200;
+        const maxDistance = 300;
         const maxY = 30;
 
         if (this._canMove && this._isDown) {
             const clampPlayerX = Math.max(-maxDistance, Math.min(maxDistance, this._playerX));
-            const clampPlayerY = Math.max(-maxY, Math.min(maxY, this._playerX));
-
+            const clampPlayerY = Math.max(-maxY, Math.min(maxY, this._playerY));
             detergent.position.x = -clampPlayerX * speed;
+            detergent.position.y = -clampPlayerY * speed * detergent.position.x;
             detergent.rotation.z = -clampPlayerY * speed * detergent.position.x;
-            detergent.position.y = -clampPlayerY * -speed * detergent.position.x;
 
-            if (detergent.position.x > 0.2 && detergent.position.x <= 0.34 && this._isDown) {
+            if (detergent.position.x > 0.23 && detergent.position.x <= 0.45 && this._isDown) {
                 this.collision();
             } else {
                 this._fill.stop();
             }
-
         }
     }
+
 
     collision() {
         if (this._playFill === 0) {
