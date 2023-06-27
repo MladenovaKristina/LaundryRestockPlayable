@@ -75,11 +75,12 @@ export default class MoveController extends THREE.Object3D {
             detergent.position.x = -clampPlayerX * speed;
             console.log(detergent.position.x
             )
-            if (detergent.position.x > 0.23 && detergent.position.x <= 0.4 && this._isDown) {
+            if (detergent.position.x > -0.15 && detergent.position.x <= 0.15 && this._isDown) {
                 this.collision();
             } else {
                 this._fill.stop();
             }
+
         }
     }
 
