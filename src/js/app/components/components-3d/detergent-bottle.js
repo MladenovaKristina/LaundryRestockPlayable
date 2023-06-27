@@ -7,7 +7,7 @@ export default class DetergentBottle extends Group {
     constructor(scene) {
         super();
         this.amplitude = 0.1;
-        this.frequency = 1;
+        this.frequency = 1.4;
         this.duration = 1000;
 
         this.height = 0;
@@ -20,7 +20,7 @@ export default class DetergentBottle extends Group {
         this.liquidBase = null;
         this.liquid = null;
         this.detergentBottleCap = null;
-
+        this.pause = false;
         this.canIdle = false;
         this.isPlaying = false;
         this.detergentTweenRotation = null;
@@ -203,6 +203,7 @@ export default class DetergentBottle extends Group {
         if (this.detergentTweenPosition) {
             this.detergentTweenPosition.end();
             this.detergentTweenRotation.end();
+            this.detergentBottle.rotation.z = 0;
             callback();
         }
 
@@ -229,10 +230,9 @@ export default class DetergentBottle extends Group {
     }
 
     rotateDown() {
-        const targetRotateY = Math.PI / 2;
-        const duration = 1000;
-        if (!this.isAnimating) {
-            this.isAnimating = true;
+        if (!this.pause) {
+            const targetRotateY = Math.PI / 2;
+            const duration = 900;
 
             this.liquidTween = new TWEEN.Tween(this.detergentBottle.rotation)
                 .to({ y: targetRotateY, z: 0 }, duration * 0.5)
@@ -249,26 +249,18 @@ export default class DetergentBottle extends Group {
                                     this.liquid.visible = false;
                                     this.liquidBase.visible = false;
                                 }
-
-                            })
-                            .easing(TWEEN.Easing.Sinusoidal.Out)
-                            .onComplete(() => {
-                                this.isAnimating = false;
                             })
                             .start();
                     }
                 })
                 .start();
         }
-
     }
 
     rotateUp() {
+        if (!this.pause) {
 
-        if (!this.isAnimating) {
-            this.isAnimating = true;
-
-            const duration = 1000;
+            const duration = 800;
             new TWEEN.Tween(this.detergentBottle.rotation)
                 .to({ y: Math.PI / 4 }, duration)
                 .easing(TWEEN.Easing.Quadratic.Out)

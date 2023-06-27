@@ -1,3 +1,4 @@
+import { call } from "file-loader";
 import * as THREE from "three";
 
 export default class MoveController extends THREE.Object3D {
@@ -18,9 +19,10 @@ export default class MoveController extends THREE.Object3D {
 
     }
 
-    start(layout2d) {
+    start(layout2d, callback) {
         this._layout2d = layout2d;
         this._canMove = true;
+        callback();
     }
 
     setBottleView(obj) {
@@ -70,13 +72,10 @@ export default class MoveController extends THREE.Object3D {
 
         if (this._canMove && this._isDown) {
             const clampPlayerX = Math.max(-maxDistance, Math.min(maxDistance, this._playerX));
-            const clampPlayerY = Math.max(-maxY, Math.min(maxY, this._playerY));
-
             detergent.position.x = -clampPlayerX * speed;
-            detergent.position.y = -clampPlayerY * speed * detergent.position.x * 10;
-
-
-            if (detergent.position.x > 0.3 && detergent.position.x <= 0.4 && this._isDown) {
+            console.log(detergent.position.x
+            )
+            if (detergent.position.x > 0.23 && detergent.position.x <= 0.4 && this._isDown) {
                 this.collision();
             } else {
                 this._fill.stop();

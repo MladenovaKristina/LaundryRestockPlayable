@@ -63,7 +63,6 @@ export default class Game {
 
     this._layout3d.messageDispatcher.on(this._layout3d.onFinishEvent, (msg) => {
       this.onFinishEvent = 'onFinishEvent';
-      console.log("game js dispatch")
       this._onFinish();
     });
   }

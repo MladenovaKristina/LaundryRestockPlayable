@@ -40,62 +40,65 @@ export default class Fill extends THREE.Object3D {
     }
 
     stop() {
+        this.canFill = false;
+
         if (this.fillTween && this.fillTween.isPlaying()) {
             this.fillTween.stop();
         }
     }
 
     resume() {
+        this.canFill = true;
+
         if (this.fillTween && !this.fillTween.isPlaying()) {
             this.fillTween.start();
         }
     }
 
     fill() {
-        const targetHeight = 0.5;
-        const targetTop = 0.27;
-        const targetBottom = 0.23;
-        const duration = 3000;
+        if (this.canFill) {
+            const targetHeight = 0.55;
+            const targetTop = 0.27;
+            const targetBottom = 0.23;
+            const duration = 10000;
+            let currentTime = this.progress * duration;
+            let currentProgress = this.progress;
 
-        if (this.fillTween && this.fillTween.isPlaying()) {
-            return;
-        }
+            this.fillTween = new TWEEN.Tween({ time: currentTime })
+                .to({ time: duration }, duration - currentTime)
+                .easing(TWEEN.Easing.Quadratic.In)
+                .onUpdate(({ time }) => {
+                    this.progress = currentProgress + ((time - currentTime) / (duration - currentTime));
+                    this.trackTime += 0.001;
 
-        let currentTime = this.progress * duration;
-        let currentProgress = this.progress;
+                    this.height = this.lerp(this.height, targetHeight, this.progress);
+                    this.top = this.lerp(this.top, targetTop, this.progress);
+                    this.bottom = this.lerp(this.bottom, targetBottom, this.progress);
 
-        this.fillTween = new TWEEN.Tween({ time: currentTime })
-            .to({ time: duration }, duration - currentTime)
-            .easing(TWEEN.Easing.Quadratic.In)
-            .onUpdate(({ time }) => {
-                this.progress = currentProgress + ((time - currentTime) / (duration - currentTime));
-                this.trackTime += 0.001;
+                    const fillMesh = this.children[0];
+                    fillMesh.geometry.dispose();
+                    fillMesh.geometry = new THREE.CylinderGeometry(this.top, this.bottom, this.height, 32);
+                    fillMesh.geometry.translate(0, this.height / 2, 0);
+                    this.progressbar.fill(this.height / targetHeight / 2);
+                    if (this.height / targetHeight >= 0.9) {
+                        this.messageDispatcher.post(this.onFinishEvent);
+                        this.canFill = false;
+                    }
+                })
+                .onComplete(() => {
+                    this.messageDispatcher.post(this.onFinishEvent);
+                    this.canFill = false;
+                });
 
-                this.height = this.lerp(this.height, targetHeight, this.progress);
-                this.top = this.lerp(this.top, targetTop, this.progress);
-                this.bottom = this.lerp(this.bottom, targetBottom, this.progress);
+            this.fillTween.start();
 
-                const fillMesh = this.children[0];
-                fillMesh.geometry.dispose();
-                fillMesh.geometry = new THREE.CylinderGeometry(this.top, this.bottom, this.height, 32);
-                fillMesh.geometry.translate(0, this.height / 2, 0);
-                this.progressbar.fill(this.height / targetHeight);
-                console.log(this.height / targetHeight);
-            })
-            .onComplete(() => {
-                console.log("win");
-                this.messageDispatcher.post(this.onFinishEvent);
-                this.canFill = false;
-            });
+            const animate = () => {
+                TWEEN.update();
+                requestAnimationFrame(animate);
+            };
 
-        this.fillTween.start();
-
-        const animate = () => {
-            TWEEN.update();
-            requestAnimationFrame(animate);
-        };
-
-        animate();
+            animate();
+        } else return;
     }
 
     lerp(start, end, progress) {
