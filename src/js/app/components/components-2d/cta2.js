@@ -41,10 +41,19 @@ export default class CTA2 extends DisplayObject {
 
 
     _swipeAnimation() {
-        const swipe = new Tween({
-            x: [this._pointer.x, this._pointer.x - 200, this._pointer.x],
-            y: [this._pointer.y, this._pointer.y + 25, this._pointer.y]
-        }, 1.5, { ease: Ease.sinusoidalOut, delay: 0, loop: true });
+        const amplitude = 100;
+        const time = performance.now() / 1000;
+        const swipe = new Tween(
+            {
+                x: [this._pointer.x, this._pointer.x - amplitude * 2, this._pointer.x],
+                y: [this._pointer.y, this._pointer.y + amplitude / 2, this._pointer.y],
+            },
+            3.25, {
+            ease: Ease.sinusoidalInOut,
+            delay: 0,
+            loop: true,
+        }
+        );
 
         this._pointer.add(swipe);
     }

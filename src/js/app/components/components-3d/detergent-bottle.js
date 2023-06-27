@@ -7,7 +7,7 @@ export default class DetergentBottle extends Group {
     constructor(scene) {
         super();
         this.amplitude = 0.1;
-        this.frequency = 1.4;
+        this.frequency = 2;
         this.duration = 1000;
 
         this.height = 0;
@@ -54,7 +54,6 @@ export default class DetergentBottle extends Group {
             }
         });
         this.detergentBottleCap.visible = true;
-        // this.liquid.scale.set(0, 0, 1);
         this.detergentBottle.scale.set(0.013, 0.013, 0.013);
         this.add(this.detergentBottle);
 
@@ -102,20 +101,27 @@ export default class DetergentBottle extends Group {
         });
     }
 
-    raise(emptyContainer, callback) {
+    raise(emptyContainer) {
+        this.idle();
         const targetZ = emptyContainer.position.z;
         const targetY = 1.8;
         const duration = 1500;
         let currentTime = 0;
         this.canIdle = true;
 
+        new TWEEN.Tween(this.detergentBottle.scale)
+            .to({ x: 0.0165, y: 0.0165, z: 0.0165 }, this.duration)
+            .easing(TWEEN.Easing.Sinusoidal.InOut)
+
+            .start();
+
         new TWEEN.Tween(this.detergentBottle.position)
             .to({ y: targetY, z: targetZ }, duration)
             .onUpdate(() => {
                 if (currentTime == duration / 2) {
                     emptyContainer.removeCap();
-                    console.log("remove cap")
                 }
+                this.detergentBottle.rotation.y -= 0.01;
             })
             .onComplete(() => {
                 this.detergentBottle.position.set(
@@ -124,26 +130,7 @@ export default class DetergentBottle extends Group {
                     targetZ,
                     this.canIdle = true
                 );
-                callback();
             })
-            .easing(TWEEN.Easing.Quadratic.Out)
-            .start();
-
-        new TWEEN.Tween(this.detergentBottle.rotation)
-            .to(
-                {
-                    x: this.detergentBottle.rotation.x - (this.amplitude * 2),
-                    y: this.detergentBottle.rotation.y + (this.amplitude * 2),
-                },
-                this.duration * 1.2
-            )
-            .easing(TWEEN.Easing.Sinusoidal.InOut)
-            .onUpdate(() => {
-                const time = performance.now() / 1000;
-                const angle = Math.sin(time * this.frequency * 2) * (this.amplitude * 2);
-                this.detergentBottle.rotation.x = this.detergentBottle.rotation.x - angle;
-            })
-            .yoyo()
             .easing(TWEEN.Easing.Quadratic.Out)
             .start();
     }
@@ -152,16 +139,16 @@ export default class DetergentBottle extends Group {
         this.detergentTweenRotation = new TWEEN.Tween(this.detergentBottle.rotation)
             .to(
                 {
-                    x: this.detergentBottle.rotation.x - this.amplitude,
-                    y: this.detergentBottle.rotation.y + this.amplitude,
+                    x: this.detergentBottle.rotation.x + this.amplitude,
+                    y: this.detergentBottle.rotation.y - this.amplitude,
                 },
-                this.duration * 1.2
+                this.duration * 2
             )
             .easing(TWEEN.Easing.Sinusoidal.InOut)
             .onUpdate(() => {
                 const time = performance.now() / 1000;
                 const angle = Math.sin(time * this.frequency) * this.amplitude;
-                this.detergentBottle.rotation.x = this.detergentBottle.rotation.x - angle;
+                this.detergentBottle.rotation.x = this.detergentBottle.rotation.x + angle * 2;
             })
             .repeat(Infinity)
             .yoyo(true)
@@ -170,21 +157,27 @@ export default class DetergentBottle extends Group {
         this.detergentTweenPosition = new TWEEN.Tween(this.detergentBottle.position)
             .to(
                 {
-                    x: this.detergentBottle.position.x - this.amplitude,
-                    y: this.detergentBottle.position.y + this.amplitude,
+                    x: this.detergentBottle.position.x - this.amplitude * 2,
                 },
-                this.duration * 1.2
+                this.duration * 1.3
             )
             .easing(TWEEN.Easing.Sinusoidal.InOut)
             .onUpdate(() => {
                 const time = performance.now() / 1000;
-                const angle = Math.sin(time * this.frequency) * this.amplitude;
-                this.detergentBottle.position.x = this.detergentBottle.position.x - angle;
+
+                if (time >= this.duration / 2) {
+                    this.detergentTweenPosition = new TWEEN.Tween(this.detergentBottle.position.y)
+                        .to(
+                            {
+                                y: this.detergentBottle.position.y - this.amplitude
+                            },
+                            this.duration * 1.2
+                        ).easing(TWEEN.Easing.Sinusoidal.InOut)
+                }
             })
             .repeat(Infinity)
             .yoyo(true)
             .start();
-
         const animate = () => {
             this.detergentTweenPosition.update();
             this.detergentTweenRotation.update();
@@ -251,6 +244,7 @@ export default class DetergentBottle extends Group {
                                     .yoyo(true)
                                     .delay(200)
                                     .start();
+
                             })
                             .onComplete(() => {
                                 if (this.detergentBottle.rotation.y <= 0.5) {
@@ -286,5 +280,17 @@ export default class DetergentBottle extends Group {
                 .easing(TWEEN.Easing.Sinusoidal.Out)
                 .start();
         }
+    }
+
+    end() {
+        this.rotateUp();
+        this.canIdle = false;
+        this.pause = true;
+        this.detergentBottle.traverse((object) => {
+            if (object.userData.tween) {
+                object.userData.tween.end();
+                object.userData.tween = null;
+            }
+        });
     }
 }

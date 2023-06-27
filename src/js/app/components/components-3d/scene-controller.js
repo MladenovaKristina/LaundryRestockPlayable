@@ -38,7 +38,6 @@ export default class SceneController extends THREE.Object3D {
 
     zoom(callback) {
         if (!this._canMove) {
-            let targetPositionY = 0;
             const targetFov = this._camera.fov - 12;
             const duration = 1000;
 
@@ -73,9 +72,7 @@ export default class SceneController extends THREE.Object3D {
         this._layout2d._targetlight.hide(() => {
             this._layout3d._emptyContainer.removeCap();
             this._layout3d._detergentBottle.removeDetergentCap(() => {
-                this._layout3d._detergentBottle.raise(this._layout3d._emptyContainer, () => {
-                    this._layout3d._detergentBottle.idle(); //smooth it out
-                });
+                this._layout3d._detergentBottle.raise(this._layout3d._emptyContainer);
                 this.zoom(() => {
                     this.updateCTAPosition();
                     this._layout2d.showCTA2();
@@ -127,7 +124,6 @@ export default class SceneController extends THREE.Object3D {
 
     onResize() {
         this.updateCTAPosition();
-        console.log("i update");
         if (window.innerWidth > window.innerHeight) {
             this.isLandscape = true;
         } else {
