@@ -86,19 +86,15 @@ export default class MoveController extends THREE.Object3D {
                     this._detergent.position.x >= pourThresholdMin &&
                     this._detergent.position.x <= pourThresholdMax
                 ) {
-                    console.log(this._detergent.position.x)
                     this.collision();
                 } else {
                     this._fill.stop();
                     this._detergent.isPlaying = false;
                     this._detergent.pause = false;
                     this._detergent.rotateUp();
-
                 }
             }
-            // else {
-            //     this._detergent.rotateUp();
-            // }
+
         }
     }
 

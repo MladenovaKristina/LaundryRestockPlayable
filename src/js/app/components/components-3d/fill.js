@@ -60,7 +60,7 @@ export default class Fill extends THREE.Object3D {
             const targetHeight = 0.55;
             const targetTop = 0.27;
             const targetBottom = 0.23;
-            const duration = 5000;
+            const duration = 10000;
             let currentTime = this.progress * duration;
             let currentProgress = this.progress;
 
