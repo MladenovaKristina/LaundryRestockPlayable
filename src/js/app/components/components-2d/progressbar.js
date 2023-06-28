@@ -5,8 +5,8 @@ export default class ProgressBar extends DisplayObject {
     constructor() {
         super();
         this.visible = false;
-        this.scaleX = 0.3;
-        this.scaleY = 0.3;
+        this.scaleX = 0.2;
+        this.scaleY = 0.2;
         this._bg = null;
         this._fill = null;
         this._cropRect = null;

@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { Vector3, Box3 } from "three";
 import Helpers from "../../helpers/helpers";
-import * as TWEEN from "@tweenjs/tween.js";
+import TWEEN from "@tweenjs/tween.js";
 
 export default class SceneController extends THREE.Object3D {
     constructor(layout2d, layout3d, camera, renderer) {
@@ -27,13 +27,12 @@ export default class SceneController extends THREE.Object3D {
         if (this._interactions === 0 && !this._sceneOnePlayed) {
             this._interactions++;
             this.sceneOne();
+        } if (this._sceneOnePlayed && !this._sceneTwoPlayed) {
+            this.sceneTwo();
         }
     }
 
     onMove() {
-        if (this._sceneOnePlayed && !this._sceneTwoPlayed) {
-            this.sceneTwo();
-        }
     }
 
     zoom(callback) {
@@ -76,7 +75,10 @@ export default class SceneController extends THREE.Object3D {
                 this.zoom(() => {
                     this.updateCTAPosition();
                     this._layout2d.showCTA2();
-                    this._layout2d._progressbar.show();
+                    this._layout2d._progressbar.show(); this._layout3d._moveController.start(this._layout2d, () => {
+                        this._gameplay = true;
+                        this._canMove = true;
+                    });
                 });
             });
         });
@@ -95,10 +97,7 @@ export default class SceneController extends THREE.Object3D {
 
     sceneThree() {
         console.log("scene3");
-        this._layout3d._moveController.start(this._layout2d, () => {
-            this._gameplay = true;
-            this._canMove = true;
-        });
+
         this._layout3d._moveController.setProgressBar(this._layout2d._progressbar);
     }
 

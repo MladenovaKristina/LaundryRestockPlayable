@@ -1,6 +1,5 @@
 import ConfigurableParams from '../../../data/configurable_params';
 import { Tween, Black, Graphics, Easing, DisplayObject, TextField, Ease, Timer } from '../../../utils/black-engine.module';
-import UTween from '../../helpers/../../utils/utween';
 import { TutorialHand } from './tutorial-hand';
 
 export default class CTA1 extends DisplayObject {
@@ -71,6 +70,7 @@ export default class CTA1 extends DisplayObject {
 
     if (bb.width > bb.height) {
       this._text.y -= 25;
+
       this._hand.x = position.x / bb.width + this._hand.width;
       this._hand.y = position.y - this._hand.height * 2;
     }

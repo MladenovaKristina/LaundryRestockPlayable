@@ -1,7 +1,6 @@
-import ConfigurableParams from '../../../data/configurable_params';
-import { Tween, Black, Graphics, Sprite, DisplayObject, TextField, Ease, Timer } from '../../../utils/black-engine.module';
-import UTween from '../../helpers/../../utils/utween';
-import { TutorialHand } from './tutorial-hand';
+
+import { Tween, Black, Sprite, DisplayObject, Ease, Timer } from '../../../utils/black-engine.module';
+
 
 export default class Tutorial extends DisplayObject {
   constructor() {

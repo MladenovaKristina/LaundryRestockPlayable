@@ -1,24 +1,24 @@
-import { call } from "file-loader";
 import * as THREE from "three";
 
 export default class MoveController extends THREE.Object3D {
     constructor() {
         super();
         this._playFill = 0;
-        //this one controls detergent movement
         this._screenWidth = window.innerWidth;
         this._canMove = false;
-        this._isDown = false;
+        this._isDown = null;
         this._layout2d = null;
         this._playerX = null;
         this._playerY = null;
         this._detergent = null;
+        this.size = null;
+
         this._fill = null;
         this._emptyContainer = null;
 
+        this._canPour = false;
         this._playFill = 0;
         this.time = 0;
-
     }
 
     start(layout2d, callback) {
@@ -29,11 +29,15 @@ export default class MoveController extends THREE.Object3D {
 
     setBottleView(obj) {
         this._detergent = obj;
+        const bbox = new THREE.Box3().setFromObject(this._detergent);
+        this.size = new THREE.Vector3();
+        bbox.getSize(this.size);
     }
 
     setFillView(obj) {
         this._fill = obj;
     }
+
     setEmptyContainerView(obj) {
         this._emptyContainer = obj;
     }
@@ -44,65 +48,74 @@ export default class MoveController extends THREE.Object3D {
 
     onMove(x, y) {
         if (this._canMove) {
-            this._getMousePosition(x, y, this._detergent, this._emptyContainer);
+            this._getMousePosition(x, y);
         }
     }
 
     onDown() {
-        if (this._canMove) {
-            this._detergent.rotateDown();
-        }
         this._isDown = true;
     }
 
     onUp() {
-        if (this._canMove) {
-            this._detergent.rotateUp();
-        }
+        this._detergent.rotateUp();
         this._isDown = false;
     }
 
-    _getMousePosition(x, y, detergent, emptyContainer) {
-
+    _getMousePosition(x, y) {
         const normalizedX = (x / this._screenWidth) * 400 - 200;
-        this._playerX = normalizedX;
+        this._playerX = normalizedX - this.size.y;
         this._playerY = y;
-        this._moveDetergent(detergent, emptyContainer);
+        this._moveDetergent();
     }
 
     _moveDetergent(detergent, emptyContainer) {
         const speed = -0.002;
         const maxDistance = 300;
-        const maxY = 30;
+        const pourThresholdMin = 0.2;
+        const pourThresholdMax = 0.3;
+        const rotationThresholdMin = Math.PI * 0.3;
+        const rotationThresholdMax = Math.PI * 0.5;
+        const rotationTarget = Math.PI * 0.8;
+        const rotationStep = 0.1;
 
         if (this._canMove && this._isDown) {
             const clampPlayerX = Math.max(-maxDistance, Math.min(maxDistance, this._playerX));
-            const clampPlayerY = Math.max(-maxY, Math.min(maxY, this._playerY));
-            detergent.position.x = -clampPlayerX * speed;
-            detergent.position.y = -clampPlayerY * speed * detergent.position.x;
-            detergent.rotation.z = -clampPlayerY * speed * detergent.position.x;
+            this._detergent.position.x = -clampPlayerX * speed;
 
-            if (detergent.position.x > 0.23 && detergent.position.x <= 0.45 && this._isDown) {
-                this.collision();
-            } else {
-                this._fill.stop();
+            if (this._isDown) {
+                if (this._detergent.position.x >= pourThresholdMin && this._detergent.position.x <= pourThresholdMax) {
+                    console.log(this._detergent.position.x);
+                    this.collision();
+                } else {
+                    this._fill.stop();
+                    this._detergent.isPlaying = false;
+                    this._detergent.pause = false;
+                }
+            } else if (this._detergent.position.x <= 0 && this._detergent.position.x >= 0.5) {
+                this._detergent.rotateUp();
+            }
+
+            if (this._detergent.rotation.y >= rotationThresholdMin && this._detergent.rotation.y <= rotationThresholdMax) {
+                this._detergent.rotation.z += rotationStep;
+            } else if (this._detergent.rotation.y > rotationThresholdMax) {
+                this._detergent.rotation.z = Math.max(this._detergent.rotation.z - rotationStep, rotationTarget);
             }
         }
     }
 
 
     collision() {
+        this._detergent.liquid.visible = true;
+        this._detergent.pour();
         if (this._playFill === 0) {
             this._playFill++;
             this._fill.show();
             this._layout2d.showHint();
-
         } else {
             if (this._fill.fillTween && !this._fill.fillTween.isPlaying()) {
                 this._layout2d.progressBar(this._fill.progress * 2);
                 this._fill.resume();
             }
-
         }
     }
 }

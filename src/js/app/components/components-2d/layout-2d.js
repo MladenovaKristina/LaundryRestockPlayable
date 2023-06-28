@@ -90,7 +90,6 @@ export default class Layout2D extends DisplayObject {
     this._cta2.y = bb.top;
     this._cta2._text.y = bb.height / 2 + 100;
 
-
     this._endScreen.onResize(bb);
 
     if (this._logoGoogle) {
@@ -112,10 +111,10 @@ export default class Layout2D extends DisplayObject {
 
     if (bb.width > bb.height) {
       this._progressbar.x = Black.stage.centerX;
-      this._progressbar.y = bb.bottom - this._topText._height - 20;
+      this._progressbar.y = bb.bottom - this._topText._height - 10;
     } else {
       this._progressbar.x = Black.stage.centerX;
-      this._progressbar.y = bb.top + this._topText._height + 20;
+      this._progressbar.y = bb.top + this._topText._height + 10;
     }
 
   }

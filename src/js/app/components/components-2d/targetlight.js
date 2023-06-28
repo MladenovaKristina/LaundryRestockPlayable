@@ -1,6 +1,5 @@
-import { Black, Graphics, DisplayObject, Tween, Ease, Vector } from '../../../utils/black-engine.module';
-import Helpers from '../../helpers/helpers';
-import ConfigurableParams from '../../../data/configurable_params';
+import { Black, Graphics, DisplayObject, Tween, Vector } from '../../../utils/black-engine.module';
+
 
 export default class TargetLight extends DisplayObject {
     constructor() {

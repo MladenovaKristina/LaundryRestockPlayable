@@ -1,6 +1,6 @@
 import ConfigurableParams from '../../../data/configurable_params';
 import { Tween, Black, DisplayObject, Sprite } from '../../../utils/black-engine.module';
-import Helpers from '../../helpers/helpers';
+
 
 export class TutorialHand extends DisplayObject {
   constructor() {

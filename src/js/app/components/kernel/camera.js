@@ -36,7 +36,7 @@ export default class Camera {
       this._orientation = "portrait";
     }
 
-    this.threeCamera.fov = Helpers.LP(50, 60);
+    this.threeCamera.fov = Helpers.LP(55, 60);
 
     this.threeCamera.aspect = renderer.domElement.width / renderer.domElement.height;
     this.threeCamera.updateProjectionMatrix();
