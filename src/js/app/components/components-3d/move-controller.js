@@ -1,3 +1,4 @@
+import { call } from "file-loader";
 import * as THREE from "three";
 
 export default class MoveController extends THREE.Object3D {
@@ -53,6 +54,8 @@ export default class MoveController extends THREE.Object3D {
     }
 
     onDown() {
+        if (this._canMove) this._detergent.rotateDown();
+
         this._isDown = true;
     }
 
@@ -73,36 +76,32 @@ export default class MoveController extends THREE.Object3D {
         const maxDistance = 300;
         const pourThresholdMin = 0.2;
         const pourThresholdMax = 0.3;
-        const rotationThresholdMin = Math.PI * 0.3;
-        const rotationThresholdMax = Math.PI * 0.5;
-        const rotationTarget = Math.PI * 0.8;
-        const rotationStep = 0.1;
 
         if (this._canMove && this._isDown) {
             const clampPlayerX = Math.max(-maxDistance, Math.min(maxDistance, this._playerX));
+
             this._detergent.position.x = -clampPlayerX * speed;
 
             if (this._isDown) {
-                if (this._detergent.position.x >= pourThresholdMin && this._detergent.position.x <= pourThresholdMax) {
-                    console.log(this._detergent.position.x);
+                if (
+                    this._detergent.position.x >= pourThresholdMin &&
+                    this._detergent.position.x <= pourThresholdMax
+                ) {
+                    console.log(this._detergent.position.x)
                     this.collision();
                 } else {
                     this._fill.stop();
                     this._detergent.isPlaying = false;
                     this._detergent.pause = false;
-                }
-            } else if (this._detergent.position.x <= 0 && this._detergent.position.x >= 0.5) {
-                this._detergent.rotateUp();
-            }
+                    this._detergent.rotateUp();
 
-            if (this._detergent.rotation.y >= rotationThresholdMin && this._detergent.rotation.y <= rotationThresholdMax) {
-                this._detergent.rotation.z += rotationStep;
-            } else if (this._detergent.rotation.y > rotationThresholdMax) {
-                this._detergent.rotation.z = Math.max(this._detergent.rotation.z - rotationStep, rotationTarget);
+                }
             }
+            // else {
+            //     this._detergent.rotateUp();
+            // }
         }
     }
-
 
     collision() {
         this._detergent.liquid.visible = true;

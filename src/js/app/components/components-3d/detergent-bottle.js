@@ -103,7 +103,7 @@ export default class DetergentBottle extends Group {
 
     raise(emptyContainer) {
         this.idle();
-        const targetZ = emptyContainer.position.z;
+        const targetZ = 0;
         const targetY = 1.8;
         const duration = 1500;
         let currentTime = 0;
@@ -221,38 +221,51 @@ export default class DetergentBottle extends Group {
     }
 
     rotateDown() {
-        if (this.isPlaying) return;
+        if (this.isPlaying || this.isRotatingUp) return;
         if (!this.pause) {
             this.isPlaying = true;
 
-            const targetRotateY = Math.PI * 0.35;
-            const duration = 1000;
+            const targetRotateY = Math.PI * 0.3;
+            const duration = 500;
 
             this.liquidTween = new TWEEN.Tween(this.detergentBottle.rotation)
                 .to({ y: targetRotateY, z: 0 }, duration)
                 .easing(TWEEN.Easing.Quadratic.In)
+                .onComplete(() => {
+                    this.isPlaying = false;
+                })
                 .start();
         }
     }
 
-
     rotateUp() {
-        if (!this.pause) {
-            this.stopLiquid();
+        const duration = 400;
+        const targetRotateY = Math.PI * 0.3;
+        if (!this.pause && this.detergentBottle.rotation.y > targetRotateY) {
+            if (this.isRotatingUp) return;
             this.isPlaying = true;
-            const duration = 500;
-            const targetRotateY = 0;
+            this.isRotatingUp = true;
+
             new TWEEN.Tween(this.detergentBottle.rotation)
                 .to({ y: targetRotateY }, duration)
                 .easing(TWEEN.Easing.Quadratic.Out)
+                .onUpdate(() => {
+                    if (this.detergentBottle.rotation.y >= targetRotateY * 0.3)
+                        new TWEEN.Tween(this.liquid.scale)
+                            .to({ y: 0, x: 0, z: 0 }, duration * 0.1)
+                            .easing(TWEEN.Easing.Sinusoidal.Out)
+                            .onComplete(() => { this.liquid.visible = false; this.liquidBase.visible = false })
+                            .start();
+                })
                 .onComplete(() => {
                     this.isPlaying = false;
+                    this.isRotatingUp = false;
                 })
                 .start();
 
             const animate = () => {
                 TWEEN.update();
-                if (this.isPlaying) {
+                if (this.isPlaying || this.isRotatingUp) {
                     requestAnimationFrame(animate);
                 }
             };
@@ -260,13 +273,17 @@ export default class DetergentBottle extends Group {
         }
     }
 
+
     pour() {
-        const duration = 500;
+        const duration = 300;
         const targetRotateY = Math.PI * 0.4;
         this.liquid.visible = true;
         if (this.detergentBottle.rotation.y >= Math.PI * 0.3) {
             new TWEEN.Tween(this.detergentBottle.rotation)
                 .to({ y: Math.PI * 0.4 }, duration * 0.3)
+                .onComplete(() => {
+                    this.liquidTween.start();
+                })
                 .start();
 
             this.liquidTween = new TWEEN.Tween(this.liquid.scale)
@@ -277,24 +294,22 @@ export default class DetergentBottle extends Group {
                     if (this.detergentBottle.rotation.y < targetRotateY * 0.5)
                         this.liquidBase.visible = false;
                     new TWEEN.Tween(this.liquid.scale)
-                        .to({ y: this.liquid.scale.y, z: [2, 1] }, duration)
+                        .to({ y: this.liquid.scale.y, z: [1, 2] }, duration)
                         .repeat(Infinity)
                         .yoyo(true)
                         .start();
-                })
-                .delay(1)
-                .start();
+                });
         }
     }
 
-    stopLiquid() {
-        this.liquidBase.visible = false
-        if (this.liquidTween && this.liquidTween.isPlaying()) this.liquidTween.end();
-        new TWEEN.Tween(this.liquid.scale)
-            .to({ y: 0, x: 0, z: 0 }, 200)
-            .easing(TWEEN.Easing.Sinusoidal.Out)
-            .start();
-    }
+    // stopLiquid() {
+    //     this.liquidBase.visible = false
+    //     if (this.liquidTween && this.liquidTween.isPlaying()) this.liquidTween.end();
+    //     new TWEEN.Tween(this.liquid.scale)
+    //         .to({ y: 0, x: 0, z: 0 }, 200)
+    //         .easing(TWEEN.Easing.Sinusoidal.Out)
+    //         .start();
+    // }
 
     end() {
         this.canIdle = false;
