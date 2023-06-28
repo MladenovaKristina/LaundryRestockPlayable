@@ -97,8 +97,8 @@ export default class SceneController extends THREE.Object3D {
 
     sceneThree() {
         console.log("scene3");
-
         this._layout3d._moveController.setProgressBar(this._layout2d._progressbar);
+        this._layout3d._detergentBottle.rotateDown();
     }
 
     updateCTAPosition() {

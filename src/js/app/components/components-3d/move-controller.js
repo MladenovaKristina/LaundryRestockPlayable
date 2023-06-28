@@ -54,7 +54,7 @@ export default class MoveController extends THREE.Object3D {
     }
 
     onDown() {
-        if (this._canMove) this._detergent.rotateDown();
+        // if (this._canMove) this._detergent.rotateDown();
 
         this._isDown = true;
     }
@@ -79,7 +79,6 @@ export default class MoveController extends THREE.Object3D {
 
         if (this._canMove && this._isDown) {
             const clampPlayerX = Math.max(-maxDistance, Math.min(maxDistance, this._playerX));
-
             this._detergent.position.x = -clampPlayerX * speed;
 
             if (this._isDown) {
