@@ -74,8 +74,10 @@ export default class MoveController extends THREE.Object3D {
     _moveDetergent(detergent, emptyContainer) {
         const speed = -0.002;
         const maxDistance = 300;
-        const pourThresholdMin = 0.2;
-        const pourThresholdMax = 0.3;
+        const center = 0;
+
+        const pourThresholdMin = center + 0.2;
+        const pourThresholdMax = center + 0.3;
 
         if (this._canMove && this._isDown) {
             const clampPlayerX = Math.max(-maxDistance, Math.min(maxDistance, this._playerX));

@@ -17,7 +17,10 @@ export default class CTA1 extends DisplayObject {
   onAdded() {
 
     this._hand = new TutorialHand();
+    this._hand.scaleX = 2;
+    this._hand.scaleY = 2;
     this._hand.alignAnchor(0, 0);
+
 
     this.add(this._hand);
 
@@ -47,8 +50,8 @@ export default class CTA1 extends DisplayObject {
 
   _makeClick() {
     const scaleTw = new Tween({
-      scaleX: [this.scaleX, this.scaleX - 0.13, this.scaleX],
-      scaleY: [this.scaleY, this.scaleY - 0.18, this.scaleY],
+      scaleX: [2, 2 - 0.13, 2],
+      scaleY: [2, 2 - 0.18, 2],
     }, 1, { ease: Ease.sinusoidalInOut, loop: true });
     this._hand.add(scaleTw);
   }

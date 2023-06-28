@@ -41,7 +41,6 @@ export default class CTA2 extends DisplayObject {
 
     _swipeAnimation() {
         const amplitude = 100;
-        const time = performance.now() / 1000;
         const swipe = new Tween(
             {
                 x: [this._pointer.x, this._pointer.x - amplitude * 2, this._pointer.x],
@@ -77,15 +76,15 @@ export default class CTA2 extends DisplayObject {
 
     setPosition(position) {
         const bb = Black.stage.bounds;
+        this._pointer.scaleX = 2;
+        this._pointer.scaleY = 2;
 
         if (bb.width > bb.height) {
-            this._pointer.scale = 0.8;
             this._pointer.x = position.x / bb.width + this._pointer.width * 2;
             this._pointer.y = position.y;
 
         }
         if (bb.width < bb.height) {
-            this._pointer.scale = 1;
 
             this._pointer.x = position.x / bb.width + this._pointer.width * 1.8;
             this._pointer.y = position.y + this._pointer.height;

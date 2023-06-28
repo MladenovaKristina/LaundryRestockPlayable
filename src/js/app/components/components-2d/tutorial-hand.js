@@ -8,7 +8,6 @@ export class TutorialHand extends DisplayObject {
 
     this.animate = false;
     this.detergentBottle = null;
-
     this._distX = 150;
     this._distY = 60;
     this._xdt = -4.682145855324444;
