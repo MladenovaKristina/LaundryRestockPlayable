@@ -66,8 +66,8 @@ export default class MoveController extends Object3D {
     }
 
     _getMousePosition(x, y) {
-        const normalizedX = x / this._screenWidth; // Normalize x coordinate to range [0, 1]
-        this._playerX = normalizedX; // Map normalized x coordinate to range [-1, 1]
+        const normalizedX = x / this._screenWidth;
+        this._playerX = normalizedX;
         this._moveDetergent(this._playerX);
     }
 
@@ -78,7 +78,7 @@ export default class MoveController extends Object3D {
         const pourThresholdMax = center + 0.3;
 
         if (this._canMove && this._isDown) {
-            this._playerX = MathUtils.clamp(this._playerX, 0, 1); // Clamp _playerX between 0 and 1
+            this._playerX = MathUtils.clamp(this._playerX, 0, 1); 
             this._detergent.position.x = x - this.size.x * 0.3;
 
             if (
