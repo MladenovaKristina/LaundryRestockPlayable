@@ -52,7 +52,6 @@ export default class MoveController extends Object3D {
         const posY = intersects[0].point.y - this.size.y;
         const posZ = 0;
 
-        console.log(posX, posY, posZ)
         this._moveDetergent(posX, posY, posZ);
     }
 
