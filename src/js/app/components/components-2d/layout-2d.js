@@ -1,7 +1,6 @@
 import {
   Black,
   DisplayObject,
-  Rectangle,
   Sprite
 } from '../../../utils/black-engine.module';
 import model from '../../../data/model';

@@ -1,4 +1,3 @@
-import { call } from "file-loader";
 import * as THREE from "three";
 
 export default class MoveController extends THREE.Object3D {

@@ -1,5 +1,5 @@
 import ConfigurableParams from '../../../data/configurable_params';
-import { Tween, Black, Graphics, Sprite, DisplayObject, TextField, Ease } from '../../../utils/black-engine.module';
+import { Tween, Black, Graphics, DisplayObject, TextField } from '../../../utils/black-engine.module';
 import Helpers from '../../helpers/helpers';
 
 export default class TopText extends DisplayObject {
@@ -16,7 +16,7 @@ export default class TopText extends DisplayObject {
     this._bg = new Graphics();
     this._bg.alpha = Number(ConfigurableParams.getData()["top_text"]["top_title_bg_alpha"]["value"])
     this.add(this._bg);
-    
+
     const textValue = ConfigurableParams.getData()["top_text"]["top_title_text"]["value"];
     const textColor = Number(ConfigurableParams.getData()["top_text"]["top_title_text_color"]["value"].replace('#', '0x'));
     const strokeColor = Number(ConfigurableParams.getData()["top_text"]["top_title_stroke_color"]["value"].replace('#', '0x'));

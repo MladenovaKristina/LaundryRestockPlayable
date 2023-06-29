@@ -1,6 +1,5 @@
 import { Black, Graphics, DisplayObject, Tween, Vector } from '../../../utils/black-engine.module';
 
-
 export default class TargetLight extends DisplayObject {
     constructor() {
         super();
@@ -75,9 +74,6 @@ export default class TargetLight extends DisplayObject {
             this._hole.cut();
         }
     }
-
-
-
 
     show() {
         this.visible = true;

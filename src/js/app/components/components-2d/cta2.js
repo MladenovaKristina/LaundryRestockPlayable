@@ -1,5 +1,5 @@
 import ConfigurableParams from '../../../data/configurable_params';
-import { Tween, Black, Graphics, Sprite, DisplayObject, TextField, Ease, Timer } from '../../../utils/black-engine.module';
+import { Tween, Black, DisplayObject, TextField, Ease } from '../../../utils/black-engine.module';
 import { TutorialHand } from './tutorial-hand';
 
 export default class CTA2 extends DisplayObject {

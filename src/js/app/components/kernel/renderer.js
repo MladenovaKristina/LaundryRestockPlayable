@@ -1,7 +1,6 @@
 import { WebGLRenderer, PCFSoftShadowMap } from 'three';
 import Config from '../../../data/config';
 import ConfigurableParams from '../../../data/configurable_params';
-import * as THREE from "three";
 const WebpackConfig = require('../../../data/settingswebpack');
 
 export default class Renderer {
