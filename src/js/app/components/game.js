@@ -81,8 +81,7 @@ export default class Game {
     const geom = new THREE.PlaneGeometry(15, 15);
 
     const plane = this._raycasterPlane = new THREE.Mesh(geom, material);
-    plane.position.set(0, 0, 0);
-    plane.rotation.x = -Math.PI / 2 + 0.1;
+    plane.position.set(0, 1, 0);
     this._scene.add(plane);
   }
 

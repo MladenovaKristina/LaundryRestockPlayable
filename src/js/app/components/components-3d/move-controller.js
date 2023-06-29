@@ -1,4 +1,5 @@
 import { Object3D, Box3, Vector3, Vector2, Raycaster, MathUtils } from "three";
+import Helpers from "../../helpers/helpers";
 
 export default class MoveController extends Object3D {
     constructor(raycasterPlane, camera) {
@@ -45,12 +46,15 @@ export default class MoveController extends Object3D {
 
         const intersects = this._raycaster.intersectObjects([this._raycasterPlane]);
 
+        console.log(intersects.length)
         if (intersects.length < 1) return;
 
-        this.position.x = intersects[0].point.x + this.size.y / 2;
-        this.position.y = intersects[0].point.y - this.size.y;
-        this.position.z = 0;
-        this._moveDetergent(this.position.x, this.position.y, this.position.z);
+        const posX = intersects[0].point.x + this.size.y / 2;
+        const posY = intersects[0].point.y - this.size.y;
+        const posZ = 0;
+
+        console.log(posX, posY, posZ)
+        this._moveDetergent(posX, posY, posZ);
     }
 
     start(layout2d, callback) {
@@ -64,8 +68,6 @@ export default class MoveController extends Object3D {
         const bbox = new Box3().setFromObject(this._detergent);
         this.size = new Vector3();
         bbox.getSize(this.size);
-        // this._detergent.position.set(this.position.x, this.position.y, this.position.z);
-
     }
 
     setFillView(obj) {
@@ -82,12 +84,12 @@ export default class MoveController extends Object3D {
 
     onMove(x, y) {
         if (!this._isDown) return;
-        this._onRaycast(x, y);
+        if (this._canMove && this._isDown) this._onRaycast(x, y);
     }
 
     onDown(x, y) {
         this._isDown = true;
-        this._onRaycast(x, y);
+        if (this._canMove) this._onRaycast(x, y);
     }
 
     onUp() {
@@ -96,13 +98,18 @@ export default class MoveController extends Object3D {
         if (this._fill.fillTween && this._fill.fillTween.isPlaying()) {
             this._fill.stop();
         }
+
     }
 
     _moveDetergent(x, y, z) {
         const center = 0;
-        const pourThresholdMin = center + 0.2;
-        const pourThresholdMax = center + 0.3;
-        this._detergent.position.set(x, y, z);
+        const pourThresholdMin = center + 0.4;
+        const pourThresholdMax = center + 0.48;
+
+        this._detergent.position.x = Helpers.clamp(x, -0.43, 0.6);
+        this._detergent.position.y = Helpers.clamp(y - 1.5, -0.15, 0.33);
+
+        console.log(this._detergent.position.x)
 
         if (this._canMove && this._isDown) {
             if (

@@ -1,5 +1,5 @@
 import * as TWEEN from "@tweenjs/tween.js";
-import { Cache, Group, MeshStandardMaterial } from "three";
+import { Cache, Vector3, Group, MeshStandardMaterial } from "three";
 
 export default class DetergentBottle extends Group {
     constructor(scene) {
@@ -25,6 +25,8 @@ export default class DetergentBottle extends Group {
         this.detergentTweenPosition = null;
         this.liquidTween = null;
         this._init();
+
+        this.detergentStartPosition = null;
     }
 
     _init() {
@@ -127,8 +129,8 @@ export default class DetergentBottle extends Group {
                     this.detergentBottle.position.x,
                     targetY,
                     targetZ,
-                    this.canIdle = true
-                );
+                ); this.canIdle = true
+                this.detergentStartPosition = new Vector3(this.detergentBottle.position.x, this.detergentBottle.position.y, 0);
             })
             .easing(TWEEN.Easing.Quadratic.Out)
             .start();
@@ -195,6 +197,7 @@ export default class DetergentBottle extends Group {
         if (this.detergentTweenPosition) {
             this.detergentTweenPosition.end();
             this.detergentTweenRotation.end();
+            this.detergentBottle.position.set(this.detergentStartPosition.x, this.detergentStartPosition.y, 0)
             if (callback) callback();
         }
     }
