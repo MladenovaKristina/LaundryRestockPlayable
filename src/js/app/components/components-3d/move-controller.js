@@ -53,56 +53,55 @@ export default class MoveController extends THREE.Object3D {
         }
     }
 
-    onDown() {
-        // if (this._canMove) this._detergent.rotateDown();
-
+    onDown(x, y) {
         this._isDown = true;
+        // this._getMousePosition(x, y);
     }
 
     onUp() {
         this._detergent.rotateUp();
         this._isDown = false;
+        if (this._fill.fillTween && this._fill.fillTween.isPlaying()) {
+            this._fill.stop();
+        }
     }
 
     _getMousePosition(x, y) {
-        const normalizedX = (x / this._screenWidth) * 400 - 200;
-        this._playerX = normalizedX - this.size.y;
-        this._playerY = y;
-        this._moveDetergent();
+        const normalizedX = x / this._screenWidth; // Normalize x coordinate to range [0, 1]
+        this._playerX = normalizedX; // Map normalized x coordinate to range [-1, 1]
+        console.log(this._playerX)
+        this._moveDetergent(this._playerX);
     }
 
-    _moveDetergent(detergent, emptyContainer) {
-        const speed = -0.002;
-        const maxDistance = 300;
+    _moveDetergent(x) {
         const center = 0;
-
+        const speed = -0.002;
         const pourThresholdMin = center + 0.2;
         const pourThresholdMax = center + 0.3;
 
         if (this._canMove && this._isDown) {
-            const clampPlayerX = Math.max(-maxDistance, Math.min(maxDistance, this._playerX));
-            this._detergent.position.x = -clampPlayerX * speed;
+            this._playerX = THREE.MathUtils.clamp(this._playerX, 0, 1); // Clamp _playerX between 0 and 1
+            this._detergent.position.x = x - this.size.x * 0.3;
 
-            if (this._isDown) {
-                if (
-                    this._detergent.position.x >= pourThresholdMin &&
-                    this._detergent.position.x <= pourThresholdMax
-                ) {
-                    this.collision();
-                } else {
-                    this._fill.stop();
-                    this._detergent.isPlaying = false;
-                    this._detergent.pause = false;
-                    this._detergent.rotateUp();
-                }
+            if (
+                this._detergent.position.x >= pourThresholdMin &&
+                this._detergent.position.x <= pourThresholdMax
+            ) {
+                this.collision();
+            } else {
+                this._fill.stop();
+                this._detergent.isPlaying = false;
+                this._detergent.pause = false;
+                this._detergent.rotateUp();
             }
-
         }
     }
+
 
     collision() {
         this._detergent.liquid.visible = true;
         this._detergent.pour();
+
         if (this._playFill === 0) {
             this._playFill++;
             this._fill.show();
