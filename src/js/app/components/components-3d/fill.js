@@ -28,7 +28,6 @@ export default class Fill extends Object3D {
     }
 
     show() {
-        this.visible = true;
         this.canFill = true;
         if (!this.fillTween || !this.fillTween.isPlaying()) {
             this.fill();
@@ -59,7 +58,7 @@ export default class Fill extends Object3D {
         if (this.canFill) {
             const targetHeight = 0.55;
             const targetTop = 0.27;
-            const targetBottom = 0.23;
+            const targetBottom = 0.24;
             const duration = 8000;
             let currentTime = this.progress * duration;
             let currentProgress = this.progress;
@@ -68,6 +67,8 @@ export default class Fill extends Object3D {
                 .to({ time: duration }, duration - currentTime)
                 .easing(TWEEN.Easing.Quadratic.In)
                 .onUpdate(({ time }) => {
+                    if (this.progress >= 0.001) this.visible = true;
+
                     this.progress = currentProgress + ((time - currentTime) / (duration - currentTime));
                     this.trackTime += 0.001;
 
