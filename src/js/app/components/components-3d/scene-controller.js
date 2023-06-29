@@ -1,146 +1,131 @@
-import { Object3D, Box3, Vector3, Vector2, Raycaster, MathUtils } from "three";
+import { Vector3, Box3, Object3D } from "three";
 import Helpers from "../../helpers/helpers";
+import TWEEN from "@tweenjs/tween.js";
 
-export default class MoveController extends Object3D {
-    constructor(raycasterPlane, camera) {
+export default class SceneController extends Object3D {
+    constructor(layout2d, layout3d, camera, renderer) {
         super();
-        this._raycasterPlane = raycasterPlane;
         this._camera = camera;
-
-        this._playFill = 0;
-        this._screenWidth = window.innerWidth;
-        this._canMove = false;
-        this._isDown = false;
-        this._layout2d = null;
-        this._playerX = null;
-        this._playerY = null;
-        this._detergent = null;
-        this.size = null;
-
-        this._fill = null;
-        this._emptyContainer = null;
-
-        this._canPour = false;
-        this._playFill = 0;
-        this.time = 0;
-        this.position.set(0, 2, 0);
-
-        this._raycaster = new Raycaster();
-        this._pointer = new Vector2();
-
-        this._detergent = new Object3D();
-        this._detergent.position.set(this.position.x, this.position.y, this.position.z);
-
-        this._initRaycaster();
-    }
-    _initRaycaster() {
-        this._raycaster = new Raycaster();
-        this._pointer = new Vector2();
-    }
-
-    _onRaycast(x, y) {
-        this._pointer.x = (x / window.innerWidth) * 2 - 1;
-        this._pointer.y = -(y / window.innerHeight) * 2 + 1;
-
-        this._raycaster.setFromCamera(this._pointer, this._camera);
-
-        const intersects = this._raycaster.intersectObjects([this._raycasterPlane]);
-
-        console.log(intersects.length)
-        if (intersects.length < 1) return;
-
-        const posX = intersects[0].point.x + this.size.y / 2;
-        const posY = intersects[0].point.y - this.size.y;
-        const posZ = 0;
-
-        console.log(posX, posY, posZ)
-        this._moveDetergent(posX, posY, posZ);
-    }
-
-    start(layout2d, callback) {
+        this._renderer = renderer;
         this._layout2d = layout2d;
-        this._canMove = true;
-        callback();
+        this._layout3d = layout3d;
+        this._canMove = false;
+        this._interactions = 0;
+        this._gameplay = false;
+        this._sceneOnePlayed = false;
+        this._sceneTwoPlayed = false;
+        this.isLandscape = null;
+        this.start();
     }
 
-    setBottleView(obj) {
-        this._detergent = obj;
-        const bbox = new Box3().setFromObject(this._detergent);
-        this.size = new Vector3();
-        bbox.getSize(this.size);
-        // this._detergent.position.set(this.position.x, this.position.y, this.position.z);
-
+    start() {
+        this.sceneZero();
     }
 
-    setFillView(obj) {
-        this._fill = obj;
-    }
-
-    setEmptyContainerView(obj) {
-        this._emptyContainer = obj;
-    }
-
-    setProgressBar(progressbar) {
-        this._fill.setProgressBar(progressbar);
-    }
-
-    onMove(x, y) {
-        if (!this._isDown) return;
-        this._onRaycast(x, y);
-    }
-
-    onDown(x, y) {
-        this._isDown = true;
-        this._onRaycast(x, y);
-    }
-
-    onUp() {
-        this._detergent.rotateUp();
-        this._isDown = false;
-        if (this._fill.fillTween && this._fill.fillTween.isPlaying()) {
-            this._fill.stop();
+    onDown() {
+        if (this._interactions === 0 && !this._sceneOnePlayed) {
+            this._interactions++;
+            this.sceneOne();
+        } if (this._sceneOnePlayed && !this._sceneTwoPlayed) {
+            this.sceneTwo();
         }
     }
 
-    _moveDetergent(x, y, z) {
-        const center = 0;
-        const pourThresholdMin = center + 0.2;
-        const pourThresholdMax = center + 0.3;
-        // this._detergent.position.set(x, y, z);
+    onMove() {
+    }
 
-        this._detergent.position.x = Helpers.clamp(x, -0.43, 0.6);
-        this._detergent.position.y = Helpers.clamp(y - 1.5, -0.15, 0.33);
+    zoom(callback) {
+        if (!this._canMove) {
+            const targetFov = this._camera.fov - 12;
+            const duration = 1000;
 
-        console.log(this._detergent.position.x)
-
-        if (this._canMove && this._isDown) {
-            if (
-                x >= pourThresholdMin &&
-                x <= pourThresholdMax
-            ) {
-                this.collision();
-            } else {
-                this._fill.stop();
-                this._detergent.isPlaying = false;
-                this._detergent.pause = false;
-                this._detergent.rotateUp();
-            }
+            new TWEEN.Tween(this._camera)
+                .to({ fov: targetFov }, duration)
+                .easing(TWEEN.Easing.Sinusoidal.In)
+                .onUpdate(() => {
+                    if (this.isLandscape) {
+                        this._camera.position.y += 0.008;
+                    } else {
+                        this._camera.position.y += 0.005;
+                    }
+                    this._camera.updateProjectionMatrix();
+                })
+                .delay(500)
+                .onComplete(() => {
+                    callback();
+                })
+                .start();
         }
     }
 
-    collision() {
-        this._detergent.liquid.visible = true;
-        this._detergent.pour();
+    sceneZero() {
+        console.log("scene0");
+        this._layout2d.showCTA1();
+    }
 
-        if (this._playFill === 0) {
-            this._playFill++;
-            this._fill.show();
-            this._layout2d.showHint();
+    sceneOne() {
+        console.log("scene1");
+        this._sceneOnePlayed = true;
+        this._layout2d._cta1.hide();
+        this._layout2d._targetlight.hide(() => {
+            this._layout3d._emptyContainer.removeCap();
+            this._layout3d._detergentBottle.removeDetergentCap(() => {
+                this._layout3d._detergentBottle.raise(this._layout3d._emptyContainer);
+                this.zoom(() => {
+                    this.updateCTAPosition();
+                    this._layout2d.showCTA2();
+                    this._layout2d._progressbar.show(); this._layout3d._moveController.start(this._layout2d, () => {
+                        this._gameplay = true;
+                        this._canMove = true;
+                    });
+                });
+            });
+        });
+    }
+
+    sceneTwo() {
+        if (!this._sceneTwoPlayed && this._canMove) {
+            console.log("scene2");
+            this._layout3d._detergentBottle.stopIdle(() => {
+                this._layout2d._cta2.hide();
+                this._sceneTwoPlayed = true;
+                this.sceneThree();
+            });
+        }
+    }
+
+    sceneThree() {
+        console.log("scene3");
+        this._layout3d._moveController.setProgressBar(this._layout2d._progressbar);
+        this._layout3d._detergentBottle.rotateDown();
+    }
+
+    updateCTAPosition() {
+        const detergent = new Vector3(
+            this._layout3d._detergentBottle.detergentBottle.position.x,
+            this._layout3d._detergentBottle.detergentBottle.position.y,
+            this._layout3d._detergentBottle.detergentBottle.position.z
+        );
+        const position = Helpers.vector3ToBlackPosition(
+            detergent,
+            this._renderer.threeRenderer,
+            this._camera
+        );
+        const boundingBox = new Box3().setFromObject(
+            this._layout3d._detergentBottle.detergentBottle
+        );
+        const size = new Vector3();
+        boundingBox.getSize(size);
+        const height = size.y;
+        this._layout2d.update2dPos(position, height);
+    }
+
+    onResize() {
+        this.updateCTAPosition();
+        if (window.innerWidth > window.innerHeight) {
+            this.isLandscape = true;
         } else {
-            if (this._fill.fillTween && !this._fill.fillTween.isPlaying()) {
-                this._layout2d.progressBar(this._fill.progress * 2);
-                this._fill.resume();
-            }
+            this.isLandscape = false;
         }
     }
 }
