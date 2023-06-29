@@ -6,6 +6,9 @@ import CameraController from "./components-3d/camera-controller";
 import SoundsController from "./kernel/soundscontroller";
 import ConfigurableParams from "../../data/configurable_params";
 import SceneController from "./components-3d/scene-controller";
+// import SceneController from "./components-3d/scene-controller-v2";
+//use this instead of using scene 2
+
 
 const STATES = {
   INTRO: 0, // if we want to make some action before the player interaction
