@@ -1,12 +1,12 @@
-import * as THREE from "three";
+import { Vector3 } from "three";
 import Helpers from "../../helpers/helpers";
 
 export default class CameraController {
   constructor(camera) {
     this._camera = camera;
 
-    this._playerPosition = new THREE.Vector3(0, 0, 0);
-    this._position = new THREE.Vector3(0, 0, 0);
+    this._playerPosition = new Vector3(0, 0, 0);
+    this._position = new Vector3(0, 0, 0);
 
     this._updatePositions();
     this._updateTransform();
@@ -27,11 +27,11 @@ export default class CameraController {
 
   _updatePositions() {
     if (Helpers.LP(false, true)) {
-      this._position = new THREE.Vector3(0, 2, 3);
+      this._position = new Vector3(0, 2, 3);
 
     }
     else {
-      this._position = new THREE.Vector3(0, 2, 3);
+      this._position = new Vector3(0, 2, 3);
     }
   }
   _getPosition() {

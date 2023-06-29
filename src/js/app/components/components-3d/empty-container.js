@@ -1,6 +1,6 @@
-import * as THREE from "three";
+import { Object3D, Cache, MeshPhysicalMaterial, DoubleSide } from "three";
 import { Tween, Easing } from "@tweenjs/tween.js";
-export default class EmptyContainer extends THREE.Object3D {
+export default class EmptyContainer extends Object3D {
     constructor() {
         super();
         this.height = 0;
@@ -10,7 +10,7 @@ export default class EmptyContainer extends THREE.Object3D {
     }
 
     _initView() {
-        const asset = THREE.Cache.get('assets').scene.children;
+        const asset = Cache.get('assets').scene.children;
 
         const bottle = this._bottle = asset[1];
         bottle.castShadow = true;
@@ -20,37 +20,37 @@ export default class EmptyContainer extends THREE.Object3D {
         this.add(bottle);
 
         const bottleLabel = bottle.children ? bottle.children.find(x => x.name === 'detergent1') : null;
-        bottleLabel.children[1].material = new THREE.MeshPhysicalMaterial({
+        bottleLabel.children[1].material = new MeshPhysicalMaterial({
             roughness: 0.4,
             metalness: 0,
-            map: THREE.Cache.get('uv_names'),
+            map: Cache.get('uv_names'),
             reflectivity: 10,
             transparent: true,
             opacity: 0.5,
-            side: THREE.DoubleSide,
+            side: DoubleSide,
         });
         bottleLabel.children[1].castShadow = true;
 
         const bottleVessel = bottle.children ? bottle.children.find(x => x.name === 'detergent1') : null;
 
-        bottleVessel.children[0].material = new THREE.MeshPhysicalMaterial({
+        bottleVessel.children[0].material = new MeshPhysicalMaterial({
             color: 0x999999,
             roughness: 0,
             metalness: 0,
             transparent: true,
             opacity: 0.4,
-            side: THREE.DoubleSide,
+            side: DoubleSide,
         });
         bottleVessel.castShadow = true;
         bottleVessel.children[0].castShadow = true;
 
         const bottleCap = this.bottleCap = bottle.children[0];
-        bottleCap.material = new THREE.MeshPhysicalMaterial({
+        bottleCap.material = new MeshPhysicalMaterial({
             roughness: 0.4,
             metalness: 0.15,
             reflectivity: 10,
             color: 0x000000,
-            side: THREE.DoubleSide,
+            side: DoubleSide,
         });
         bottleCap.visible = true;
         bottleCap.castShadow = true;

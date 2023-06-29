@@ -1,8 +1,5 @@
 import { Black, MessageDispatcher } from "../../utils/black-engine.module";
-import * as THREE from 'three';
-import TWEEN from "@tweenjs/tween.js";
 import Model from "../../data/model";
-import Helpers from "../helpers/helpers";
 import Layout2D from "./components-2d/layout-2d";
 import Layout3D from "./components-3d/layout-3d";
 import CameraController from "./components-3d/camera-controller";

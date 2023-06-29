@@ -1,6 +1,6 @@
-import * as THREE from "three";
+import { Object3D, Box3, Vector3, MathUtils } from "three";
 
-export default class MoveController extends THREE.Object3D {
+export default class MoveController extends Object3D {
     constructor() {
         super();
         this._playFill = 0;
@@ -29,8 +29,8 @@ export default class MoveController extends THREE.Object3D {
 
     setBottleView(obj) {
         this._detergent = obj;
-        const bbox = new THREE.Box3().setFromObject(this._detergent);
-        this.size = new THREE.Vector3();
+        const bbox = new Box3().setFromObject(this._detergent);
+        this.size = new Vector3();
         bbox.getSize(this.size);
     }
 
@@ -79,7 +79,7 @@ export default class MoveController extends THREE.Object3D {
         const pourThresholdMax = center + 0.3;
 
         if (this._canMove && this._isDown) {
-            this._playerX = THREE.MathUtils.clamp(this._playerX, 0, 1); // Clamp _playerX between 0 and 1
+            this._playerX = MathUtils.clamp(this._playerX, 0, 1); // Clamp _playerX between 0 and 1
             this._detergent.position.x = x - this.size.x * 0.3;
 
             if (

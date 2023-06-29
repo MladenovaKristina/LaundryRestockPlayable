@@ -1,8 +1,8 @@
-import * as THREE from "three";
+import { Object3D, CylinderGeometry, MeshBasicMaterial, Mesh } from "three";
 import TWEEN from "@tweenjs/tween.js";
 import { MessageDispatcher } from "../../../utils/black-engine.module";
 
-export default class Fill extends THREE.Object3D {
+export default class Fill extends Object3D {
     constructor(layout2d) {
         super();
         this.height = 0;
@@ -20,10 +20,10 @@ export default class Fill extends THREE.Object3D {
     }
 
     _initView() {
-        var geometry = new THREE.CylinderGeometry(this.top, this.bottom, this.height, 32);
+        var geometry = new CylinderGeometry(this.top, this.bottom, this.height, 32);
         geometry.translate(0, this.height * 1.3, 0); // Translate the geometry to align the bottom to 0,0,0
-        var material = new THREE.MeshBasicMaterial({ color: 0x0000ff, transparent: true, opacity: 0.5 });
-        var fill = new THREE.Mesh(geometry, material);
+        var material = new MeshBasicMaterial({ color: 0x0000ff, transparent: true, opacity: 0.5 });
+        var fill = new Mesh(geometry, material);
         this.add(fill);
     }
 
@@ -77,7 +77,7 @@ export default class Fill extends THREE.Object3D {
 
                     const fillMesh = this.children[0];
                     fillMesh.geometry.dispose();
-                    fillMesh.geometry = new THREE.CylinderGeometry(this.top, this.bottom, this.height, 32);
+                    fillMesh.geometry = new CylinderGeometry(this.top, this.bottom, this.height, 32);
                     fillMesh.geometry.translate(0, this.height / 2, 0);
                     this.progressbar.fill(this.height / targetHeight / 2);
                     if (this.height / targetHeight >= 0.9) {

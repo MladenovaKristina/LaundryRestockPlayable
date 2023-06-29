@@ -1,9 +1,8 @@
-import * as THREE from "three";
-import { Vector3, Box3 } from "three";
+import { Vector3, Box3, Object3D } from "three";
 import Helpers from "../../helpers/helpers";
 import TWEEN from "@tweenjs/tween.js";
 
-export default class SceneController extends THREE.Object3D {
+export default class SceneController extends Object3D {
     constructor(layout2d, layout3d, camera, renderer) {
         super();
         this._camera = camera;

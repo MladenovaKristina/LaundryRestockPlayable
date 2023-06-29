@@ -1,6 +1,5 @@
 import * as TWEEN from "@tweenjs/tween.js";
-import * as THREE from "three";
-import { Group, MeshStandardMaterial } from "three";
+import { Cache, Group, MeshStandardMaterial } from "three";
 
 export default class DetergentBottle extends Group {
     constructor(scene) {
@@ -14,7 +13,7 @@ export default class DetergentBottle extends Group {
         this.bottom = 0.02;
 
         this._scene = scene;
-        this.asset = THREE.Cache.get("assets").scene;
+        this.asset = Cache.get("assets").scene;
         this.detergentBottle = null;
         this.liquidBase = null;
         this.liquid = null;
@@ -67,7 +66,7 @@ export default class DetergentBottle extends Group {
                             emissive: 0x000000,
                             roughness: 1,
                             metalness: 0.1,
-                            map: THREE.Cache.get("detergent_poster"),
+                            map: Cache.get("detergent_poster"),
                         });
                         child.castShadow = true;
                         break;
