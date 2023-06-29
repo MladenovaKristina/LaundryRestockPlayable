@@ -29,7 +29,6 @@ export default class MoveController extends Object3D {
 
         this._detergent = new Object3D();
         this._detergent.position.set(this.position.x, this.position.y, this.position.z);
-        console.log(this._detergent.position);
 
         this._initRaycaster();
     }
@@ -43,10 +42,8 @@ export default class MoveController extends Object3D {
         this._pointer.y = -(y / window.innerHeight) * 2 + 1;
 
         this._raycaster.setFromCamera(this._pointer, this._camera);
-        console.log(this._pointer.x);
 
         const intersects = this._raycaster.intersectObjects([this._raycasterPlane]);
-        console.log(intersects);
 
         if (intersects.length < 1) return;
 
