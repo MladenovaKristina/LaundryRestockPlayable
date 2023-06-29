@@ -13,7 +13,7 @@ export default class Camera {
 
     if (window.innerWidth >= window.innerHeight) {
       this._orientation = "lanscape";
-    } 
+    }
     else {
       this._orientation = "portrait";
     }
@@ -24,16 +24,20 @@ export default class Camera {
     this.updateSize(renderer);
     window.addEventListener('resize', () => this.updateSize(renderer), false);
   }
+  setFov(amt) {
+    this.threeCamera.fov = amt;
+  }
 
   updateSize(renderer) {
     if (window.innerWidth >= window.innerHeight) {
       this._orientation = "lanscape";
-    } 
+    }
     else {
       this._orientation = "portrait";
     }
 
-    this.threeCamera.fov = Helpers.LP(40, 60);
+    this.threeCamera.fov = Helpers.LP(55, 60);
+
     this.threeCamera.aspect = renderer.domElement.width / renderer.domElement.height;
     this.threeCamera.updateProjectionMatrix();
   }

@@ -28,7 +28,9 @@ export default class Layout2D extends DisplayObject {
     this._logoGoogle = null;
     this._endScreen = null;
     this._click = 0;
+
     this._isStaticStoreMode = false;
+    this.gameplay = false;
   }
 
   onAdded() {
@@ -77,14 +79,16 @@ export default class Layout2D extends DisplayObject {
     this._tutorial.x = Black.stage.centerX;
     this._tutorial.y = Black.stage.centerY + bb.height * 0.18;
 
-    this._cta2.x = Black.stage.centerX;
-    this._cta2.y = bb.top + (bb.height / 2) * 1.8;
-
-    this._targetlight.x = Black.stage.centerX;
-    this._targetlight.y = Black.stage.centerY;
+    this._targetlight.x = bb.left;
+    this._targetlight.y = bb.top;
+    this._targetlight.onResize();
 
     this._cta1.x = Black.stage.centerX;
-    this._cta1.y = bb.top + this._topText.height * 2 + this._cta1._text.size;
+    this._cta1.y = bb.top + this._topText.height * 2;
+
+    this._cta2.x = Black.stage.centerX;
+    this._cta2.y = bb.top;
+    this._cta2._text.y = bb.height / 2 + 100;
 
     this._endScreen.onResize(bb);
 
@@ -105,8 +109,14 @@ export default class Layout2D extends DisplayObject {
     }
     this._targetlight.onResize();
 
-    this._progressbar.x = Black.stage.centerX;
-    this._progressbar.y = bb.top + this._topText._height + 20;
+    if (bb.width > bb.height) {
+      this._progressbar.x = Black.stage.centerX;
+      this._progressbar.y = bb.bottom - this._topText._height - 10;
+    } else {
+      this._progressbar.x = Black.stage.centerX;
+      this._progressbar.y = bb.top + this._topText._height + 10;
+    }
+
   }
 
   _createEndscreen() {
@@ -141,15 +151,17 @@ export default class Layout2D extends DisplayObject {
   }
   showCTA1() {
     this._cta1.show();
-  }
-
-  update2dPos(position) {
-    this._targetlight.setTargetlightPosition(position);
-    this._cta1.setPosition(position);
+    this._targetlight.show();
   }
 
   showCTA2() {
     this._cta2.show();
+  }
+
+  update2dPos(position, height) {
+    this._targetlight.setTargetlightPosition(position, height);
+    this._cta1.setPosition(position);
+    this._cta2.setPosition(position);
   }
 
   progressBar(percent) {
@@ -157,7 +169,7 @@ export default class Layout2D extends DisplayObject {
   }
 
   onDown(x, y) {
-    this.countClicks();
+    // this.countClicks();
     const defaultPos = { x: x, y: y };
     const blackPos = Black.stage.worldTransformationInverted.transformVector(defaultPos);
 
@@ -166,9 +178,22 @@ export default class Layout2D extends DisplayObject {
 
     this._endScreen.onDown(blackPos.x, blackPos.y);
   }
-  countClicks(clicks) {
-    this._click++;
-  }
+
+  //   countClicks() {
+  //     this._click++;
+  // 
+  //     if (this._click >= 1 && this.gameplay == false) {
+  //       this._cta1.hide();
+  //       this._targetlight.hide();
+  //       setTimeout(() => { this.showCTA2() }, 500);
+  //       setTimeout(() => { this.gameplay = true; }, 1000)
+  //     }
+  //     if (this._click >= 2 && this.gameplay == true) {
+  //       setTimeout(() => { this._cta2.hide(); }, 500);
+  // 
+  //       setTimeout(() => { this.showHint(); }, 1000);
+  //     } else return;
+  //   }
 
   onMove(x, y) {
     const defaultPos = { x: x, y: y };

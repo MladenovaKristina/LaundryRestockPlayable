@@ -1,12 +1,12 @@
-import { Black, Graphics, DisplayObject, Tween, Ease } from '../../../utils/black-engine.module';
-import Helpers from '../../helpers/helpers';
-import ConfigurableParams from '../../../data/configurable_params';
+import { Black, Graphics, DisplayObject, Tween, Vector } from '../../../utils/black-engine.module';
+
 
 export default class TargetLight extends DisplayObject {
     constructor() {
         super();
 
-        this.visible = true;
+        this._lastPosition = new Vector(0, 0);
+        this.visible = false;
         this._initView();
         this.onResize();
     }
@@ -26,8 +26,7 @@ export default class TargetLight extends DisplayObject {
         this.addChild(this._bg);
 
         this._hole = new Graphics();
-        this._radius = 150;
-
+        this._hole.alignAnchor(0.5, 0.5);
         this.addChild(this._hole);
     }
 
@@ -42,28 +41,49 @@ export default class TargetLight extends DisplayObject {
 
         this._bg.clear();
         this._bg.beginPath();
+        this._bg.alignAnchor(0, 0);
         this._bg.fillStyle(0x000000, 0.6);
         this._bg.rect(0, 0, bgWidth, bgHeight);
         this._bg.fill();
     }
 
-    setTargetlightPosition(position) {
-        let holeX = position.x + this._radius / 4;
-        let holeY = position.y + this._radius / 8;
+    setTargetlightPosition(position, holeSize) {
+        const bb = Black.stage.bounds;
 
-        this._hole.clear();
-        this._hole.beginPath();
-        this._hole.alignAnchor(0.5, 0.5);
-        this._hole.fillStyle(0x000000, 1);
-        this._hole.circle(holeX, holeY, this._radius);
-        this._hole.cut();
+        if (bb.width > bb.height) {
+            const diameter = holeSize * bb.height / 4;
+
+            const positionX = position.x + diameter * 3;
+            const positionY = position.y - diameter / 2;
+
+            this._hole.clear();
+            this._hole.beginPath();
+            this._hole.fillStyle(0x000000, 1);
+            this._hole.circle(positionX, positionY, diameter);
+            this._hole.cut();
+        }
+        else {
+            const diameter = holeSize * bb.width / 2;
+
+            const positionX = position.x;
+            const positionY = position.y + diameter;
+
+            this._hole.clear();
+            this._hole.beginPath();
+            this._hole.fillStyle(0x000000, 1);
+            this._hole.circle(positionX, positionY, diameter);
+            this._hole.cut();
+        }
     }
+
+
+
 
     show() {
         this.visible = true;
     }
 
-    hide() {
+    hide(callback) {
         const hideTween = new Tween({
             alpha: [1, 0]
         }, 0.2);
@@ -72,6 +92,7 @@ export default class TargetLight extends DisplayObject {
 
         hideTween.on('complete', () => {
             this.visible = false;
+            callback();
         });
     }
 }

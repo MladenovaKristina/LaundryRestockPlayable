@@ -1,16 +1,14 @@
 import { Black, MessageDispatcher } from "../../utils/black-engine.module";
 import * as THREE from 'three';
+import TWEEN from "@tweenjs/tween.js";
 import Model from "../../data/model";
 import Helpers from "../helpers/helpers";
 import Layout2D from "./components-2d/layout-2d";
+import Layout3D from "./components-3d/layout-3d";
 import CameraController from "./components-3d/camera-controller";
 import SoundsController from "./kernel/soundscontroller";
 import ConfigurableParams from "../../data/configurable_params";
-import Bottle from "./components-3d/bottle";
-import Environment from "./components-3d/enviroment";
-import DetergentBottle from "./components-3d/animated-objects";
-import Menu from "./components-3d/menu";
-import SwipeMechanic from "./components-3d/pouring-mechanic";
+import SceneController from "./components-3d/scene-controller";
 
 const STATES = {
   INTRO: 0, // if we want to make some action before the player interaction
@@ -28,9 +26,10 @@ export default class Game {
     this._camera = camera;
     this._renderer = renderer;
     this._state = STATES.INTRO;
-    this.flag = false;
-    this.playingFlag = false;
+
     this._clicks = 0;
+    this.clicked = 0;
+    this.isGameplay = false;
     this._startTime = 0;
     this._storeOnDown = false;
     this._lastClickTime = 0;
@@ -44,56 +43,35 @@ export default class Game {
 
   _init() {
     this._initUI();
+    this._init3D();
+    this._initSceneController();
     this._cameraController = new CameraController(this._camera.threeCamera);
-    this._initEnvironment();
-    this._initBottle();
-    this._initDetergentBottle();
-    this._initMenu();
-    this._initCameraPosition();
-    this._initSwipeMechanic();
   }
 
   _initUI() {
     this._layout2d = new Layout2D();
     Black.stage.add(this._layout2d);
 
-    this._layout2d.onPlayBtnClickEvent((msg) => {
+    this._layout2d.on(this._layout2d.onPlayBtnClickEvent, (msg) => {
       this._state = STATES.FINAL;
       this.messageDispatcher.post(this.onFinishEvent);
     });
   }
 
-  _initBottle() {
-    this._bottle = new Bottle();
-    this._scene.add(this._bottle);
+  _init3D() {
+    this._layout3d = new Layout3D(this._camera, this._cameraController, this._scene, this._renderer);
+
+    this._layout3d.messageDispatcher.on(this._layout3d.onFinishEvent, (msg) => {
+      this.onFinishEvent = 'onFinishEvent';
+      this._onFinish();
+    });
   }
 
-  _initDetergentBottle() {
-    this._animatedObject = new DetergentBottle();
-    this._scene.add(this._animatedObject);
-  }
-
-  _initMenu() {
-    this._menu = new Menu();
-    this._scene.add(this._menu);
-  }
-
-  _initEnvironment() {
-    this._environment = new Environment();
-    this._scene.add(this._environment);
-  }
-
-  _initCameraPosition() {
-    this._initCameraPos = this._cameraController._camera.position.clone();
-  }
-
-  _initSwipeMechanic() {
-    this._swipeMechanic = new SwipeMechanic();
-    this._scene.add(this._swipeMechanic);
+  _initSceneController() {
+    this._sceneController = new SceneController(this._layout2d, this._layout3d, this._camera.threeCamera, this._renderer);
   }
 
   start() {
-    this._layout2d.showCTA1();
     this._startTime = Date.now();
 
     if (ConfigurableParams.isXTime()) {
@@ -102,6 +80,9 @@ export default class Game {
       }, 1000);
     }
   }
+  changeState() {
+    this._state = STATES.GAMEPLAY;
+  };
 
   _countTime() {
     if (this._isStore) return;
@@ -116,16 +97,11 @@ export default class Game {
     }
   }
 
-  _gameplay(x, y) {
-    if (this._state === STATES.GAMEPLAY) {
-      this._animatedObject.stopIdle();
-
-      this._swipeMechanic.getMousePosition(x, y, this._bottle, this._animatedObject.detergentBottle);
-      this.collision(this._animatedObject.detergentBottle.position);
-    }
-  }
-
   onDown(x, y) {
+    this._layout2d.onDown(x, y);
+    this._layout3d.onDown(x, y);
+    this._sceneController.onDown();
+
     const downloadBtnClicked = this._layout2d.onDown(x, y);
     if (downloadBtnClicked)
       return;
@@ -137,49 +113,19 @@ export default class Game {
       this._onFinish();
 
     this._countClicks();
-
-    if (this._state !== STATES.GAMEPLAY)
-      return;
-
-    this._layout2d.onMove(x, y);
   }
 
   onMove(x, y) {
-    if (this._state !== STATES.GAMEPLAY)
-      return;
-
     this._layout2d.onMove(x, y);
-    this._gameplay(x, y);
+    this._layout3d.onMove(x, y);
+    this._sceneController.onMove();
+
   }
 
   onUp() {
     this._isDown = false;
     this._layout2d.onUp();
-  }
-
-  collision(liquid) {
-    if (!this.playingFlag) {
-      this.playingFlag = true;
-      this._animatedObject.pourLiquid();
-      this._animatedObject.playAnim("pour");
-      setTimeout(() => {
-        this.playingFlag = false;
-      }, this._animatedObject._animations.pour.duration);
-    }
-
-    if (liquid.x >= 0.35 && liquid.x <= 0.45) {
-      this._layout2d.progressBar(this._animatedObject.progressPercent / 2);
-      this._animatedObject.progressionAnim("fillVessel", () => {
-        this.win();
-      });
-    }
-  }
-
-  win() {
-    this.flag = false;
-    this._animatedObject._liquid.visible = false;
-    this._animatedObject.stopIdle();
-    this._onFinish();
+    this._layout3d.onUp();
   }
 
   _countClicks() {
@@ -191,77 +137,6 @@ export default class Game {
       this._onFinish();
       console.log('clicks');
     }
-
-    if (this._clicks === 1) {
-      this.runAnimationSequence();
-      this._animationInProgress = true;
-    }
-
-    if (this._clicks > 1 && !this._animationInProgress) {
-      this.flag = true;
-      this._state = STATES.GAMEPLAY;
-
-      this._layout2d._cta2.hide();
-      this._layout2d.showHint();
-    }
-  }
-
-  async runAnimationSequence() {
-    if (this._animationInProgress)
-      return;
-
-    this._animationInProgress = true;
-
-    this._layout2d._cta1.hide();
-    this._layout2d._targetlight.hide();
-
-    this._animatedObject.removeDetergentCap();
-    this._bottle.removeCap();
-
-    setTimeout(async () => {
-      await this._animatedObject.playAnim("raise");
-      this._zoomIn();
-      this._layout2d.showCTA2();
-      this._layout2d._progressbar.show();
-      this._animatedObject.idleAnimateDetergent();
-      this._animationInProgress = false;
-    }, 2000);
-  }
-
-  _zoomIn() {
-    const targetZ = this._cameraController._camera.position.z - 1;
-    const duration = 1000;
-    let startTime = null;
-    const initialZ = this._cameraController._camera.position.z;
-
-    const updateCameraPosition = (timestamp) => {
-      if (!startTime)
-        startTime = timestamp;
-      const elapsed = timestamp - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-      const interpolatedZ = initialZ + (targetZ - initialZ) * progress;
-
-      this._cameraController._camera.position.z = interpolatedZ;
-
-      if (progress < 1)
-        requestAnimationFrame(updateCameraPosition);
-    };
-
-    requestAnimationFrame(updateCameraPosition);
-  }
-
-  _resetCamera() {
-    this._cameraController._camera.position.set(this._initCameraPos);
-  }
-
-  _initUI() {
-    this._layout2d = new Layout2D();
-    Black.stage.add(this._layout2d);
-
-    this._layout2d.on(this._layout2d.onPlayBtnClickEvent, (msg) => {
-      this._state = STATES.FINAL;
-      this.messageDispatcher.post(this.onFinishEvent);
-    });
   }
 
   _onFinish() {
@@ -307,14 +182,6 @@ export default class Game {
 
   onResize() {
     this._cameraController.onResize();
-    const pos = Helpers.vector3ToBlackPosition(
-      new THREE.Vector3(this._animatedObject.detergentBottle.x, this._animatedObject.detergentBottle.y, this._animatedObject.detergentBottle.z),
-      this._renderer.threeRenderer,
-      this._camera.threeCamera);
-    const adjustedPos = pos.clone();
-    adjustedPos.x -= this._camera.threeCamera.position.z * 100;
-    adjustedPos.y -= this._camera.threeCamera.position.y * 100 * 2;
-
-    this._layout2d.update2dPos(adjustedPos)
+    this._sceneController.onResize();
   }
 }

@@ -1,6 +1,5 @@
 import ConfigurableParams from '../../../data/configurable_params';
 import { Tween, Black, Graphics, Easing, DisplayObject, TextField, Ease, Timer } from '../../../utils/black-engine.module';
-import UTween from '../../helpers/../../utils/utween';
 import { TutorialHand } from './tutorial-hand';
 
 export default class CTA1 extends DisplayObject {
@@ -18,7 +17,10 @@ export default class CTA1 extends DisplayObject {
   onAdded() {
 
     this._hand = new TutorialHand();
+    this._hand.scaleX = 2;
+    this._hand.scaleY = 2;
     this._hand.alignAnchor(0, 0);
+
 
     this.add(this._hand);
 
@@ -48,8 +50,8 @@ export default class CTA1 extends DisplayObject {
 
   _makeClick() {
     const scaleTw = new Tween({
-      scaleX: [this.scaleX, this.scaleX - 0.13, this.scaleX],
-      scaleY: [this.scaleY, this.scaleY - 0.18, this.scaleY],
+      scaleX: [2, 2 - 0.13, 2],
+      scaleY: [2, 2 - 0.18, 2],
     }, 1, { ease: Ease.sinusoidalInOut, loop: true });
     this._hand.add(scaleTw);
   }
@@ -67,8 +69,18 @@ export default class CTA1 extends DisplayObject {
   }
 
   setPosition(position) {
-    this._hand.x = position.x;
-    this._hand.y = position.y + 350;
+    const bb = Black.stage.bounds;
+
+    if (bb.width > bb.height) {
+      this._text.y -= 25;
+
+      this._hand.x = position.x / bb.width + this._hand.width;
+      this._hand.y = position.y - this._hand.height * 2;
+    }
+    if (bb.width < bb.height) {
+      this._hand.x = position.x / bb.width + this._hand.width;
+      this._hand.y = position.y;
+    }
   }
 }
 

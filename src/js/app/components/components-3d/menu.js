@@ -1,8 +1,6 @@
-import TWEEN from "@tweenjs/tween.js";
-import * as THREE from "three";
-import { Group, Cache, AnimationMixer, MeshPhysicalMaterial, DoubleSide } from "three";
+
+import { Group, Cache, MeshPhysicalMaterial, DoubleSide } from "three";
 import { SkeletonUtils } from "../../../utils/skeleton-utils";
-import { MessageDispatcher } from "../../../utils/black-engine.module";
 
 export default class Menu extends Group {
     constructor(scene) {
@@ -123,7 +121,6 @@ export default class Menu extends Group {
 
         view.traverse(child => {
             child.frustumCulled = false;
-            // console.log(child.name); // TO SEE ALL CHILDREN'S names in element
 
             if (child.type === "Mesh" || child.type === "SkinnedMesh") {
                 const properties = childProperties[child.name];

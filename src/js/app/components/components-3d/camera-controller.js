@@ -13,28 +13,27 @@ export default class CameraController {
   }
 
   onResize() {
-    this._updatePositions();
-    this._updateTransform();
+    // this._updatePositions();
+    // this._updateTransform();
 
     this._camera.lookAt(0, 1, 0);
   }
 
   _updateTransform() {
     const position = this._getPosition();
-    this._camera.position.set(0, 2, 3);
+    console.log(position);
+    this._camera.position.set(position.x, position.y, position.z);
   }
 
   _updatePositions() {
     if (Helpers.LP(false, true)) {
-      this._position = new THREE.Vector3(0.25, 1.5, 1.5);
+      this._position = new THREE.Vector3(0, 2, 3);
 
     }
     else {
-      this._position = new THREE.Vector3(0.25, 1.5, 1.5);
+      this._position = new THREE.Vector3(0, 2, 3);
     }
-
   }
-
   _getPosition() {
     return this._position;
   }

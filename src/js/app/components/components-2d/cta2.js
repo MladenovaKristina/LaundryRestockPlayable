@@ -1,6 +1,5 @@
 import ConfigurableParams from '../../../data/configurable_params';
 import { Tween, Black, Graphics, Sprite, DisplayObject, TextField, Ease, Timer } from '../../../utils/black-engine.module';
-import UTween from '../../helpers/../../utils/utween';
 import { TutorialHand } from './tutorial-hand';
 
 export default class CTA2 extends DisplayObject {
@@ -26,8 +25,6 @@ export default class CTA2 extends DisplayObject {
         this.add(this._text);
 
         this._pointer = new TutorialHand();
-        this._pointer.x = -100;
-        this._pointer.y = -300;
         this._pointer._rotation = 0;
         this.add(this._pointer);
 
@@ -43,11 +40,22 @@ export default class CTA2 extends DisplayObject {
 
 
     _swipeAnimation() {
-        const swipe = new Tween({
-            x: [100, -100],
-        }, 2, { ease: Ease.quadraticInOut, delay: 0, loop: true });
+        const amplitude = 100;
+        const swipe = new Tween(
+            {
+                x: [this._pointer.x, this._pointer.x - amplitude * 2, this._pointer.x],
+                y: [this._pointer.y, this._pointer.y + amplitude / 2, this._pointer.y],
+            },
+            3.25, {
+            ease: Ease.sinusoidalInOut,
+            delay: 0,
+            loop: true,
+        }
+        );
+
         this._pointer.add(swipe);
     }
+
     _textPulse() {
         const textTween = new Tween({
             scaleX: [1.2, 1],
@@ -64,6 +72,23 @@ export default class CTA2 extends DisplayObject {
         this.add(hideTween);
 
         hideTween.on('complete', this.visible = false);
+    }
+
+    setPosition(position) {
+        const bb = Black.stage.bounds;
+        this._pointer.scaleX = 2;
+        this._pointer.scaleY = 2;
+
+        if (bb.width > bb.height) {
+            this._pointer.x = position.x / bb.width + this._pointer.width * 2;
+            this._pointer.y = position.y;
+
+        }
+        if (bb.width < bb.height) {
+
+            this._pointer.x = position.x / bb.width + this._pointer.width * 1.8;
+            this._pointer.y = position.y + this._pointer.height;
+        }
     }
 }
 
