@@ -6,8 +6,8 @@ import Layout3D from "./components-3d/layout-3d";
 import CameraController from "./components-3d/camera-controller";
 import SoundsController from "./kernel/soundscontroller";
 import ConfigurableParams from "../../data/configurable_params";
-// import SceneController from "./components-3d/scene-controller";
-import SceneController from "./components-3d/scene-controller-v2";
+import SceneController from "./components-3d/scene-controller";
+// import SceneController from "./components-3d/scene-controller-v2";
 //v2 scene controller starts from skipped CTA1
 
 const STATES = {
