@@ -50,8 +50,8 @@ export default class MoveController extends Object3D {
 
         if (intersects.length < 1) return;
 
-        this.position.x = intersects[0].point.x;
-        this.position.y = intersects[0].point.y - 0.15;
+        this.position.x = intersects[0].point.x + this.size.y / 2;
+        this.position.y = intersects[0].point.y - this.size.y;
         this.position.z = 0;
         this._moveDetergent(this.position.x, this.position.y, this.position.z);
     }
