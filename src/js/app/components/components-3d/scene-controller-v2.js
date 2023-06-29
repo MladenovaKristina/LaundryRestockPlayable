@@ -1,0 +1,123 @@
+import * as THREE from "three";
+import { Vector3, Box3 } from "three";
+import Helpers from "../../helpers/helpers";
+import TWEEN from "@tweenjs/tween.js";
+
+export default class SceneController extends THREE.Object3D {
+    constructor(layout2d, layout3d, camera, renderer) {
+        super();
+        this._camera = camera;
+        this._renderer = renderer;
+        this._layout2d = layout2d;
+        this._layout3d = layout3d;
+        this._canMove = false;
+        this._interactions = 0;
+        this._gameplay = false;
+        this._sceneOnePlayed = false;
+        this._sceneTwoPlayed = false;
+        this.isLandscape = null;
+        this.start();
+    }
+
+    start() {
+        this.sceneOne();
+    }
+
+    onDown() {
+        if (this._interactions === 0 && this._canMove) {
+            this._interactions++;
+            this.sceneTwo();
+        }
+    }
+
+    onMove() {
+    }
+
+    zoom(callback) {
+        if (!this._canMove) {
+            const targetFov = this._camera.fov - 12;
+            const duration = 1000;
+
+            new TWEEN.Tween(this._camera)
+                .to({ fov: targetFov }, duration)
+                .easing(TWEEN.Easing.Sinusoidal.In)
+                .onUpdate(() => {
+                    if (this.isLandscape) {
+                        this._camera.position.y += 0.008;
+                    } else {
+                        this._camera.position.y += 0.005;
+                    }
+                    this._camera.updateProjectionMatrix();
+                })
+                .delay(500)
+                .onComplete(() => {
+                    callback();
+                })
+                .start();
+        }
+    }
+
+    sceneOne() {
+        console.log("scene1");
+        this._sceneOnePlayed = true;
+
+        this._layout3d._emptyContainer.removeCap();
+        this._layout3d._detergentBottle.removeDetergentCap(() => {
+            this._layout3d._detergentBottle.raise(this._layout3d._emptyContainer);
+            this.zoom(() => {
+                this.updateCTAPosition();
+                this._layout2d.showCTA2();
+                this._layout2d._progressbar.show(); this._layout3d._moveController.start(this._layout2d, () => {
+                    this._gameplay = true;
+                    this._canMove = true;
+                });
+            });
+        });
+    }
+
+    sceneTwo() {
+        if (!this._sceneTwoPlayed) {
+            console.log("scene2");
+            this._layout3d._detergentBottle.stopIdle(() => {
+                this._layout2d._cta2.hide();
+                this._sceneTwoPlayed = true;
+                this.sceneThree();
+            });
+        }
+    }
+
+    sceneThree() {
+        console.log("scene3");
+        this._layout3d._moveController.setProgressBar(this._layout2d._progressbar);
+        this._layout3d._detergentBottle.rotateDown();
+    }
+
+    updateCTAPosition() {
+        const detergent = new Vector3(
+            this._layout3d._detergentBottle.detergentBottle.position.x,
+            this._layout3d._detergentBottle.detergentBottle.position.y,
+            this._layout3d._detergentBottle.detergentBottle.position.z
+        );
+        const position = Helpers.vector3ToBlackPosition(
+            detergent,
+            this._renderer.threeRenderer,
+            this._camera
+        );
+        const boundingBox = new Box3().setFromObject(
+            this._layout3d._detergentBottle.detergentBottle
+        );
+        const size = new Vector3();
+        boundingBox.getSize(size);
+        const height = size.y;
+        this._layout2d.update2dPos(position, height);
+    }
+
+    onResize() {
+        this.updateCTAPosition();
+        if (window.innerWidth > window.innerHeight) {
+            this.isLandscape = true;
+        } else {
+            this.isLandscape = false;
+        }
+    }
+}
