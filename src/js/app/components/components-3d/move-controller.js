@@ -68,7 +68,6 @@ export default class MoveController extends Object3D {
     _getMousePosition(x, y) {
         const normalizedX = x / this._screenWidth; // Normalize x coordinate to range [0, 1]
         this._playerX = normalizedX; // Map normalized x coordinate to range [-1, 1]
-        console.log(this._playerX)
         this._moveDetergent(this._playerX);
     }
 
