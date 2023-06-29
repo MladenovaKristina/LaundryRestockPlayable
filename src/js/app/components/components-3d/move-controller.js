@@ -1,12 +1,15 @@
-import { Object3D, Box3, Vector3, MathUtils } from "three";
+import { Object3D, Box3, Vector3, Vector2, Raycaster, MathUtils } from "three";
 
 export default class MoveController extends Object3D {
-    constructor() {
+    constructor(raycasterPlane, camera) {
         super();
+        this._raycasterPlane = raycasterPlane;
+        this._camera = camera;
+
         this._playFill = 0;
         this._screenWidth = window.innerWidth;
         this._canMove = false;
-        this._isDown = null;
+        this._isDown = false;
         this._layout2d = null;
         this._playerX = null;
         this._playerY = null;
@@ -19,6 +22,38 @@ export default class MoveController extends Object3D {
         this._canPour = false;
         this._playFill = 0;
         this.time = 0;
+        this.position.set(0, 2, 0);
+
+        this._raycaster = new Raycaster();
+        this._pointer = new Vector2();
+
+        this._detergent = new Object3D();
+        this._detergent.position.set(this.position.x, this.position.y, this.position.z);
+        console.log(this._detergent.position);
+
+        this._initRaycaster();
+    }
+    _initRaycaster() {
+        this._raycaster = new Raycaster();
+        this._pointer = new Vector2();
+    }
+
+    _onRaycast(x, y) {
+        this._pointer.x = (x / window.innerWidth) * 2 - 1;
+        this._pointer.y = -(y / window.innerHeight) * 2 + 1;
+
+        this._raycaster.setFromCamera(this._pointer, this._camera);
+        console.log(this._pointer.x);
+
+        const intersects = this._raycaster.intersectObjects([this._raycasterPlane]);
+        console.log(intersects);
+
+        if (intersects.length < 1) return;
+
+        this.position.x = intersects[0].point.x;
+        this.position.y = intersects[0].point.y - 0.15;
+        this.position.z = 0;
+        this._moveDetergent(this.position.x, this.position.y, this.position.z);
     }
 
     start(layout2d, callback) {
@@ -32,6 +67,8 @@ export default class MoveController extends Object3D {
         const bbox = new Box3().setFromObject(this._detergent);
         this.size = new Vector3();
         bbox.getSize(this.size);
+        // this._detergent.position.set(this.position.x, this.position.y, this.position.z);
+
     }
 
     setFillView(obj) {
@@ -47,14 +84,13 @@ export default class MoveController extends Object3D {
     }
 
     onMove(x, y) {
-        if (this._canMove) {
-            this._getMousePosition(x, y);
-        }
+        if (!this._isDown) return;
+        this._onRaycast(x, y);
     }
 
     onDown(x, y) {
         this._isDown = true;
-        // this._getMousePosition(x, y);
+        this._onRaycast(x, y);
     }
 
     onUp() {
@@ -65,25 +101,16 @@ export default class MoveController extends Object3D {
         }
     }
 
-    _getMousePosition(x, y) {
-        const normalizedX = x / this._screenWidth;
-        this._playerX = normalizedX;
-        this._moveDetergent(this._playerX);
-    }
-
-    _moveDetergent(x) {
+    _moveDetergent(x, y, z) {
         const center = 0;
-        const speed = -0.002;
         const pourThresholdMin = center + 0.2;
         const pourThresholdMax = center + 0.3;
+        this._detergent.position.set(x, y, z);
 
         if (this._canMove && this._isDown) {
-            this._playerX = MathUtils.clamp(this._playerX, 0, 1); 
-            this._detergent.position.x = x - this.size.x * 0.3;
-
             if (
-                this._detergent.position.x >= pourThresholdMin &&
-                this._detergent.position.x <= pourThresholdMax
+                x >= pourThresholdMin &&
+                x <= pourThresholdMax
             ) {
                 this.collision();
             } else {
@@ -94,7 +121,6 @@ export default class MoveController extends Object3D {
             }
         }
     }
-
 
     collision() {
         this._detergent.liquid.visible = true;

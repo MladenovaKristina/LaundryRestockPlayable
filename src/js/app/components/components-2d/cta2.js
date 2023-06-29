@@ -69,26 +69,17 @@ export default class CTA2 extends DisplayObject {
             y: Black.stage.bounds.bottom + 250
         }, 0.2);
 
-        this.add(hideTween);
+        this.add(hideTween); this.visible = false;
 
-        hideTween.on('complete', this.visible = false);
+        hideTween.on('complete', msg => this.visible = false);
+
     }
 
     setPosition(position) {
         const bb = Black.stage.bounds;
-        this._pointer.scaleX = 2;
-        this._pointer.scaleY = 2;
 
-        if (bb.width > bb.height) {
-            this._pointer.x = position.x / bb.width + this._pointer.width * 2;
-            this._pointer.y = position.y;
-
-        }
-        if (bb.width < bb.height) {
-
-            this._pointer.x = position.x / bb.width + this._pointer.width * 1.8;
-            this._pointer.y = position.y + this._pointer.height;
-        }
+        this._pointer.x = position.x + this._pointer.width;
+        this._pointer.y = position.y - this._pointer.height;
     }
 }
 

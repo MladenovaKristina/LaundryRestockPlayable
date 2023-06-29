@@ -16,7 +16,6 @@ export default class TargetLight extends DisplayObject {
         const bgHeight = bb.height;
 
         this._bg = new Graphics();
-        this._bg.alignAnchor(0.5, 0.5);
 
         this._bg.beginPath();
         this._bg.fillStyle(0x000000, 0.5);
@@ -40,9 +39,9 @@ export default class TargetLight extends DisplayObject {
 
         this._bg.clear();
         this._bg.beginPath();
-        this._bg.alignAnchor(0, 0);
+        // this._bg.alignAnchor(0, 0);
         this._bg.fillStyle(0x000000, 0.6);
-        this._bg.rect(0, 0, bgWidth, bgHeight);
+        this._bg.rect(bb.left, bb.top, bgWidth, bgHeight);
         this._bg.fill();
     }
 
@@ -52,7 +51,7 @@ export default class TargetLight extends DisplayObject {
         if (bb.width > bb.height) {
             const diameter = holeSize * bb.height / 4;
 
-            const positionX = position.x + diameter * 3;
+            const positionX = position.x;
             const positionY = position.y - diameter / 2;
 
             this._hole.clear();
@@ -62,10 +61,10 @@ export default class TargetLight extends DisplayObject {
             this._hole.cut();
         }
         else {
-            const diameter = holeSize * bb.width / 2;
+            const diameter = holeSize * bb.height / 4;
 
             const positionX = position.x;
-            const positionY = position.y + diameter;
+            const positionY = position.y - diameter / 2;
 
             this._hole.clear();
             this._hole.beginPath();

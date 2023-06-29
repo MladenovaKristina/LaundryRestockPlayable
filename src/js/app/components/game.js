@@ -1,5 +1,6 @@
 import { Black, MessageDispatcher } from "../../utils/black-engine.module";
 import Model from "../../data/model";
+import * as THREE from "three";
 import Layout2D from "./components-2d/layout-2d";
 import Layout3D from "./components-3d/layout-3d";
 import CameraController from "./components-3d/camera-controller";
@@ -7,8 +8,7 @@ import SoundsController from "./kernel/soundscontroller";
 import ConfigurableParams from "../../data/configurable_params";
 import SceneController from "./components-3d/scene-controller";
 // import SceneController from "./components-3d/scene-controller-v2";
-//use this instead of using scene 2
-
+//v2 scene controller starts from skipped CTA1
 
 const STATES = {
   INTRO: 0, // if we want to make some action before the player interaction
@@ -42,6 +42,7 @@ export default class Game {
   }
 
   _init() {
+    this._initRaycasterPlane();
     this._initUI();
     this._init3D();
     this._initSceneController();
@@ -59,7 +60,7 @@ export default class Game {
   }
 
   _init3D() {
-    this._layout3d = new Layout3D(this._camera, this._cameraController, this._scene, this._renderer);
+    this._layout3d = new Layout3D(this._camera, this._cameraController, this._scene, this._renderer, this._raycasterPlane);
 
     this._layout3d.messageDispatcher.on(this._layout3d.onFinishEvent, (msg) => {
       this.onFinishEvent = 'onFinishEvent';
@@ -69,6 +70,20 @@ export default class Game {
 
   _initSceneController() {
     this._sceneController = new SceneController(this._layout2d, this._layout3d, this._camera.threeCamera, this._renderer);
+  }
+  _initRaycasterPlane() {
+    const material = new THREE.MeshBasicMaterial({
+      color: 0x0000ff,
+      transparent: true,
+      opacity: 0
+    });
+
+    const geom = new THREE.PlaneGeometry(15, 15);
+
+    const plane = this._raycasterPlane = new THREE.Mesh(geom, material);
+    plane.position.set(0, 0, 0);
+    plane.rotation.x = -Math.PI / 2 + 0.1;
+    this._scene.add(plane);
   }
 
   start() {

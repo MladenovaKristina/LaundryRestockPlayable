@@ -8,12 +8,13 @@ import { MessageDispatcher } from "../../../utils/black-engine.module";
 import { Group } from "three";
 
 export default class Layout3D extends Group {
-    constructor(camera, cameraController, scene, renderer) {
+    constructor(camera, cameraController, scene, renderer, raycasterPlane) {
         super();
         this._camera = camera;
         this._cameraController = cameraController;
         this._scene = scene;
         this._renderer = renderer;
+        this._raycasterPlane = raycasterPlane;
 
         this.messageDispatcher = new MessageDispatcher();
         this.onFinishEvent = 'onFinishEvent';
@@ -35,7 +36,7 @@ export default class Layout3D extends Group {
     }
 
     _initMoveController() {
-        this._moveController = new MoveController();
+        this._moveController = new MoveController(this._raycasterPlane, this._camera.threeCamera);
         this._scene.add(this._moveController);
     }
 

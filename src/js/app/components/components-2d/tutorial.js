@@ -6,8 +6,8 @@ export default class Tutorial extends DisplayObject {
 
     this._sign = null;
 
-    this.scaleX = 0.9;
-    this.scaleY = 0.9;
+    this.scaleX = 1;
+    this.scaleY = 1;
 
     this.visible = false;
   }

@@ -60,8 +60,7 @@ export default class SceneController extends Object3D {
         console.log("scene1");
         this._sceneOnePlayed = true;
 
-        this._layout3d._emptyContainer.removeCap();
-        this._layout3d._detergentBottle.removeDetergentCap(() => {
+        this._layout3d._emptyContainer.removeCap(); this._layout3d._detergentBottle.removeDetergentCap(() => {
             this._layout3d._detergentBottle.raise(this._layout3d._emptyContainer);
             this.zoom(() => {
                 this.updateCTAPosition();
