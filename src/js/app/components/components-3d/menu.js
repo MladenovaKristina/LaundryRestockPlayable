@@ -5,20 +5,12 @@ import { SkeletonUtils } from "../../../utils/skeleton-utils";
 export default class Menu extends Group {
     constructor(scene) {
         super();
-        //=============================================
-        // EVENTS
-        //=============================================
-        // this.messageDispatcher = new MessageDispatcher();
-        // this.events = {
-        //     someEvent: "someEvent",
-        // };
-
         this._scene = scene;
 
         this.detergentBottle = null;
         this._init();
-
     }
+
     _init() {
         const asset = Cache.get('assets').scene.children;
         let view = this.detergentBottle = SkeletonUtils.clone(Cache.get('assets').scene);
@@ -133,6 +125,5 @@ export default class Menu extends Group {
                 }
             }
         });
-
     }
 }

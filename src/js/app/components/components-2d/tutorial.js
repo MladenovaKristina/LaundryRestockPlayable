@@ -1,4 +1,3 @@
-
 import { Tween, Black, Sprite, DisplayObject, Ease, Timer } from '../../../utils/black-engine.module';
 
 export default class Tutorial extends DisplayObject {
