@@ -46,7 +46,6 @@ export default class MoveController extends Object3D {
 
         const intersects = this._raycaster.intersectObjects([this._raycasterPlane]);
 
-        console.log(intersects.length)
         if (intersects.length < 1) return;
 
         const posX = intersects[0].point.x + this.size.y / 2;
@@ -108,8 +107,6 @@ export default class MoveController extends Object3D {
 
         this._detergent.position.x = Helpers.clamp(x, -0.43, 0.6);
         this._detergent.position.y = Helpers.clamp(y - 1.5, -0.15, 0.33);
-
-        console.log(this._detergent.position.x)
 
         if (this._canMove && this._isDown) {
             if (
