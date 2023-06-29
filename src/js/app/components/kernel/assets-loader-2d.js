@@ -2,7 +2,6 @@ import { AssetManager, GameObject } from '../../../utils/black-engine.module';
 import hint_mickey from '../../../data/textures/hint_mickey.png';
 import hint_simple from '../../../data/textures/hint_simple.png';
 import hint_original from '../../../data/textures/hint_original.png';
-import infinity_sign from '../../../data/textures/infinity_sign.png';
 import btn_outline from '../../../data/textures/btn_outline.png';
 import btn_color from '../../../data/textures/btn_color.png';
 import btn_back from '../../../data/textures/btn_back.png';
@@ -32,7 +31,6 @@ export default class AssetsLoader2D extends GameObject {
     assets.enqueueImage('hint_simple', hint_simple);
     assets.enqueueImage('hint_original', hint_original);
     assets.enqueueImage('hint_hold', hint_hold);
-    assets.enqueueImage('infinity_sign', infinity_sign);
 
     assets.enqueueImage('btn_outline', btn_outline);
     assets.enqueueImage('btn_color', btn_color);
