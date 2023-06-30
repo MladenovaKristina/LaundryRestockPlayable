@@ -10,42 +10,64 @@ export default class IronSourceGameController {
 
     /* -------------------------------DAPI------------------------------------ */
     //LOAD the game, but don't start it until the ad is visible
-    window.onload = () => {
-      (dapi.isReady()) ? () => { this.onReadyCallback() } : dapi.addEventListener("ready", () => { this.onReadyCallback() });
-    };
+
+    const onLoad = () => {
+      console.log("On load called");
+      (dapi.isReady()) ? this.onReadyCallback() : dapi.addEventListener("ready", () => this.onReadyCallback());
+    }
+
+    window.addEventListener('load', () => onLoad());
   }
 
   onReadyCallback() {
     // console.log('%c READY ', 'background: #0095ff; color: #ffffff');
     //no need to listen to this event anymore
-    dapi.removeEventListener("ready", () => { this.onReadyCallback() });
+    dapi.removeEventListener("ready", this.onReadyCallback);
+    console.log("On ready callback called");
+
+    let isAudioEnabled = !!dapi.getAudioVolume();
 
     if (dapi.isViewable()) {
       this.adVisibleCallback({ isViewable: true });
       // console.log('%c Check if visible TRUE ', 'background: #0095ff; color: #ffffff');
     }
 
-    let isAudioEnabled = !!dapi.getAudioVolume();
+    dapi.addEventListener("viewableChange", () => { this.adVisibleCallback({ isViewable: dapi.isViewable() }) });
+    dapi.addEventListener("adResized", () => { this.adResizeCallback(dapi.getScreenSize()) });
+    dapi.addEventListener("audioVolumeChange", () => { this.audioVolumeChangeCallback() });
+  }
 
-    dapi.addEventListener("viewableChange", () => { this.adVisibleCallback(event) });
-    dapi.addEventListener("adResized", () => { this.adResizeCallback() });
-    dapi.addEventListener("audioVolumeChange", () => { this.audioVolumeChangeCallback(event) });
+  startGame() {
+    console.log("Start game called");
+
+    let screenSize = dapi.getScreenSize();
+    this.screenSize = screenSize;
+  }
+
+  pauseGame() {
+    console.log("Pause game called");
+
+    //pause your game here(add your own code here)
   }
 
   adVisibleCallback(event) {
     // console.log('%c VISIBLE ' + event.isViewable, 'background: #0095ff; color: #ffffff');
-    if (event.isViewable) {
+    console.log("adVisibleCallback called");
+    console.log("isViewable " + event.isViewable);
 
-      //START or RESUME the ad
-      if (Model.gameStep === Model.gameSteps.INIT) Model.gameStep = Model.gameSteps.LOAD;
-      this.screenSize = dapi.getScreenSize();
+    if (event.isViewable) {
+      if (event.startGame) event.startGame();
+      this.startGame();
     } else {
-      this.onUp();
+      if (event.pauseGame) event.pauseGame();
+      this.pauseGame();
     }
   }
 
-  adResizeCallback() {
-    this.screenSize = dapi.getScreenSize();
+  adResizeCallback(event) {
+    this.screenSize = event
+    console.log("adResizeCallback called");
+
     // console.log('%c RESIZE: width:' + this.screenSize.width +' height: '+ this.screenSize.height, 'background: #0095ff; color: #ffffff');
   }
 
@@ -57,6 +79,7 @@ export default class IronSourceGameController {
   audioVolumeChangeCallback(volume) {
     // console.log('%c VALUE CHANGE to '+volume, 'background: #0095ff; color: #ffffff');
     let isAudioEnabled = !!volume;
+
     if (isAudioEnabled) {
       //START or turn on the sound
       Model.mute = true;
@@ -71,9 +94,7 @@ export default class IronSourceGameController {
 
   goToStore() {
     console.log("Go to store");
-
     this.userClickedDownloadButton();
-    return;
   }
 
   //=============================================
@@ -84,7 +105,7 @@ export default class IronSourceGameController {
 
     if (Model.gameStep === Model.gameSteps.INIT) {
       try {
-        if (dapi.isViewable()) {
+        if (dapi && dapi.isViewable()) {
           Model.gameStep = Model.gameSteps.LOAD;
         }
       } catch (error) {
